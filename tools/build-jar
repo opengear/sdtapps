@@ -1,0 +1,18 @@
+#!/bin/sh
+ROOTDIR=$PWD
+DISTDIR=$PWD/dist
+OUTJAR=$DISTDIR/sdtcon.jar
+
+cd $DISTDIR;
+rm -rf tmp
+mkdir tmp
+cd tmp
+mkdir main
+cp -al $DISTDIR/lib lib
+cp -al $DISTDIR/SDTConnector.jar main/main.jar
+
+jar xf $ROOTDIR/tools/one-jar-boot-0.95.jar
+jar -cfm $OUTJAR boot-manifest.mf .
+
+cd $DISTDIR
+rm -rf tmp
