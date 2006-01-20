@@ -6,6 +6,14 @@
 
 package sdtconnector;
 
+import java.util.Enumeration;
+import javax.swing.JDialog;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
 /**
  *
  * @author  wayne
@@ -15,6 +23,27 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("SDT Gateways", true);
+        DefaultTreeModel model = new DefaultTreeModel(top, true);
+        gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        gatewayList.setModel(model);
+        gatewayList.setShowsRootHandles(true);
+        for (Gateway gateway : SDTManager.getGatewayList()) {
+            DefaultMutableTreeNode gw;
+            
+            gw = new DefaultMutableTreeNode(gateway, true);
+            System.out.println("Adding gateway " + gateway);
+            
+            model.insertNodeInto(gw, top, top.getChildCount());
+            
+            // Insert all the hosts
+            for (Host host : gateway.getHostList()) {
+                System.out.println("Adding host " + host);
+                model.insertNodeInto(new DefaultMutableTreeNode(host, false),
+                        gw, gw.getChildCount());
+            }
+        }
+        gatewayList.setSelectionRow(0);
     }
     
     /** This method is called from within the constructor to
@@ -24,42 +53,33 @@ public class MainWindow extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jScrollPane1 = new javax.swing.JScrollPane();
-        hostsList = new javax.swing.JList();
-        jPanel1 = new javax.swing.JPanel();
+        connectButtonPanel = new javax.swing.JPanel();
         telnetButton = new javax.swing.JButton();
         webButton = new javax.swing.JButton();
         vncButton = new javax.swing.JButton();
         rdpButton = new javax.swing.JButton();
-        addButton = new javax.swing.JButton();
-        configureButton = new javax.swing.JButton();
+        addHostButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         descriptionArea = new javax.swing.JTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        gatewayList = new javax.swing.JTree();
+        addGatewayButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        addGatewayMenuItem = new javax.swing.JMenuItem();
         addHostMenu = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        hostsList.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        hostsList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Host1", "Host2" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        hostsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        hostsList.setNextFocusableComponent(telnetButton);
-        hostsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                hostsListValueChanged(evt);
-            }
-        });
-
-        jScrollPane1.setViewportView(hostsList);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect using ..."));
+        setTitle("Opengear SDT Connector");
+        setLocationByPlatform(true);
+        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect using ..."));
         telnetButton.setText("Telnet");
+        telnetButton.setEnabled(false);
         telnetButton.setNextFocusableComponent(webButton);
         telnetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -68,62 +88,76 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         webButton.setText("Web");
+        webButton.setEnabled(false);
         webButton.setNextFocusableComponent(rdpButton);
 
         vncButton.setText("VNC");
+        vncButton.setEnabled(false);
+        vncButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vncButtonActionPerformed(evt);
+            }
+        });
 
         rdpButton.setText("RDP");
+        rdpButton.setEnabled(false);
         rdpButton.setNextFocusableComponent(vncButton);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout connectButtonPanelLayout = new org.jdesktop.layout.GroupLayout(connectButtonPanel);
+        connectButtonPanel.setLayout(connectButtonPanelLayout);
+        connectButtonPanelLayout.setHorizontalGroup(
+            connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(connectButtonPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(webButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(telnetButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(vncButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                     .add(rdpButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        jPanel1Layout.linkSize(new java.awt.Component[] {rdpButton, telnetButton, vncButton, webButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+        connectButtonPanelLayout.linkSize(new java.awt.Component[] {rdpButton, telnetButton, vncButton, webButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        connectButtonPanelLayout.setVerticalGroup(
+            connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(connectButtonPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(telnetButton)
                     .add(rdpButton))
                 .add(17, 17, 17)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(webButton)
                     .add(vncButton))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
-        addButton.setText("Add Host");
-        addButton.addActionListener(new java.awt.event.ActionListener() {
+        addHostButton.setText("Add Host");
+        addHostButton.setEnabled(false);
+        addHostButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonActionPerformed(evt);
+                addHostButtonActionPerformed(evt);
             }
         });
 
-        configureButton.setText("Configure");
-        configureButton.setEnabled(false);
-        configureButton.addActionListener(new java.awt.event.ActionListener() {
+        editButton.setText("Edit");
+        editButton.setEnabled(false);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configureButtonActionPerformed(evt);
+                editButtonActionPerformed(evt);
             }
         });
 
         removeButton.setText("Remove");
         removeButton.setEnabled(false);
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Description"));
         descriptionArea.setColumns(20);
@@ -132,6 +166,7 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea.setRows(5);
         descriptionArea.setText("A Description of the host would go here");
         descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setAutoscrolls(false);
         descriptionArea.setBorder(null);
         descriptionArea.setFocusable(false);
         descriptionArea.setMargin(new java.awt.Insets(3, 3, 3, 3));
@@ -139,14 +174,51 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea.setRequestFocusEnabled(false);
         jScrollPane2.setViewportView(descriptionArea);
 
+        gatewayList.setRootVisible(false);
+        gatewayList.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                gatewayListValueChanged(evt);
+            }
+        });
+
+        jScrollPane1.setViewportView(gatewayList);
+
+        addGatewayButton.setText("Add Gateway");
+        addGatewayButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addGatewayButtonActionPerformed(evt);
+            }
+        });
+
         fileMenu.setText("File");
+        addGatewayMenuItem.setText("New Gateway");
+        addGatewayMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addGatewayButtonActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(addGatewayMenuItem);
+
         addHostMenu.setText("New Host");
+        addHostMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addHostButtonActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(addHostMenu);
 
         exitMenuItem.setText("Exit");
         fileMenu.add(exitMenuItem);
 
         jMenuBar1.add(fileMenu);
+
+        helpMenu.setText("Help");
+        aboutMenuItem.setText("About");
+        helpMenu.add(aboutMenuItem);
+
+        jMenuBar1.add(helpMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -155,64 +227,205 @@ public class MainWindow extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(11, 11, 11)
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(20, 20, 20)
+                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(29, 29, 29)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jScrollPane2, 0, 0, Short.MAX_VALUE)
-                            .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                     .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(addButton)
+                        .add(addGatewayButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(removeButton)
+                        .add(addHostButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(configureButton)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                        .add(editButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(removeButton)))
+                .addContainerGap())
         );
 
-        layout.linkSize(new java.awt.Component[] {jPanel1, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+        layout.linkSize(new java.awt.Component[] {connectButtonPanel, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+        layout.linkSize(new java.awt.Component[] {addGatewayButton, addHostButton, editButton, removeButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                        .add(removeButton)
-                        .add(configureButton))
-                    .add(addButton))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(editButton)
+                    .add(addHostButton)
+                    .add(addGatewayButton)
+                    .add(removeButton))
                 .addContainerGap())
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void hostsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_hostsListValueChanged
-        System.out.println("Selected " + hostsList.getSelectedIndex() + "="
-                + hostsList.getSelectedValue());
-        removeButton.setEnabled(true);
-        configureButton.setEnabled(true);
-    }//GEN-LAST:event_hostsListValueChanged
-
-    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-// TODO add your handling code here:
-        new AddHostDialog(this, true).setVisible(true);
-    }//GEN-LAST:event_addButtonActionPerformed
-
-    private void configureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureButtonActionPerformed
-// TODO add your handling code here:
+    
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        if (gatewayList.isSelectionEmpty()) {
+            return;
+        }
+        TreePath path = gatewayList.getSelectionPath();
+        boolean isGateway = path.getPathCount() == 2;
+        boolean isHost = path.getPathCount() == 3;
+        DefaultMutableTreeNode gwNode = (DefaultMutableTreeNode) path.getPathComponent(1);
+        DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
         
-    }//GEN-LAST:event_configureButtonActionPerformed
-
+        if (isGateway) {
+            SDTManager.removeGateway(gwNode.toString());
+            model.removeNodeFromParent(gwNode);
+        } else if (isHost) {
+            Gateway gw = (Gateway) gwNode.getUserObject();
+            DefaultMutableTreeNode hostNode =
+                    (DefaultMutableTreeNode) path.getPathComponent(2);
+            gw.removeHost(hostNode.toString());
+            model.removeNodeFromParent(hostNode);
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
+    
+    private void addGatewayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGatewayButtonActionPerformed
+        
+        Gateway gw = new Gateway();
+        GatewayDialog dlg = new GatewayDialog(this, true, gw);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if (dlg.getReturnStatus() == dlg.RET_OK) {
+            SDTManager.addGateway(gw);
+            DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
+            DefaultMutableTreeNode top = (DefaultMutableTreeNode) model.getRoot();
+            DefaultMutableTreeNode gwNode;
+            gwNode = new DefaultMutableTreeNode(gw.getAddress());
+            
+            // Insert it and update the display
+            model.insertNodeInto(gwNode, top, top.getChildCount());
+            gatewayList.scrollPathToVisible(new TreePath(gwNode.getPath()));
+            gatewayList.setSelectionRow(top.getIndex(gwNode));
+        }
+    }//GEN-LAST:event_addGatewayButtonActionPerformed
+    
+    private void vncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vncButtonActionPerformed
+        
+        
+    }//GEN-LAST:event_vncButtonActionPerformed
+    
+    private void gatewayListValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_gatewayListValueChanged
+        
+        TreePath path = gatewayList.getSelectionPath();
+        boolean isGateway = false;
+        boolean isHost = false;
+        String desc = "";
+        if (path != null) {
+            isGateway = path.getPathCount() == 2;
+            isHost = path.getPathCount() == 3;
+            
+            
+            String gateway = path.getPathComponent(1).toString();
+            String host = "";
+            if (isHost) {
+                host = path.getPathComponent(2).toString();
+            }
+            System.out.println("gateway=" + gateway + " host=" + host);
+            
+            if (isHost) {
+                Host h = SDTManager.getHost(gateway, host);
+                if (h != null) {
+                    desc = h.getDescription();
+                }
+            } else if (isGateway) {
+                Gateway gw = SDTManager.getGateway(gateway);
+                if (gw != null) {
+                    desc = gw.getDescription();
+                }
+            }
+        }
+        System.out.println("description = " + desc);
+        System.out.println("isHost = " + isHost + " isGateway=" + isGateway);
+        descriptionArea.setText(desc);
+        addHostButton.setEnabled(isGateway);
+        removeButton.setEnabled(isHost || isGateway);
+        editButton.setEnabled(isHost || isGateway);
+        telnetButton.setEnabled(isHost);
+        webButton.setEnabled(isHost);
+        rdpButton.setEnabled(isHost);
+        vncButton.setEnabled(isHost);
+    }//GEN-LAST:event_gatewayListValueChanged
+    
+    private void addHostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addHostButtonActionPerformed
+        
+        TreePath path = gatewayList.getSelectionPath();
+        DefaultMutableTreeNode gwNode = (DefaultMutableTreeNode) path.getPathComponent(1);
+        
+        Host host = new Host();
+        AddHostDialog dlg = new AddHostDialog(this, true, host);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if (dlg.getReturnStatus() == dlg.RET_OK) {
+            
+            // Add it to the DB
+            Gateway gw = SDTManager.getGateway(gwNode.toString());
+            gw.addHost(host);
+            
+            // Now add it to the JTree
+            DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(host, false);
+            model.insertNodeInto(child, gwNode, gwNode.getChildCount());
+            gatewayList.scrollPathToVisible(new TreePath(child.getPath()));
+            
+        }
+    }//GEN-LAST:event_addHostButtonActionPerformed
+    
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        
+        TreePath path = gatewayList.getSelectionPath();
+        boolean isGateway = path.getPathCount() == 2;
+        boolean isHost = path.getPathCount() == 3;
+        DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
+        if (isGateway) {
+            Gateway gw = SDTManager.getGateway(path.getPathComponent(1).toString());
+            GatewayDialog dlg = new GatewayDialog(this, true, gw);
+            String oldAddress = gw.getAddress();
+            
+            dlg.setLocationRelativeTo(this);
+            dlg.pack();
+            dlg.setVisible(true);
+            if (dlg.getReturnStatus() == dlg.RET_OK) {
+                if (!oldAddress.equals(gw.getAddress())) {
+                    SDTManager.removeGateway(oldAddress);
+                    SDTManager.addGateway(gw);
+                }
+                
+                model.valueForPathChanged(path, gw.getAddress());
+                descriptionArea.setText(gw.getDescription());
+            }
+        } else if (isHost) {
+            Gateway gw = SDTManager.getGateway(path.getPathComponent(1).toString());
+            Host host = gw.getHost(path.getPathComponent(2).toString());
+            AddHostDialog dlg = new AddHostDialog(this, true, host);
+            String oldAddress = host.getAddress();
+            dlg.setLocationRelativeTo(this);
+            dlg.pack();
+            dlg.setVisible(true);
+            if (dlg.getReturnStatus() == dlg.RET_OK) {
+                model.valueForPathChanged(path, host.getAddress());
+                descriptionArea.setText(host.getDescription());
+                if (!oldAddress.equals(host.getAddress())) {
+                    gw.removeHost(oldAddress);
+                    gw.addHost(host);
+                }
+            }
+        }
+    }//GEN-LAST:event_editButtonActionPerformed
+    
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
         System.out.println("telnet pressed");
     }//GEN-LAST:event_telnetButtonActionPerformed
@@ -229,15 +442,19 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addButton;
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton addGatewayButton;
+    private javax.swing.JMenuItem addGatewayMenuItem;
+    private javax.swing.JButton addHostButton;
     private javax.swing.JMenuItem addHostMenu;
-    private javax.swing.JButton configureButton;
+    private javax.swing.JPanel connectButtonPanel;
     private javax.swing.JTextArea descriptionArea;
+    private javax.swing.JButton editButton;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JList hostsList;
+    private javax.swing.JTree gatewayList;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton rdpButton;
