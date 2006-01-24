@@ -9,11 +9,14 @@
 
 package sdtconnector;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -22,7 +25,7 @@ import java.util.Map;
  */
 public class SDTManager {
     static {
-        gateways = new HashMap<String, Gateway>();
+        gatewayList = new BasicEventList<Gateway>();
         Gateway gw = new Gateway("cm4008.opengear.com", "test user", "password",
                 "Some gateway or other");
         gw.addHost(new Host("www.example.com", "Some description"));
@@ -30,6 +33,10 @@ public class SDTManager {
         gw = new Gateway("cm4116.example.com", "root", "default",
                 "CM4116 at i.lab somewhere or other");
         addGateway(gw);
+        gw = new Gateway("192.168.99.11", "root", "default",
+                "CM4148 prototype");
+        addGateway(gw);
+        gw.addHost(new Host("192.168.99.2", "Web server"));
     }
     /**
      * Creates a new instance of SDTManager
@@ -37,22 +44,33 @@ public class SDTManager {
     private SDTManager() {
     }
     public static Gateway getGateway(String address) {
-        return gateways.get(address);
+        for (Gateway gw : gatewayList) {
+            if (gw.getAddress().equals(address)) {
+                return gw;
+            }
+        }
+        return null;
     }
     public static void addGateway(Gateway gw) {
-        gateways.put(gw.getAddress(), gw);
+        gatewayList.add(gw);
     }
     public static void removeGateway(String address) {
-        gateways.remove(address);
+        
+        for (ListIterator i = gatewayList.listIterator(); i.hasNext(); ) {
+            Gateway gw = (Gateway) i.next();
+            if (gw.getAddress().equals(address)) {
+                i.remove();
+            }
+        }
     }
-    public static List<Gateway> getGatewayList() {
-        return new ArrayList<Gateway>(gateways.values());
+    public static EventList<Gateway> getGatewayList() {
+        return gatewayList;
     }
-    public static List<Host> getHostList(String gwAddress) {
+    public static EventList<Host> getHostList(String gwAddress) {
         return getGateway(gwAddress).getHostList();
     }
     public static Host getHost(String gateway, String address) {
         return getGateway(gateway).getHost(address);
     }
-    private static Map<String, Gateway> gateways;
+    private static EventList<Gateway> gatewayList;
 }
