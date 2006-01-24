@@ -1,10 +1,6 @@
 /*
  * Main.java
  *
- * Created on January 15, 2006, 9:22 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -16,7 +12,6 @@ import com.jgoodies.looks.LookUtils;
 
 /**
  *
- * @author wayne
  */
 public class Main {
     
@@ -50,7 +45,6 @@ public class Main {
             System.out.println("Using " + lafName + " look & feel");
             UIManager.setLookAndFeel(lafName);
         } catch (Exception e) {}
-        
         new MainWindow().setVisible(true);
     }
     
