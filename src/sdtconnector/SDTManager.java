@@ -26,7 +26,7 @@ public class SDTManager {
     private static void init() {
         Gateway gw;
         gatewayList = new BasicEventList<Gateway>();
-        preferences = Preferences.userRoot().node("Opengear/SDTConnector/gateways");
+        preferences = Preferences.userRoot().node("opengear/sdtconnector/gateways");
         try {
             for (String id : preferences.childrenNames()) {
                 Preferences child = preferences.node(id);
