@@ -9,10 +9,13 @@
 
 package sdtconnector;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -26,7 +29,7 @@ public class Gateway {
      */
     public Gateway() {
     }
-    public Gateway(String address, String username, String password, 
+    public Gateway(String address, String username, String password,
             String description) {
         this.address = address;
         this.username = username;
@@ -53,34 +56,50 @@ public class Gateway {
     }
     public void setPassword(String password) {
         this.password = password;
-    }  
+    }
     public String getDescription() {
         return description;
     }
     public void setDescription(String description) {
         this.description = description;
     }
-    public List<Host> getHostList() {
-        return new ArrayList<Host>(hosts.values());
+    public EventList<Host> getHostList() {
+        return hostList;
     }
     public void addHost(Host host) {
-        hosts.put(host.getAddress(), host);
+        hostList.add(host);
     }
     public void removeHost(String address) {
-        hosts.remove(address);
+        ListIterator it;
+        for (it = hostList.listIterator(); it.hasNext(); ) {
+            Host host = (Host) it.next();
+            if (host.getAddress().equals(address)) {
+                it.remove();
+                break;
+            }
+        }       
     }
     public Host getHost(String address) {
-        return hosts.get(address);
-    }   
+        for (Host host : hostList) {
+            if (host.getAddress().equals(address)) {
+                return host;
+            }
+        }
+        return null;
+    }
     public String toString() {
         return address;
     }
     
+    public boolean equals(Object obj) {
+        return getAddress().equals(((Gateway) obj).getAddress());
+    }
+    
     // Variables
     private String address = "";
-
+    
     private String username = "";
     private String password = "";
     private String description = "";
-    private Map<String, Host> hosts = new HashMap<String, Host>();
+    private EventList<Host> hostList = new BasicEventList<Host>();
 }
