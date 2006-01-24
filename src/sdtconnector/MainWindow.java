@@ -6,13 +6,23 @@
 
 package sdtconnector;
 
-import java.util.Enumeration;
+import com.jcraft.jsch.UserInfo;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.prefs.Preferences;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 
 /**
  *
@@ -23,27 +33,30 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("SDT Gateways", true);
-        DefaultTreeModel model = new DefaultTreeModel(top, true);
+        connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        gatewayList.setModel(model);
         gatewayList.setShowsRootHandles(true);
-        for (Gateway gateway : SDTManager.getGatewayList()) {
-            DefaultMutableTreeNode gw;
-            
-            gw = new DefaultMutableTreeNode(gateway, true);
-            System.out.println("Adding gateway " + gateway);
-            
-            model.insertNodeInto(gw, top, top.getChildCount());
-            
-            // Insert all the hosts
-            for (Host host : gateway.getHostList()) {
-                System.out.println("Adding host " + host);
-                model.insertNodeInto(new DefaultMutableTreeNode(host, false),
-                        gw, gw.getChildCount());
-            }
-        }
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("SDT Gateways", true);
+        
+        gatewayList.setModel(treeModel = new SDTTreeModel());
         gatewayList.setSelectionRow(0);
+        treeModel.addTreeModelListener(new TreeModelListener() {
+            public void treeNodesChanged(TreeModelEvent e) {
+                // Update the description when a node in the tree changes
+                if (!e.getTreePath().equals(gatewayList.getSelectionPath())) {
+                    return;
+                }
+                Object last = gatewayList.getSelectionPath().getLastPathComponent();
+                if (last instanceof Gateway) {
+                    descriptionArea.setText(((Gateway) last).getDescription());
+                } else {
+                    descriptionArea.setText(((Host) last).getDescription());
+                }
+            }
+            public void treeNodesInserted(TreeModelEvent e) { }
+            public void treeNodesRemoved(TreeModelEvent e) { }
+            public void treeStructureChanged(TreeModelEvent e) { }
+        });
     }
     
     /** This method is called from within the constructor to
@@ -90,6 +103,11 @@ public class MainWindow extends javax.swing.JFrame {
         webButton.setText("Web");
         webButton.setEnabled(false);
         webButton.setNextFocusableComponent(rdpButton);
+        webButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                webButtonActionPerformed(evt);
+            }
+        });
 
         vncButton.setText("VNC");
         vncButton.setEnabled(false);
@@ -132,7 +150,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(webButton)
                     .add(vncButton))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         addHostButton.setText("Add Host");
@@ -231,10 +249,15 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
                         .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(29, 29, 29)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane2, 0, 0, Short.MAX_VALUE)
-                            .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(layout.createSequentialGroup()
+                                .add(28, 28, 28)
+                                .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(layout.createSequentialGroup()
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jScrollPane2, 0, 0, Short.MAX_VALUE)))
+                        .addContainerGap(51, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(addGatewayButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -242,8 +265,8 @@ public class MainWindow extends javax.swing.JFrame {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(editButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(removeButton)))
-                .addContainerGap())
+                        .add(removeButton)
+                        .addContainerGap(22, Short.MAX_VALUE))))
         );
 
         layout.linkSize(new java.awt.Component[] {connectButtonPanel, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
@@ -252,70 +275,71 @@ public class MainWindow extends javax.swing.JFrame {
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 287, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(editButton)
                     .add(addHostButton)
                     .add(addGatewayButton)
                     .add(removeButton))
-                .addContainerGap())
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void webButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonActionPerformed
+        
+        GatewayConnection.Redirector r = getRedirectorForSelection(80);
+        try {
+            URL url = new URL("http", "localhost", r.getLocalPort(), "/");           
+            Browser.displayURL(url);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_webButtonActionPerformed
     
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         if (gatewayList.isSelectionEmpty()) {
             return;
         }
-        TreePath path = gatewayList.getSelectionPath();
-        boolean isGateway = path.getPathCount() == 2;
-        boolean isHost = path.getPathCount() == 3;
-        DefaultMutableTreeNode gwNode = (DefaultMutableTreeNode) path.getPathComponent(1);
-        DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
         
-        if (isGateway) {
-            SDTManager.removeGateway(gwNode.toString());
-            model.removeNodeFromParent(gwNode);
-        } else if (isHost) {
-            Gateway gw = (Gateway) gwNode.getUserObject();
-            DefaultMutableTreeNode hostNode =
-                    (DefaultMutableTreeNode) path.getPathComponent(2);
-            gw.removeHost(hostNode.toString());
-            model.removeNodeFromParent(hostNode);
+        Object last = gatewayList.getLastSelectedPathComponent();
+        if (last instanceof Gateway) {
+            SDTManager.removeGateway(last.toString());
+        } else {
+            TreePath path = gatewayList.getSelectionPath();
+            SDTManager.removeHost((Gateway) path.getPathComponent(1), (Host) last);
         }
+        
     }//GEN-LAST:event_removeButtonActionPerformed
     
     private void addGatewayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGatewayButtonActionPerformed
         
         Gateway gw = new Gateway();
         GatewayDialog dlg = new GatewayDialog(this, true, gw);
-        dlg.setLocationRelativeTo(this);
+        //dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
+        
         if (dlg.getReturnStatus() == dlg.RET_OK) {
             SDTManager.addGateway(gw);
-            DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
-            DefaultMutableTreeNode top = (DefaultMutableTreeNode) model.getRoot();
-            DefaultMutableTreeNode gwNode;
-            gwNode = new DefaultMutableTreeNode(gw.getAddress());
+            TreePath path = new TreePath(new Object[] {
+                gatewayList.getModel().getRoot(), gw });
             
-            // Insert it and update the display
-            model.insertNodeInto(gwNode, top, top.getChildCount());
-            gatewayList.scrollPathToVisible(new TreePath(gwNode.getPath()));
-            gatewayList.setSelectionRow(top.getIndex(gwNode));
+            gatewayList.scrollPathToVisible(path);
+            gatewayList.setSelectionPath(path);
         }
     }//GEN-LAST:event_addGatewayButtonActionPerformed
     
     private void vncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vncButtonActionPerformed
-        
-        
+        VNCViewer.launch("localhost", getRedirectorForSelection(5900).getLocalPort());
     }//GEN-LAST:event_vncButtonActionPerformed
     
     private void gatewayListValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_gatewayListValueChanged
@@ -325,33 +349,20 @@ public class MainWindow extends javax.swing.JFrame {
         boolean isHost = false;
         String desc = "";
         if (path != null) {
-            isGateway = path.getPathCount() == 2;
-            isHost = path.getPathCount() == 3;
-            
-            
-            String gateway = path.getPathComponent(1).toString();
-            String host = "";
-            if (isHost) {
-                host = path.getPathComponent(2).toString();
-            }
-            System.out.println("gateway=" + gateway + " host=" + host);
-            
-            if (isHost) {
-                Host h = SDTManager.getHost(gateway, host);
-                if (h != null) {
-                    desc = h.getDescription();
-                }
-            } else if (isGateway) {
-                Gateway gw = SDTManager.getGateway(gateway);
-                if (gw != null) {
-                    desc = gw.getDescription();
-                }
+            Object last = path.getLastPathComponent();
+            if (last instanceof Gateway) {
+                desc = ((Gateway) last).getDescription();
+                isGateway = true;
+            } else {
+                desc = ((Host) last).getDescription();
+                isHost = true;
             }
         }
-        System.out.println("description = " + desc);
-        System.out.println("isHost = " + isHost + " isGateway=" + isGateway);
+        
         descriptionArea.setText(desc);
-        addHostButton.setEnabled(isGateway);
+        addHostMenu.setEnabled(isHost || isGateway);
+        addGatewayMenuItem.setEnabled(true);
+        addHostButton.setEnabled(isHost || isGateway);
         removeButton.setEnabled(isHost || isGateway);
         editButton.setEnabled(isHost || isGateway);
         telnetButton.setEnabled(isHost);
@@ -363,24 +374,23 @@ public class MainWindow extends javax.swing.JFrame {
     private void addHostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addHostButtonActionPerformed
         
         TreePath path = gatewayList.getSelectionPath();
-        DefaultMutableTreeNode gwNode = (DefaultMutableTreeNode) path.getPathComponent(1);
+        if (path == null) {
+            return;
+        }
         
         Host host = new Host();
         AddHostDialog dlg = new AddHostDialog(this, true, host);
-        dlg.setLocationRelativeTo(this);
+        //dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         if (dlg.getReturnStatus() == dlg.RET_OK) {
             
             // Add it to the DB
-            Gateway gw = SDTManager.getGateway(gwNode.toString());
-            gw.addHost(host);
+            SDTManager.addHost((Gateway) path.getPathComponent(1), host);
             
-            // Now add it to the JTree
-            DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
-            DefaultMutableTreeNode child = new DefaultMutableTreeNode(host, false);
-            model.insertNodeInto(child, gwNode, gwNode.getChildCount());
-            gatewayList.scrollPathToVisible(new TreePath(child.getPath()));
-            
+            // Make the new host selected by default
+            path = path.pathByAddingChild(host);
+            gatewayList.scrollPathToVisible(path);
+            gatewayList.setSelectionPath(path);
         }
     }//GEN-LAST:event_addHostButtonActionPerformed
     
@@ -388,47 +398,47 @@ public class MainWindow extends javax.swing.JFrame {
         
         TreePath path = gatewayList.getSelectionPath();
         boolean isGateway = path.getPathCount() == 2;
-        boolean isHost = path.getPathCount() == 3;
-        DefaultTreeModel model = (DefaultTreeModel) gatewayList.getModel();
+        TreeModel model = (TreeModel) gatewayList.getModel();
+        Gateway gw = (Gateway) path.getPathComponent(1);
+        JDialog dlg;
+        
         if (isGateway) {
-            Gateway gw = SDTManager.getGateway(path.getPathComponent(1).toString());
-            GatewayDialog dlg = new GatewayDialog(this, true, gw);
             String oldAddress = gw.getAddress();
+            dlg = new GatewayDialog(this, true, gw);
             
-            dlg.setLocationRelativeTo(this);
             dlg.pack();
             dlg.setVisible(true);
-            if (dlg.getReturnStatus() == dlg.RET_OK) {
-                if (!oldAddress.equals(gw.getAddress())) {
-                    SDTManager.removeGateway(oldAddress);
-                    SDTManager.addGateway(gw);
-                }
-                
-                model.valueForPathChanged(path, gw.getAddress());
-                descriptionArea.setText(gw.getDescription());
+            if (!oldAddress.equals(gw.getAddress())) {
+                removeGatewayConnection(oldAddress);
             }
-        } else if (isHost) {
-            Gateway gw = SDTManager.getGateway(path.getPathComponent(1).toString());
-            Host host = gw.getHost(path.getPathComponent(2).toString());
-            AddHostDialog dlg = new AddHostDialog(this, true, host);
+            SDTManager.updateGateway(gw, oldAddress);
+        } else {
+            Host host = (Host) path.getPathComponent(2);
+            
             String oldAddress = host.getAddress();
-            dlg.setLocationRelativeTo(this);
+            System.out.println("Editing host " + oldAddress);
+            dlg = new AddHostDialog(this, true, host);
             dlg.pack();
             dlg.setVisible(true);
-            if (dlg.getReturnStatus() == dlg.RET_OK) {
-                model.valueForPathChanged(path, host.getAddress());
-                descriptionArea.setText(host.getDescription());
-                if (!oldAddress.equals(host.getAddress())) {
-                    gw.removeHost(oldAddress);
-                    gw.addHost(host);
-                }
-            }
+            SDTManager.updateHost(gw, host, oldAddress);
         }
+        model.valueForPathChanged(path, path.getLastPathComponent());
+        
     }//GEN-LAST:event_editButtonActionPerformed
     
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
-        System.out.println("telnet pressed");
+        Telnet.launch("localhost", getRedirectorForSelection(23).getLocalPort());
     }//GEN-LAST:event_telnetButtonActionPerformed
+ 
+    GatewayConnection.Redirector getRedirectorForSelection(int port) {
+        TreePath path = gatewayList.getSelectionPath();
+        Gateway gw = (Gateway) path.getPathComponent(1);
+        Host host = (Host) path.getLastPathComponent();
+        GatewayConnection conn = getGatewayConnection(gw);
+        System.out.println("Adding redirection to " + host + ":" + port + " via "
+                + gw);
+        return conn.getRedirector(host.toString(), port);
+    }
     
     /**
      * @param args the command line arguments
@@ -439,6 +449,37 @@ public class MainWindow extends javax.swing.JFrame {
                 new MainWindow().setVisible(true);
             }
         });
+    }
+   
+    private GatewayConnection getGatewayConnection(Gateway gw) {
+        GatewayConnection conn = connections.get(gw.getAddress());
+        if (conn == null) {
+            connections.put(gw.getAddress(), conn = new GatewayConnection(gw, new UserInfo() {
+                public String getPassphrase() {
+                    return "";
+                }
+                public String getPassword() {
+                    return "";
+                }
+                public boolean promptPassphrase(String string) {
+                    return false;
+                }
+                public boolean promptPassword(String string) {
+                    return false;
+                }
+                public boolean promptYesNo(String string) {
+                    return false;
+                }
+                public void showMessage(String string) {
+                }
+            }, Executors.newSingleThreadExecutor()));
+        }
+        return conn;
+    }
+    private void removeGatewayConnection(String oldAddress) {
+        GatewayConnection conn = connections.get(oldAddress);
+        conn.shutdown();
+        connections.remove(oldAddress);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -464,4 +505,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton webButton;
     // End of variables declaration//GEN-END:variables
     
+    private SDTTreeModel treeModel;
+    private Map<String, GatewayConnection> connections;
 }
