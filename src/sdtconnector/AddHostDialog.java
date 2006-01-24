@@ -52,6 +52,7 @@ public class AddHostDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationByPlatform(true);
         hostField.setNextFocusableComponent(telnetCheckbox);
 
         jLabel1.setText("Host Address:");
@@ -68,6 +69,7 @@ public class AddHostDialog extends javax.swing.JDialog {
 
         descriptionField.setColumns(20);
         descriptionField.setRows(5);
+        descriptionField.setNextFocusableComponent(okButton);
         jScrollPane1.setViewportView(descriptionField);
 
         telnetCheckbox.setText("Telnet");
@@ -88,7 +90,7 @@ public class AddHostDialog extends javax.swing.JDialog {
         vncCheckbox.setText("VNC");
         vncCheckbox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         vncCheckbox.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        vncCheckbox.setNextFocusableComponent(okButton);
+        vncCheckbox.setNextFocusableComponent(descriptionField);
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -122,7 +124,7 @@ public class AddHostDialog extends javax.swing.JDialog {
                                 .add(webCheckbox)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(vncCheckbox))
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
                         .addContainerGap())
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(okButton)
@@ -156,7 +158,7 @@ public class AddHostDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(okButton)
