@@ -42,6 +42,11 @@ public class Host {
     public String toString() {
         return address;
     }
+
+    public boolean equals(Object obj) {
+        return address.equals(((Host) obj).getAddress());
+    }
+
     private String address = "";
     private String description = "";
 }
