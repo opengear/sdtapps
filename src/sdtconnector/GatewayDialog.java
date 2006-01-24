@@ -53,6 +53,9 @@ public class GatewayDialog extends javax.swing.JDialog {
         descriptionField = new javax.swing.JTextArea();
         passwordField = new javax.swing.JPasswordField();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationByPlatform(true);
+        setMinimumSize(new java.awt.Dimension(420, 220));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -73,12 +76,16 @@ public class GatewayDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setLabelFor(addressField);
         jLabel1.setText("Gateway Address");
 
+        jLabel2.setLabelFor(usernameField);
         jLabel2.setText("Gateway Username");
 
+        jLabel3.setLabelFor(passwordField);
         jLabel3.setText("Gateway Password");
 
+        jLabel4.setLabelFor(descriptionField);
         jLabel4.setText("Description");
 
         descriptionField.setColumns(20);
