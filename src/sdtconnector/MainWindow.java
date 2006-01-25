@@ -40,7 +40,7 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */
     public MainWindow() {
-        initComponents();        
+        initComponents();
         setIconImage(getToolkit().getImage("images/tsclient.png"));
         
         connections = new HashMap<String, GatewayConnection>();
@@ -66,7 +66,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void treeNodesInserted(TreeModelEvent e) { }
             public void treeNodesRemoved(TreeModelEvent e) { }
             public void treeStructureChanged(TreeModelEvent e) { }
-        });      
+        });
     }
     
     /** This method is called from within the constructor to
@@ -76,6 +76,9 @@ public class MainWindow extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        gatewayListPopup = new javax.swing.JPopupMenu();
+        listEditMenuItem = new javax.swing.JMenuItem();
+        listRemoveMenuItem = new javax.swing.JMenuItem();
         connectButtonPanel = new javax.swing.JPanel();
         telnetButton = new javax.swing.JButton();
         webButton = new javax.swing.JButton();
@@ -102,6 +105,24 @@ public class MainWindow extends javax.swing.JFrame {
         prefsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
+
+        listEditMenuItem.setText("Edit");
+        listEditMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listEditMenuItemActionPerformed(evt);
+            }
+        });
+
+        gatewayListPopup.add(listEditMenuItem);
+
+        listRemoveMenuItem.setText("Delete");
+        listRemoveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listRemoveMenuItemActionPerformed(evt);
+            }
+        });
+
+        gatewayListPopup.add(listRemoveMenuItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Opengear SDT Connector");
@@ -217,6 +238,9 @@ public class MainWindow extends javax.swing.JFrame {
         gatewayList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 gatewayListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                gatewayListMouseReleased(evt);
             }
         });
 
@@ -351,18 +375,42 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    private void listRemoveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listRemoveMenuItemActionPerformed
+        removeSelectedNode(gatewayList.getSelectionPath());
+    }//GEN-LAST:event_listRemoveMenuItemActionPerformed
+    
+    private void gatewayListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMouseReleased
+        showListPopup(evt);
+    }//GEN-LAST:event_gatewayListMouseReleased
+    
+    private void listEditMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listEditMenuItemActionPerformed
+        editSelectedNode(gatewayList.getSelectionPath());
+    }//GEN-LAST:event_listEditMenuItemActionPerformed
+    
     private void gatewayListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMousePressed
-// TODO add your handling code here:
-        if (evt.getClickCount() == 2) {
-            TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
-            editGatewayNode(path);
+        TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
+        if (path != null) {
+            gatewayList.setSelectionPath(path);
+            if (evt.getClickCount() == 2) {
+                editSelectedNode(path);
+            }
         }
+        
+        showListPopup(evt);
     }//GEN-LAST:event_gatewayListMousePressed
+    
+    private void showListPopup(final java.awt.event.MouseEvent evt) {
+        TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
+        if (evt.isPopupTrigger() && path != null) {
+            gatewayListPopup.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }
     
     private void prefsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prefsMenuItemActionPerformed
         
         PreferencesDialog dlg = new PreferencesDialog(this, true);
+        dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         updateButtonState();
     }//GEN-LAST:event_prefsMenuItemActionPerformed
@@ -383,22 +431,23 @@ public class MainWindow extends javax.swing.JFrame {
         if (gatewayList.isSelectionEmpty()) {
             return;
         }
-        
-        Object last = gatewayList.getLastSelectedPathComponent();
+        removeSelectedNode(gatewayList.getSelectionPath());
+    }//GEN-LAST:event_removeButtonActionPerformed
+    
+    private void removeSelectedNode(TreePath path) {
+        Object last = path.getLastPathComponent();
         if (last instanceof Gateway) {
             SDTManager.removeGateway(last.toString());
         } else {
-            TreePath path = gatewayList.getSelectionPath();
             SDTManager.removeHost((Gateway) path.getPathComponent(1), (Host) last);
         }
-        
-    }//GEN-LAST:event_removeButtonActionPerformed
+    }
     
     private void addGatewayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGatewayButtonActionPerformed
         
         Gateway gw = new Gateway();
         GatewayDialog dlg = new GatewayDialog(this, true, gw);
-        //dlg.setLocationRelativeTo(this);
+        dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         dlg.setTitle("New SDT Gateway");
         if (dlg.getReturnStatus() == dlg.RET_OK) {
@@ -452,7 +501,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         Host host = new Host();
         AddHostDialog dlg = new AddHostDialog(this, true, host);
-        //dlg.setLocationRelativeTo(this);
+        dlg.setLocationRelativeTo(this);
         dlg.setTitle("New SDT Host");
         dlg.setVisible(true);
         if (dlg.getReturnStatus() == dlg.RET_OK) {
@@ -470,10 +519,11 @@ public class MainWindow extends javax.swing.JFrame {
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         
         TreePath path = gatewayList.getSelectionPath();
-        editGatewayNode(path);        
+        editSelectedNode(path);
     }//GEN-LAST:event_editButtonActionPerformed
-
-    private void editGatewayNode(final TreePath path) {
+    
+    
+    private void editSelectedNode(final TreePath path) {
         boolean isGateway = path.getPathCount() == 2;
         TreeModel model = (TreeModel) gatewayList.getModel();
         Gateway gw = (Gateway) path.getPathComponent(1);
@@ -484,6 +534,7 @@ public class MainWindow extends javax.swing.JFrame {
             int oldPort = gw.getPort();
             dlg = new GatewayDialog(this, true, gw);
             dlg.setTitle("Edit SDT Gateway");
+            dlg.setLocationRelativeTo(this);
             dlg.pack();
             dlg.setVisible(true);
             if (!oldAddress.equals(gw.getAddress()) || gw.getPort() != oldPort) {
@@ -497,12 +548,13 @@ public class MainWindow extends javax.swing.JFrame {
             System.out.println("Editing host " + oldAddress);
             dlg = new AddHostDialog(this, true, host);
             dlg.setTitle("Edit SDT Host");
+            dlg.setLocationRelativeTo(this);
             dlg.pack();
             dlg.setVisible(true);
             SDTManager.updateHost(gw, host, oldAddress);
         }
         model.valueForPathChanged(path, path.getLastPathComponent());
-        updateButtonState();        
+        updateButtonState();
     }
     
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
@@ -610,12 +662,15 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JTree gatewayList;
+    private javax.swing.JPopupMenu gatewayListPopup;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private org.jdesktop.swingx.JXStatusBar jXStatusBar1;
+    private javax.swing.JMenuItem listEditMenuItem;
+    private javax.swing.JMenuItem listRemoveMenuItem;
     private javax.swing.JMenuItem prefsMenuItem;
     private javax.swing.JButton rdpButton;
     private javax.swing.JButton removeButton;
