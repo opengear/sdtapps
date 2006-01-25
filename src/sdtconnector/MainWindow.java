@@ -101,6 +101,7 @@ public class MainWindow extends javax.swing.JFrame {
         editMenu = new javax.swing.JMenu();
         editGatewayMenuItem = new javax.swing.JMenuItem();
         editHostMenuItem = new javax.swing.JMenuItem();
+        editDeleteMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         prefsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -299,6 +300,15 @@ public class MainWindow extends javax.swing.JFrame {
 
         editMenu.add(editHostMenuItem);
 
+        editDeleteMenuItem.setText("Delete");
+        editDeleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editDeleteMenuItemActionPerformed(evt);
+            }
+        });
+
+        editMenu.add(editDeleteMenuItem);
+
         editMenu.add(jSeparator1);
 
         prefsMenuItem.setText("Preferences");
@@ -375,6 +385,10 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void editDeleteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDeleteMenuItemActionPerformed
+        removeSelectedNode(gatewayList.getSelectionPath());
+    }//GEN-LAST:event_editDeleteMenuItemActionPerformed
     
     private void listRemoveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listRemoveMenuItemActionPerformed
         removeSelectedNode(gatewayList.getSelectionPath());
@@ -656,6 +670,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel connectButtonPanel;
     private javax.swing.JTextArea descriptionArea;
     private javax.swing.JButton editButton;
+    private javax.swing.JMenuItem editDeleteMenuItem;
     private javax.swing.JMenuItem editGatewayMenuItem;
     private javax.swing.JMenuItem editHostMenuItem;
     private javax.swing.JMenu editMenu;
