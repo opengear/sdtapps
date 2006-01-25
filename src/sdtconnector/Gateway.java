@@ -41,7 +41,12 @@ public class Gateway {
     public String getAddress() {
         return address;
     }
-    
+    public int getPort() {
+        return port;
+    }
+    public void setPort(int port) {
+        this.port = port;
+    }
     public void setAddress(String address) {
         this.address = address;
     }
@@ -97,7 +102,7 @@ public class Gateway {
     
     // Variables
     private String address = "";
-    
+    private int port = 22;
     private String username = "";
     private String password = "";
     private String description = "";
