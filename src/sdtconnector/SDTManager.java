@@ -116,6 +116,9 @@ public class SDTManager {
         gwPrefs.put("username", gw.getUsername());
         gwPrefs.put("password", gw.getPassword());
         gwPrefs.putInt("sshport", gw.getPort());
+        try {
+            gwPrefs.sync();
+        } catch (BackingStoreException ex) {}
     }
     public static EventList<Gateway> getGatewayList() {
         return gatewayList;
@@ -130,7 +133,9 @@ public class SDTManager {
         protocols.putBoolean("www", host.www);
         protocols.putBoolean("vnc", host.vnc);
         protocols.putBoolean("rdp", host.rdp);
-        
+        try {
+            gwPrefs.sync();
+        } catch (BackingStoreException ex) {}
     }
     public static void addHost(Gateway gw, Host host) {
         gw.addHost(host);
@@ -152,6 +157,7 @@ public class SDTManager {
         if (!oldAddress.equals(host.getAddress())) {
             try {
                 gwPrefs.node("hosts/" + oldAddress).removeNode();
+                gwPrefs.sync();
             } catch (BackingStoreException ex) { }
         }
         
