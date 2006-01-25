@@ -29,14 +29,16 @@ public class SDTManager {
         preferences = Preferences.userRoot().node("opengear/sdtconnector/gateways");
         try {
             for (String id : preferences.childrenNames()) {
-                Preferences child = preferences.node(id);
-                String address = child.get("address", "");
-                String description = child.get("description", "");
-                String username = child.get("username", "");
-                String password = child.get("password", "");
+                Preferences gwPrefs = preferences.node(id);
+                String address = gwPrefs.get("address", "");
+                String description = gwPrefs.get("description", "");
+                String username = gwPrefs.get("username", "");
+                String password = gwPrefs.get("password", "");
                 gw = new Gateway(address, username, password, description);
+                gw.setPort(gwPrefs.getInt("sshport", 22));
+                
                 gatewayList.add(gw);
-                Preferences hosts = child.node("hosts");
+                Preferences hosts = gwPrefs.node("hosts");
                 for (String hostID : hosts.childrenNames()) {
                     Preferences host = hosts.node(hostID);
                     String hostAddress = host.get("address", "");
@@ -107,6 +109,7 @@ public class SDTManager {
         gwPrefs.put("description", gw.getDescription());
         gwPrefs.put("username", gw.getUsername());
         gwPrefs.put("password", gw.getPassword());
+        gwPrefs.putInt("sshport", gw.getPort());
     }
     public static EventList<Gateway> getGatewayList() {
         return gatewayList;
