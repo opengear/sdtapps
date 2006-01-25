@@ -455,11 +455,12 @@ public class MainWindow extends javax.swing.JFrame {
         
         if (isGateway) {
             String oldAddress = gw.getAddress();
+            int oldPort = gw.getPort();
             dlg = new GatewayDialog(this, true, gw);
             dlg.setTitle("Edit SDT Gateway");
             dlg.pack();
             dlg.setVisible(true);
-            if (!oldAddress.equals(gw.getAddress())) {
+            if (!oldAddress.equals(gw.getAddress()) || gw.getPort() != oldPort) {
                 removeGatewayConnection(oldAddress);
             }
             SDTManager.updateGateway(gw, oldAddress);
@@ -495,7 +496,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (!rdpIsSet) {
             rdpButton.setToolTipText("Set the RDP client in Edit -> Preferences");
         } else {
-            rdpButton.setToolTipText(isHost ? 
+            rdpButton.setToolTipText(isHost ?
                 "Connect to " + last + " using a RDP client" : "");
         }
         vncButton.setEnabled(isHost && vncIsSet);
@@ -558,8 +559,10 @@ public class MainWindow extends javax.swing.JFrame {
     }
     private void removeGatewayConnection(String oldAddress) {
         GatewayConnection conn = connections.get(oldAddress);
-        conn.shutdown();
-        connections.remove(oldAddress);
+        if (conn != null) {
+            conn.shutdown();
+            connections.remove(oldAddress);
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

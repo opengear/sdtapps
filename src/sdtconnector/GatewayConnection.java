@@ -53,7 +53,7 @@ public class GatewayConnection {
         this.callback = callback;
         try {
             jsch = new JSch();
-            session = jsch.getSession(gw.getUsername(), gw.getAddress(), 22);
+            session = jsch.getSession(gw.getUsername(), gw.getAddress(), gw.getPort());
             session.setUserInfo(ui);
             
             Hashtable<String, String> config = new Hashtable<String, String>();
