@@ -214,6 +214,11 @@ public class MainWindow extends javax.swing.JFrame {
                 gatewayListValueChanged(evt);
             }
         });
+        gatewayList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                gatewayListMousePressed(evt);
+            }
+        });
 
         jScrollPane1.setViewportView(gatewayList);
 
@@ -346,6 +351,14 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void gatewayListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMousePressed
+// TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
+            editGatewayNode(path);
+        }
+    }//GEN-LAST:event_gatewayListMousePressed
     
     private void prefsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prefsMenuItemActionPerformed
         
@@ -457,6 +470,10 @@ public class MainWindow extends javax.swing.JFrame {
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         
         TreePath path = gatewayList.getSelectionPath();
+        editGatewayNode(path);        
+    }//GEN-LAST:event_editButtonActionPerformed
+
+    private void editGatewayNode(final TreePath path) {
         boolean isGateway = path.getPathCount() == 2;
         TreeModel model = (TreeModel) gatewayList.getModel();
         Gateway gw = (Gateway) path.getPathComponent(1);
@@ -486,7 +503,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         model.valueForPathChanged(path, path.getLastPathComponent());
         updateButtonState();        
-    }//GEN-LAST:event_editButtonActionPerformed
+    }
     
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
         Telnet.launch("localhost", getRedirectorForSelection(23).getLocalPort());
