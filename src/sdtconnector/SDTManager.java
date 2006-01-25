@@ -40,10 +40,16 @@ public class SDTManager {
                 gatewayList.add(gw);
                 Preferences hosts = gwPrefs.node("hosts");
                 for (String hostID : hosts.childrenNames()) {
-                    Preferences host = hosts.node(hostID);
-                    String hostAddress = host.get("address", "");
-                    String hostDescription = host.get("description", "");
-                    gw.addHost(new Host(hostAddress, hostDescription));
+                    Preferences hostPrefs = hosts.node(hostID);
+                    String hostAddress = hostPrefs.get("address", "");
+                    String hostDescription = hostPrefs.get("description", "");
+                    Host host = new Host(hostAddress, hostDescription);
+                    Preferences protocols = hostPrefs.node("protocols");
+                    host.telnet = protocols.getBoolean("telnet", false);
+                    host.www = protocols.getBoolean("www", false);
+                    host.rdp = protocols.getBoolean("rdp", false);
+                    host.vnc = protocols.getBoolean("vnc", false);
+                    gw.addHost(host);
                 }
             }
         } catch (BackingStoreException ex) {
@@ -119,6 +125,12 @@ public class SDTManager {
         hostPrefs.put("address", host.getAddress());
         System.out.println("Saving description " + host.getDescription());
         hostPrefs.put("description", host.getDescription());
+        Preferences protocols = hostPrefs.node("protocols");
+        protocols.putBoolean("telnet", host.telnet);
+        protocols.putBoolean("www", host.www);
+        protocols.putBoolean("vnc", host.vnc);
+        protocols.putBoolean("rdp", host.rdp);
+        
     }
     public static void addHost(Gateway gw, Host host) {
         gw.addHost(host);

@@ -23,15 +23,15 @@ public class Host {
         this.description = description;
     }
     
-
+    
     public void setDescription(String description) {
         this.description = description;
     }
-
+    
     public String getDescription() {
         return description;
     }
-
+    
     public String getAddress() {
         return address;
     }
@@ -42,11 +42,15 @@ public class Host {
     public String toString() {
         return address;
     }
-
+    
     public boolean equals(Object obj) {
         return address.equals(((Host) obj).getAddress());
     }
-
+    
     private String address = "";
     private String description = "";
+    public boolean telnet = false;
+    public boolean www = false;
+    public boolean vnc = false;
+    public boolean rdp = false;
 }

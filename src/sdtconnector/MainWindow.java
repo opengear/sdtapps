@@ -7,6 +7,12 @@
 package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -15,6 +21,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeModelEvent;
@@ -33,7 +40,9 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */
     public MainWindow() {
-        initComponents();
+        initComponents();        
+        setIconImage(getToolkit().getImage("images/tsclient.png"));
+        
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         gatewayList.setShowsRootHandles(true);
@@ -57,7 +66,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void treeNodesInserted(TreeModelEvent e) { }
             public void treeNodesRemoved(TreeModelEvent e) { }
             public void treeStructureChanged(TreeModelEvent e) { }
-        });
+        });      
     }
     
     /** This method is called from within the constructor to
@@ -476,7 +485,7 @@ public class MainWindow extends javax.swing.JFrame {
             SDTManager.updateHost(gw, host, oldAddress);
         }
         model.valueForPathChanged(path, path.getLastPathComponent());
-        
+        updateButtonState();        
     }//GEN-LAST:event_editButtonActionPerformed
     
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
@@ -489,26 +498,30 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         Object last = path.getLastPathComponent();
+        Host host = null;
         boolean isHost = last instanceof Host;
+        if (isHost) {
+            host = (Host) last;
+        }
         boolean rdpIsSet = Settings.getProperty("rdp.path").length() > 0;
         boolean vncIsSet = Settings.getProperty("vnc.path").length() > 0;
-        rdpButton.setEnabled(isHost && rdpIsSet);
+        rdpButton.setEnabled(isHost && rdpIsSet && host.rdp);
         if (!rdpIsSet) {
             rdpButton.setToolTipText("Set the RDP client in Edit -> Preferences");
         } else {
             rdpButton.setToolTipText(isHost ?
                 "Connect to " + last + " using a RDP client" : "");
         }
-        vncButton.setEnabled(isHost && vncIsSet);
+        vncButton.setEnabled(isHost && vncIsSet && host.vnc);
         if (!vncIsSet) {
             vncButton.setToolTipText("Set the VNC client in Edit -> Preferences");
         } else {
             vncButton.setToolTipText(isHost ?
                 "Connect to " + last + " using a VNC client" : "");
         }
-        telnetButton.setEnabled(isHost);
+        telnetButton.setEnabled(isHost && host.telnet);
         telnetButton.setToolTipText(isHost ? "Telnet to " + last : "");
-        webButton.setEnabled(isHost);
+        webButton.setEnabled(isHost && host.www);
         webButton.setToolTipText(isHost ? "Browse to " + last : "");
     }
     GatewayConnection.Redirector getRedirectorForSelection(int port) {

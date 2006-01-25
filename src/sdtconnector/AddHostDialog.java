@@ -23,6 +23,10 @@ public class AddHostDialog extends javax.swing.JDialog {
         this.host = host;
         hostField.setText(host.getAddress());
         descriptionField.setText(host.getDescription());
+        rdpCheckbox.setSelected(host.rdp);
+        telnetCheckbox.setSelected(host.telnet);
+        vncCheckbox.setSelected(host.vnc);
+        webCheckbox.setSelected(host.www);
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -184,6 +188,10 @@ public class AddHostDialog extends javax.swing.JDialog {
         doClose(RET_OK);
         host.setAddress(hostField.getText());        
         host.setDescription(descriptionField.getText());
+        host.telnet = telnetCheckbox.isSelected();
+        host.www = webCheckbox.isSelected();
+        host.rdp = rdpCheckbox.isSelected();
+        host.vnc = vncCheckbox.isSelected();
     }//GEN-LAST:event_okButtonActionPerformed
                               
     
