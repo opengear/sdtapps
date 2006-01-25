@@ -6,8 +6,11 @@
 
 package sdtconnector;
 
+import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
+import org.jdesktop.swingx.util.OS;
 
 /**
  *
@@ -167,7 +170,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private void showChooser(String type, JTextField field) {
         JFileChooser jc = new JFileChooser();
         jc.setDialogTitle("Select " + type + " client");
-        if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {            
+        jc.setFileSelectionMode(jc.FILES_ONLY);
+        
+        // On windows, only look for .exe files
+        if (OS.isWindows()) {
+            jc.setFileFilter(new FileFilter() {
+                public boolean accept(File f) {
+                    return f.isDirectory() || f.getName().endsWith(".exe");
+                }
+                public String getDescription() {
+                    return "Executable files";
+                }
+            });
+        }
+        if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
             field.setText(jc.getSelectedFile().getAbsolutePath());
         }
     }
