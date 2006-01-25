@@ -21,9 +21,9 @@ public class VNCViewer {
     public VNCViewer() {
     }
     public static void launch(String host, int port) {
+        String vncpath = Settings.getProperty("vnc.path");
         try {
-            Runtime.getRuntime().exec("C:\\program files\\ultravnc\\vncviewer.exe" + 
-                    " " + host + ":" + port);
+            Runtime.getRuntime().exec(vncpath + " " + host + ":" + port);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
