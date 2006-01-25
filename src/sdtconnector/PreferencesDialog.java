@@ -176,7 +176,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         if (OS.isWindows()) {
             jc.setFileFilter(new FileFilter() {
                 public boolean accept(File f) {
-                    return f.isDirectory() || f.getName().endsWith(".exe");
+                    return f.isDirectory() || f.getName().toLowerCase().endsWith(".exe");
                 }
                 public String getDescription() {
                     return "Executable files";
