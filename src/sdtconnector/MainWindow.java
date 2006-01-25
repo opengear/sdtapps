@@ -487,23 +487,28 @@ public class MainWindow extends javax.swing.JFrame {
         if (path == null) {
             return;
         }
-        boolean isHost = path.getLastPathComponent() instanceof Host;
+        Object last = path.getLastPathComponent();
+        boolean isHost = last instanceof Host;
         boolean rdpIsSet = Settings.getProperty("rdp.path").length() > 0;
         boolean vncIsSet = Settings.getProperty("vnc.path").length() > 0;
         rdpButton.setEnabled(isHost && rdpIsSet);
         if (!rdpIsSet) {
             rdpButton.setToolTipText("Set the RDP client in Edit -> Preferences");
         } else {
-            rdpButton.setToolTipText("Connect to this host using a RDP client");
+            rdpButton.setToolTipText(isHost ? 
+                "Connect to " + last + " using a RDP client" : "");
         }
         vncButton.setEnabled(isHost && vncIsSet);
         if (!vncIsSet) {
             vncButton.setToolTipText("Set the VNC client in Edit -> Preferences");
         } else {
-            vncButton.setToolTipText("Connect to this host using a VNC client");
+            vncButton.setToolTipText(isHost ?
+                "Connect to " + last + " using a VNC client" : "");
         }
         telnetButton.setEnabled(isHost);
+        telnetButton.setToolTipText(isHost ? "Telnet to " + last : "");
         webButton.setEnabled(isHost);
+        webButton.setToolTipText(isHost ? "Browse to " + last : "");
     }
     GatewayConnection.Redirector getRedirectorForSelection(int port) {
         TreePath path = gatewayList.getSelectionPath();
