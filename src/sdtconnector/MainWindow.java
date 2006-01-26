@@ -14,6 +14,7 @@ import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.JXLoginDialog;
 import org.jdesktop.swingx.JXLoginPanel;
+import org.jdesktop.swingx.event.ProgressEvent;
 import org.jdesktop.swingx.util.WindowUtils;
 
 
@@ -45,7 +47,7 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        setIconImage(getToolkit().getImage("images/tsclient.png"));
+        setIconImage(getMenuIcon("gateway").getImage());
         
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -71,8 +73,43 @@ public class MainWindow extends javax.swing.JFrame {
             public void treeNodesRemoved(TreeModelEvent e) { }
             public void treeStructureChanged(TreeModelEvent e) { }
         });
+        
+        
+        prefsMenuItem.setIcon(getMenuIcon("preferences"));
+        editMenuEditItem.setIcon(getMenuIcon("edit"));
+        editMenuDeleteItem.setIcon(getMenuIcon("delete"));
+        listEditMenuItem.setIcon(getMenuIcon("edit"));
+        listRemoveMenuItem.setIcon(getMenuIcon("delete"));
+        addGatewayMenuItem.setIcon(getMenuIcon("gateway"));
+        addHostMenu.setIcon(getMenuIcon("host"));
+        aboutMenuItem.setIcon(getMenuIcon("about"));
+        exitMenuItem.setIcon(getMenuIcon("exit"));
+        addGatewayButton.setIcon(getButtonIcon("gateway"));
+        addGatewayButton.setText("");
+        addGatewayButton.setToolTipText("Create a new Secure Desktop Tunnel");
+        addHostButton.setIcon(getButtonIcon("host"));
+        addHostButton.setText("");
+        addHostButton.setToolTipText("Add a Host via the Secure Tunnel");
+        editButton.setIcon(getButtonIcon("edit"));
+        editButton.setText("");
+        removeButton.setIcon(getButtonIcon("delete"));
+        removeButton.setText("");
+        pack();
     }
-    
+    private ImageIcon getIcon(String path) {
+        URL url = getClass().getResource("/images/" + path);
+        if (url != null) {
+            return new ImageIcon(url);
+        } else {
+            return new ImageIcon(getToolkit().getImage("images/" + path));
+        }
+    }
+    private ImageIcon getMenuIcon(String name) {
+        return getIcon("16x16/" + name + ".png");
+    }
+    private ImageIcon getButtonIcon(String name) {
+        return getIcon("22x22/" + name + ".png");
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -92,8 +129,8 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         gatewayList = new javax.swing.JTree();
-        jXStatusBar1 = new org.jdesktop.swingx.JXStatusBar();
-        jToolBar1 = new javax.swing.JToolBar();
+        statusBar = new org.jdesktop.swingx.JXStatusBar();
+        toolbar = new javax.swing.JToolBar();
         addGatewayButton = new javax.swing.JButton();
         addHostButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
@@ -104,9 +141,8 @@ public class MainWindow extends javax.swing.JFrame {
         addHostMenu = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        editGatewayMenuItem = new javax.swing.JMenuItem();
-        editHostMenuItem = new javax.swing.JMenuItem();
-        editDeleteMenuItem = new javax.swing.JMenuItem();
+        editMenuEditItem = new javax.swing.JMenuItem();
+        editMenuDeleteItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         prefsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -228,21 +264,24 @@ public class MainWindow extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(gatewayList);
 
-        jXStatusBar1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
-        jXStatusBar1.setFocusable(false);
+        statusBar.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        statusBar.setFocusable(false);
 
-        jToolBar1.setFloatable(false);
-        jToolBar1.setFocusable(false);
-        addGatewayButton.setText("Add Gateway");
+        toolbar.setFloatable(false);
+        toolbar.setRollover(true);
+        toolbar.setFocusable(false);
+        addGatewayButton.setText("gw");
+        addGatewayButton.setToolTipText("Create a Secure Desktop Tunnel");
         addGatewayButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addGatewayButtonActionPerformed(evt);
             }
         });
 
-        jToolBar1.add(addGatewayButton);
+        toolbar.add(addGatewayButton);
 
-        addHostButton.setText("Add Host");
+        addHostButton.setText("host");
+        addHostButton.setToolTipText("Add a host via the Tunnel");
         addHostButton.setEnabled(false);
         addHostButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,9 +289,10 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jToolBar1.add(addHostButton);
+        toolbar.add(addHostButton);
 
-        editButton.setText("Edit");
+        editButton.setText("edit");
+        editButton.setToolTipText("Edit");
         editButton.setEnabled(false);
         editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,9 +300,10 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jToolBar1.add(editButton);
+        toolbar.add(editButton);
 
-        removeButton.setText("Remove");
+        removeButton.setText("delete");
+        removeButton.setToolTipText("Delete");
         removeButton.setEnabled(false);
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -270,7 +311,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jToolBar1.add(removeButton);
+        toolbar.add(removeButton);
 
         fileMenu.setText("File");
         addGatewayMenuItem.setText("New Gateway");
@@ -297,32 +338,23 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuBar1.add(fileMenu);
 
         editMenu.setText("Edit");
-        editGatewayMenuItem.setText("Edit Gateway");
-        editGatewayMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        editMenuEditItem.setText("Edit Gateway");
+        editMenuEditItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editButtonActionPerformed(evt);
             }
         });
 
-        editMenu.add(editGatewayMenuItem);
+        editMenu.add(editMenuEditItem);
 
-        editHostMenuItem.setText("Edit Host");
-        editHostMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        editMenuDeleteItem.setText("Delete");
+        editMenuDeleteItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonActionPerformed(evt);
+                editMenuDeleteItemActionPerformed(evt);
             }
         });
 
-        editMenu.add(editHostMenuItem);
-
-        editDeleteMenuItem.setText("Delete");
-        editDeleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editDeleteMenuItemActionPerformed(evt);
-            }
-        });
-
-        editMenu.add(editDeleteMenuItem);
+        editMenu.add(editMenuDeleteItem);
 
         editMenu.add(jSeparator1);
 
@@ -349,20 +381,15 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(layout.createSequentialGroup()
-                        .add(28, 28, 28)
-                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, 0, 0, Short.MAX_VALUE)))
-                .addContainerGap(65, Short.MAX_VALUE))
-            .add(jXStatusBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jScrollPane2, 0, 0, Short.MAX_VALUE))
+                .add(40, 40, 40))
+            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, toolbar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
         );
 
         layout.linkSize(new java.awt.Component[] {connectButtonPanel, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
@@ -370,26 +397,23 @@ public class MainWindow extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(toolbar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(49, 49, 49))
-                    .add(layout.createSequentialGroup()
-                        .add(jScrollPane1, 0, 0, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jXStatusBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(statusBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void editDeleteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDeleteMenuItemActionPerformed
+    private void editMenuDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMenuDeleteItemActionPerformed
         removeSelectedNode(gatewayList.getSelectionPath());
-    }//GEN-LAST:event_editDeleteMenuItemActionPerformed
+    }//GEN-LAST:event_editMenuDeleteItemActionPerformed
     
     private void listRemoveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listRemoveMenuItemActionPerformed
         removeSelectedNode(gatewayList.getSelectionPath());
@@ -498,8 +522,7 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea.setText(desc);
         addHostMenu.setEnabled(isHost || isGateway);
         addGatewayMenuItem.setEnabled(true);
-        editGatewayMenuItem.setEnabled(isGateway);
-        editHostMenuItem.setEnabled(isHost);
+        
         addHostButton.setEnabled(isHost || isGateway);
         removeButton.setEnabled(isHost || isGateway);
         editButton.setEnabled(isHost || isGateway);
@@ -607,6 +630,18 @@ public class MainWindow extends javax.swing.JFrame {
         telnetButton.setToolTipText(isHost ? "Telnet to " + last : "");
         webButton.setEnabled(isHost && host.www);
         webButton.setToolTipText(isHost ? "Browse to " + last : "");
+        if (isHost) {
+            listEditMenuItem.setText("Edit Host");
+            editMenuEditItem.setText("Edit Host");
+            editButton.setToolTipText("Edit Host");
+            removeButton.setToolTipText("Delete Host");
+        } else {
+            listEditMenuItem.setText("Edit Gateway");
+            editMenuEditItem.setText("Edit Gateway");
+            editButton.setToolTipText("Edit Gateway");
+            removeButton.setToolTipText("Delete Gateway");
+        }
+        
     }
     GatewayConnection.Redirector getRedirectorForSelection(int port) {
         TreePath path = gatewayList.getSelectionPath();
@@ -631,8 +666,9 @@ public class MainWindow extends javax.swing.JFrame {
     
     private GatewayConnection getGatewayConnection(Gateway gw) {
         GatewayConnection conn = connections.get(gw.getAddress());
-        if (conn == null) {        
+        if (conn == null) {
             conn = new GatewayConnection(gw, new GatewayAuth(gw), swingExec);
+            conn.setListener(new SSHListener(gw));
             connections.put(gw.getAddress(), conn);
         }
         return conn;
@@ -645,7 +681,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     class GatewayAuth implements GatewayConnection.Authentication {
-         public GatewayAuth(Gateway gw) {
+        public GatewayAuth(Gateway gw) {
             this.gateway = gw;
             password = gw.getPassword();
         }
@@ -657,6 +693,7 @@ public class MainWindow extends javax.swing.JFrame {
             dlg.setPassword(password);
             //dlg.setLocationRelativeTo(MainWindow.this);
             dlg.setLocation(WindowUtils.getPointForCentering(dlg));
+            dlg.setAlwaysOnTop(true);
             dlg.setVisible(true);
             
             if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
@@ -677,6 +714,50 @@ public class MainWindow extends javax.swing.JFrame {
         String passphrase;
         String password;
     }
+    class SSHListener implements GatewayConnection.Listener {
+        public SSHListener(Gateway gw) {
+            gateway = gw;
+        }
+        
+        
+        public void sshLoginStarted() {
+            statusBar.setLeadingMessage("Logging in to gateway " +
+                    gateway.getAddress());
+            statusBar.progressStarted(progress);
+        }
+        
+        public void sshLoginSucceeded() {
+            statusBar.setLeadingMessage("Successfully logged in to " +
+                    gateway.getAddress());
+            statusBar.progressStarted(progress);
+        }
+        public void sshLoginFailed() {
+            statusBar.setLeadingMessage("Failed to authenticate to " +
+                    gateway.getAddress());
+            statusBar.progressEnded(progress);
+        }
+        public void sshTcpChannelStarted(String host, int port) {
+            statusBar.setLeadingMessage("Connecting to " + host + ":" + port);
+            statusBar.progressStarted(progress);
+        }
+        
+        public void sshTcpChannelFailed(String host, int port) {
+            statusBar.setLeadingMessage("Failed to connect to " + host + ":" + port);
+            statusBar.progressEnded(progress);
+        }
+        
+        public void sshTcpChannelEstablished(String host, int port) {
+            statusBar.setLeadingMessage("Connected to " + host + ":" + port);
+            statusBar.progressEnded(progress);
+        }
+        ProgressEvent progress = new ProgressEvent(this) {
+            public boolean isIndeterminate() {
+                return true;
+            }
+        };
+        
+        Gateway gateway;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -687,10 +768,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel connectButtonPanel;
     private javax.swing.JTextArea descriptionArea;
     private javax.swing.JButton editButton;
-    private javax.swing.JMenuItem editDeleteMenuItem;
-    private javax.swing.JMenuItem editGatewayMenuItem;
-    private javax.swing.JMenuItem editHostMenuItem;
     private javax.swing.JMenu editMenu;
+    private javax.swing.JMenuItem editMenuDeleteItem;
+    private javax.swing.JMenuItem editMenuEditItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JTree gatewayList;
@@ -700,14 +780,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JToolBar jToolBar1;
-    private org.jdesktop.swingx.JXStatusBar jXStatusBar1;
     private javax.swing.JMenuItem listEditMenuItem;
     private javax.swing.JMenuItem listRemoveMenuItem;
     private javax.swing.JMenuItem prefsMenuItem;
     private javax.swing.JButton rdpButton;
     private javax.swing.JButton removeButton;
+    private org.jdesktop.swingx.JXStatusBar statusBar;
     private javax.swing.JButton telnetButton;
+    private javax.swing.JToolBar toolbar;
     private javax.swing.JButton vncButton;
     private javax.swing.JButton webButton;
     // End of variables declaration//GEN-END:variables
