@@ -6,6 +6,15 @@
 
 package sdtconnector;
 
+import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
+
 /**
  *
  * @author  wayne
@@ -27,6 +36,44 @@ public class AddHostDialog extends javax.swing.JDialog {
         telnetCheckbox.setSelected(host.telnet);
         vncCheckbox.setSelected(host.vnc);
         webCheckbox.setSelected(host.www);
+        KeyListener keyListener = new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
+                switch (evt.getKeyCode()) {
+                    // case KeyEvent.VK_CANCEL:
+                    case KeyEvent.VK_ESCAPE:
+                        evt.consume();
+                        doClose(RET_CANCEL);
+                        break;
+                    case KeyEvent.VK_ENTER:
+                        evt.consume();
+                        doClose(RET_OK);
+                        break;
+                }
+            }
+        };
+        
+        addKeyListener(keyListener);
+        hostField.addKeyListener(keyListener);
+        descriptionField.addKeyListener(keyListener);
+        telnetCheckbox.addKeyListener(keyListener);
+        webCheckbox.addKeyListener(keyListener);
+        rdpCheckbox.addKeyListener(keyListener);
+        vncCheckbox.addKeyListener(keyListener);
+        
+        //
+        // Make it so the contents of text fields are selected when they are clicked
+        //
+        FocusListener focus = new FocusListener() {
+            public void focusGained(FocusEvent evt) {
+                ((JTextComponent) evt.getSource()).selectAll();
+            }
+            public void focusLost(FocusEvent evt) {
+                ((JTextComponent) evt.getSource()).select(0, 0);
+            }
+        };
+        
+        hostField.addFocusListener(focus);
+        //descriptionField.addFocusListener(focus);
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -177,35 +224,37 @@ public class AddHostDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-
-       doClose(RET_CANCEL);
+        
+        doClose(RET_CANCEL);
     }//GEN-LAST:event_cancelButtonActionPerformed
-
+    
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-
+        
         doClose(RET_OK);
-        host.setAddress(hostField.getText());        
-        host.setDescription(descriptionField.getText());
-        host.telnet = telnetCheckbox.isSelected();
-        host.www = webCheckbox.isSelected();
-        host.rdp = rdpCheckbox.isSelected();
-        host.vnc = vncCheckbox.isSelected();
     }//GEN-LAST:event_okButtonActionPerformed
-                              
+    
     
     /** Closes the dialog */
-    private void closeDialog(java.awt.event.WindowEvent evt) {                             
+    private void closeDialog(java.awt.event.WindowEvent evt) {
         doClose(RET_CANCEL);
-    }                            
+    }
     
     private void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
+        if (retStatus == RET_OK) {
+            host.setAddress(hostField.getText());
+            host.setDescription(descriptionField.getText());
+            host.telnet = telnetCheckbox.isSelected();
+            host.www = webCheckbox.isSelected();
+            host.rdp = rdpCheckbox.isSelected();
+            host.vnc = vncCheckbox.isSelected();
+        }
     }
-   
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton cancelButton;
@@ -221,7 +270,7 @@ public class AddHostDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox vncCheckbox;
     private javax.swing.JCheckBox webCheckbox;
     // End of variables declaration//GEN-END:variables
- 
+    
     private int returnStatus = RET_CANCEL;
     private Host host;
 }

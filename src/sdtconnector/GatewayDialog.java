@@ -6,7 +6,18 @@
 
 package sdtconnector;
 
+import java.awt.Component;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.ParseException;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -30,7 +41,50 @@ public class GatewayDialog extends javax.swing.JDialog {
         passwordField.setText(gw.getPassword());
         descriptionField.setText(gw.getDescription());
         System.out.println("gw port = " + gw.getPort());
+        
         sshPortField.setValue(new Integer(gw.getPort()));
+        KeyListener keyListener = new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
+                switch (evt.getKeyCode()) {
+                    // case KeyEvent.VK_CANCEL:
+                    case KeyEvent.VK_ESCAPE:
+                        evt.consume();
+                        doClose(RET_CANCEL);
+                        break;
+                    case KeyEvent.VK_ENTER:
+                        evt.consume();
+                        doClose(RET_OK);
+                        break;
+                }
+            }
+        };
+        addKeyListener(keyListener);
+        
+        addressField.addKeyListener(keyListener);
+        sshPortField.addKeyListener(keyListener);
+        usernameField.addKeyListener(keyListener);
+        passwordField.addKeyListener(keyListener);
+        descriptionField.addKeyListener(keyListener);
+        
+        //
+        // Make it so the contents of text fields are selected when they are clicked
+        //
+        FocusListener focus = new FocusListener() {
+            public void focusGained(FocusEvent evt) {
+                JTextComponent text = (JTextComponent) evt.getSource();
+                text.setCaretPosition(text.getText().length());
+                text.selectAll();
+            }
+            public void focusLost(FocusEvent evt) {
+                ((JTextComponent) evt.getSource()).select(0, 0);
+            }
+        };
+        
+        addressField.addFocusListener(focus);
+        sshPortField.addFocusListener(focus);
+        usernameField.addFocusListener(focus);
+        passwordField.addFocusListener(focus);
+//        descriptionField.addFocusListener(focus);
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -169,17 +223,6 @@ public class GatewayDialog extends javax.swing.JDialog {
     
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         doClose(RET_OK);
-        gateway.setAddress(addressField.getText());
-        gateway.setUsername(usernameField.getText());
-        gateway.setPassword(new String(passwordField.getPassword()));
-        gateway.setDescription(descriptionField.getText());
-        try {
-            
-            sshPortField.commitEdit();
-            gateway.setPort(((Integer) sshPortField.getValue()).intValue());
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }                
     }//GEN-LAST:event_okButtonActionPerformed
     
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -195,6 +238,19 @@ public class GatewayDialog extends javax.swing.JDialog {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
+        if (retStatus == RET_OK) {
+            gateway.setAddress(addressField.getText());
+            gateway.setUsername(usernameField.getText());
+            gateway.setPassword(new String(passwordField.getPassword()));
+            gateway.setDescription(descriptionField.getText());
+            try {
+                
+                sshPortField.commitEdit();
+                gateway.setPort(((Integer) sshPortField.getValue()).intValue());
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
     
     
