@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -30,6 +31,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.jdesktop.swingx.JXLoginDialog;
+import org.jdesktop.swingx.JXLoginPanel;
+import org.jdesktop.swingx.util.WindowUtils;
 
 
 /**
@@ -84,15 +88,16 @@ public class MainWindow extends javax.swing.JFrame {
         webButton = new javax.swing.JButton();
         vncButton = new javax.swing.JButton();
         rdpButton = new javax.swing.JButton();
-        addHostButton = new javax.swing.JButton();
-        editButton = new javax.swing.JButton();
-        removeButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         descriptionArea = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         gatewayList = new javax.swing.JTree();
-        addGatewayButton = new javax.swing.JButton();
         jXStatusBar1 = new org.jdesktop.swingx.JXStatusBar();
+        jToolBar1 = new javax.swing.JToolBar();
+        addGatewayButton = new javax.swing.JButton();
+        addHostButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         addGatewayMenuItem = new javax.swing.JMenuItem();
@@ -191,30 +196,6 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        addHostButton.setText("Add Host");
-        addHostButton.setEnabled(false);
-        addHostButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addHostButtonActionPerformed(evt);
-            }
-        });
-
-        editButton.setText("Edit");
-        editButton.setEnabled(false);
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonActionPerformed(evt);
-            }
-        });
-
-        removeButton.setText("Remove");
-        removeButton.setEnabled(false);
-        removeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeButtonActionPerformed(evt);
-            }
-        });
-
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Description"));
         descriptionArea.setColumns(20);
         descriptionArea.setEditable(false);
@@ -247,6 +228,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(gatewayList);
 
+        jXStatusBar1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        jXStatusBar1.setFocusable(false);
+
+        jToolBar1.setFloatable(false);
+        jToolBar1.setFocusable(false);
         addGatewayButton.setText("Add Gateway");
         addGatewayButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -254,8 +240,37 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jXStatusBar1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
-        jXStatusBar1.setFocusable(false);
+        jToolBar1.add(addGatewayButton);
+
+        addHostButton.setText("Add Host");
+        addHostButton.setEnabled(false);
+        addHostButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addHostButtonActionPerformed(evt);
+            }
+        });
+
+        jToolBar1.add(addHostButton);
+
+        editButton.setText("Edit");
+        editButton.setEnabled(false);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+
+        jToolBar1.add(editButton);
+
+        removeButton.setText("Remove");
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+
+        jToolBar1.add(removeButton);
 
         fileMenu.setText("File");
         addGatewayMenuItem.setText("New Gateway");
@@ -334,52 +349,38 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(layout.createSequentialGroup()
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(layout.createSequentialGroup()
-                                .add(28, 28, 28)
-                                .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(layout.createSequentialGroup()
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jScrollPane2, 0, 0, Short.MAX_VALUE)))
-                        .addContainerGap(65, Short.MAX_VALUE))
+                        .add(28, 28, 28)
+                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
-                        .add(addGatewayButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(addHostButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(editButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(removeButton)
-                        .addContainerGap(36, Short.MAX_VALUE))))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jXStatusBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                        .add(jScrollPane2, 0, 0, Short.MAX_VALUE)))
+                .addContainerGap(65, Short.MAX_VALUE))
+            .add(jXStatusBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
         );
 
         layout.linkSize(new java.awt.Component[] {connectButtonPanel, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
-        layout.linkSize(new java.awt.Component[] {addGatewayButton, addHostButton, editButton, removeButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+            .add(layout.createSequentialGroup()
+                .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(addGatewayButton)
-                    .add(editButton)
-                    .add(addHostButton)
-                    .add(removeButton))
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(49, 49, 49))
+                    .add(layout.createSequentialGroup()
+                        .add(jScrollPane1, 0, 0, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jXStatusBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
@@ -630,26 +631,9 @@ public class MainWindow extends javax.swing.JFrame {
     
     private GatewayConnection getGatewayConnection(Gateway gw) {
         GatewayConnection conn = connections.get(gw.getAddress());
-        if (conn == null) {
-            connections.put(gw.getAddress(), conn = new GatewayConnection(gw, new UserInfo() {
-                public String getPassphrase() {
-                    return "";
-                }
-                public String getPassword() {
-                    return "";
-                }
-                public boolean promptPassphrase(String string) {
-                    return false;
-                }
-                public boolean promptPassword(String string) {
-                    return false;
-                }
-                public boolean promptYesNo(String string) {
-                    return false;
-                }
-                public void showMessage(String string) {
-                }
-            }, Executors.newSingleThreadExecutor()));
+        if (conn == null) {        
+            conn = new GatewayConnection(gw, new GatewayAuth(gw), swingExec);
+            connections.put(gw.getAddress(), conn);
         }
         return conn;
     }
@@ -659,6 +643,39 @@ public class MainWindow extends javax.swing.JFrame {
             conn.shutdown();
             connections.remove(oldAddress);
         }
+    }
+    class GatewayAuth implements GatewayConnection.Authentication {
+         public GatewayAuth(Gateway gw) {
+            this.gateway = gw;
+            password = gw.getPassword();
+        }
+        public boolean promptAuthentication() {
+            System.out.println("Prompting for password");
+            LoginDialog dlg = new LoginDialog(MainWindow.this, true);
+            
+            dlg.setUsername(gateway.getUsername());
+            dlg.setPassword(password);
+            //dlg.setLocationRelativeTo(MainWindow.this);
+            dlg.setLocation(WindowUtils.getPointForCentering(dlg));
+            dlg.setVisible(true);
+            
+            if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
+                return false;
+            }
+            password = dlg.getPassword();
+            return true;
+        }
+        
+        public String getUsername() {
+            return gateway.getUsername();
+        }
+        
+        public String getPassword() {
+            return password;
+        }
+        Gateway gateway;
+        String passphrase;
+        String password;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -683,6 +700,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JToolBar jToolBar1;
     private org.jdesktop.swingx.JXStatusBar jXStatusBar1;
     private javax.swing.JMenuItem listEditMenuItem;
     private javax.swing.JMenuItem listRemoveMenuItem;
@@ -696,5 +714,6 @@ public class MainWindow extends javax.swing.JFrame {
     
     private SDTTreeModel treeModel;
     private Map<String, GatewayConnection> connections;
+    ExecutorService swingExec = new SwingExecutorService();
     
 }
