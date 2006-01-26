@@ -65,6 +65,60 @@ public class GatewayConnection {
         }
     }
     
+    public GatewayConnection(Gateway gw, final Authentication auth, ExecutorService exec) {
+        this.gateway = gw;
+        this.callback = exec;
+        this.authentication = auth;
+        UserInfo ui = new UserInfo() {
+            public String getPassphrase() {
+                return "";
+            }
+            public String getPassword() {
+                Future<String> f = callback.submit(new Callable<String>() {
+                    public String call() throws Exception {
+                        return authentication.getPassword();
+                    }
+                });
+                try {
+                    return f.get();
+                } catch (Exception ex) { }
+                return "";
+            }
+            public boolean promptPassphrase(String string) {
+                return false;
+            }
+            public boolean promptPassword(String string) {
+                Future<Boolean> f = callback.submit(new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        return authentication.promptAuthentication();
+                    }
+                });
+                try {
+                    return f.get();
+                } catch (Exception ex) { }
+                return false;
+            }
+            public boolean promptYesNo(String string) {
+                return false;
+            }
+            public void showMessage(String string) {
+                
+            }
+        };
+        try {
+            jsch = new JSch();
+            session = jsch.getSession(gw.getUsername(), gw.getAddress(), gw.getPort());
+            session.setUserInfo(ui);
+            
+            Hashtable<String, String> config = new Hashtable<String, String>();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword(gw.getPassword());
+        } catch (com.jcraft.jsch.JSchException jsche) {
+            System.out.println("Jsch exception " + jsche);
+        }
+    }
+    
     private Future<SSHChannel> openShellAsync() {
         return exec.submit(new Callable<SSHChannel>() {
             public SSHChannel call() throws Exception {
@@ -143,7 +197,12 @@ public class GatewayConnection {
         public void stop() {
             listenThread.interrupt();
         }
-        
+        public void shutdown() {
+            stop();
+            try {
+                listenSocket.close();
+            } catch (IOException ex) {}
+        }
         public int getLocalPort() {
             return listenSocket.getLocalPort();
         }
@@ -224,6 +283,9 @@ public class GatewayConnection {
         });
     }
     public void shutdown() {
+        for (Redirector r : redirectors) {
+            r.shutdown();
+        }
         exec.execute(new Runnable() {
             public void run() {
                 session.disconnect();
@@ -261,7 +323,11 @@ public class GatewayConnection {
         System.out.println("Redirecting port " + r.getLocalPort() + " to 192.168.99.2:80");
 //        conn.openShell();
     }
-    
+    public interface Authentication {
+        public boolean promptAuthentication();
+        public String getUsername();
+        public String getPassword();
+    }
     public void openShell() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -271,6 +337,8 @@ public class GatewayConnection {
     private ExecutorService exec = Executors.newSingleThreadExecutor();
     private ExecutorService callback;
     private List<Redirector> redirectors = new ArrayList<Redirector>();
+    
+    private Authentication authentication;
 }
 class MyUserInfo implements UserInfo {
     public String getPassword() {
@@ -301,11 +369,5 @@ class MyUserInfo implements UserInfo {
     public void showMessage(String string) {
         System.out.println("showMessage: " + string);
     }
-    interface Listener {
-        public void portForwardSuccess(int lport, String host, int rport);
-        public void portForwardFailure(int lport, String host, int rport);
-        public void connected();
-        public void connectionFailure();
-        public void openShellFailure();
-    }
+    
 }
