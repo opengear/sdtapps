@@ -105,6 +105,28 @@ public class GatewayConnection {
                 
             }
         };
+        
+        listener = new Listener() {
+            public void sshLoginStarted() {
+            }
+            
+            public void sshLoginSucceeded() {
+            }
+            
+            public void sshLoginFailed() {
+            }
+            
+            public void sshTcpChannelStarted(String host, int port) {
+            }
+            
+            public void sshTcpChannelEstablished(String host, int port) {
+            }
+            
+            public void sshTcpChannelFailed(String host, int port) {
+            }
+            
+        };
+        
         try {
             jsch = new JSch();
             session = jsch.getSession(gw.getUsername(), gw.getAddress(), gw.getPort());
@@ -119,23 +141,9 @@ public class GatewayConnection {
         }
     }
     
-    private Future<SSHChannel> openShellAsync() {
-        return exec.submit(new Callable<SSHChannel>() {
-            public SSHChannel call() throws Exception {
-                try {
-                    doConnect();
-                    System.out.println("Opening shell");
-                    ChannelShell shell = (ChannelShell) session.openChannel("shell");
-                    System.out.println("Shell opened");
-                    return new SSHChannel(shell);
-                } catch (JSchException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            }
-        });
+    public void setListener(Listener l) {
+        listener = l;
     }
-    
     public Redirector getRedirector(String host, int port) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port) {
@@ -152,28 +160,68 @@ public class GatewayConnection {
             return null;
         }
     }
-    private void doConnect() throws JSchException {
+    private boolean doConnect()  {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
-            session.connect(5000);
+            callback.execute(new Runnable() {
+                public void run() {
+                    listener.sshLoginStarted();
+                }
+            });
+            try {
+                session.connect(5000);
+            } catch (JSchException ex) {
+                callback.execute(new Runnable() {
+                    public void run() {
+                        listener.sshLoginFailed();
+                    }
+                });
+                return false;
+            }
+            callback.execute(new Runnable() {
+                public void run() {
+                    listener.sshLoginSucceeded();
+                }
+            });
             System.out.println("Connected");
         }
+        return true;
     }
     public boolean redirectSocket(final String host, final int port, final Socket s) {
         Future<Channel> f = exec.submit(new Callable<Channel>() {
             public Channel call() throws Exception {
                 ChannelDirectTCPIP channel;
+                if (!doConnect()) {
+                    throw new JSchException("Failed to connect");
+                }
                 try {
-                    doConnect();
+                    
                     channel  = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
                     channel.setHost(host);
                     channel.setPort(port);
                     channel.setInputStream(s.getInputStream());
                     channel.setOutputStream(s.getOutputStream());
+                    callback.execute(new Runnable() {
+                        public void run() {
+                            listener.sshTcpChannelStarted(host, port);
+                        }
+                    });
+                    
                     channel.connect();
+                    callback.execute(new Runnable() {
+                        public void run() {
+                            listener.sshTcpChannelEstablished(host, port);
+                        }
+                    });
                     
                     return channel;
                 } catch (JSchException ex) {
+                    callback.execute(new Runnable() {
+                        public void run() {
+                            listener.sshTcpChannelFailed(host, port);
+                        }
+                    });
+                    
                     ex.printStackTrace();
                     throw ex;
                 }
@@ -253,6 +301,23 @@ public class GatewayConnection {
         
         
     }
+    private Future<SSHChannel> openShellAsync() {
+        return exec.submit(new Callable<SSHChannel>() {
+            public SSHChannel call() throws Exception {
+                try {
+                    doConnect();
+                    System.out.println("Opening shell");
+                    ChannelShell shell = (ChannelShell) session.openChannel("shell");
+                    System.out.println("Shell opened");
+                    return new SSHChannel(shell);
+                } catch (JSchException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }
+        });
+    }
+    
     public SSHChannel openTcpStream(final String host, int port) throws IOException {
         try {
             return openTcpStreamAsync(host, port).get();
@@ -328,6 +393,14 @@ public class GatewayConnection {
         public String getUsername();
         public String getPassword();
     }
+    public interface Listener {
+        public void sshLoginStarted();
+        public void sshLoginSucceeded();
+        public void sshLoginFailed();
+        public void sshTcpChannelStarted(String host, int port);
+        public void sshTcpChannelEstablished(String host, int port);
+        public void sshTcpChannelFailed(String host, int port);
+    }
     public void openShell() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -339,6 +412,7 @@ public class GatewayConnection {
     private List<Redirector> redirectors = new ArrayList<Redirector>();
     
     private Authentication authentication;
+    private Listener listener;
 }
 class MyUserInfo implements UserInfo {
     public String getPassword() {
