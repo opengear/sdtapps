@@ -54,7 +54,7 @@ public class AddHostDialog extends javax.swing.JDialog {
         
         addKeyListener(keyListener);
         hostField.addKeyListener(keyListener);
-        descriptionField.addKeyListener(keyListener);
+        //descriptionField.addKeyListener(keyListener);
         telnetCheckbox.addKeyListener(keyListener);
         webCheckbox.addKeyListener(keyListener);
         rdpCheckbox.addKeyListener(keyListener);
@@ -106,7 +106,7 @@ public class AddHostDialog extends javax.swing.JDialog {
         setLocationByPlatform(true);
         hostField.setNextFocusableComponent(telnetCheckbox);
 
-        jLabel1.setText("Host Address:");
+        jLabel1.setText("Host Address");
 
         okButton.setText("OK");
         okButton.setNextFocusableComponent(cancelButton);
@@ -116,7 +116,7 @@ public class AddHostDialog extends javax.swing.JDialog {
             }
         });
 
-        descLabel.setText("Description:");
+        descLabel.setText("Description");
 
         descriptionField.setColumns(20);
         descriptionField.setRows(5);
@@ -150,7 +150,7 @@ public class AddHostDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel2.setText("Protocols:");
+        jLabel2.setText("Protocols");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -175,7 +175,7 @@ public class AddHostDialog extends javax.swing.JDialog {
                                 .add(webCheckbox)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(vncCheckbox))
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
                         .addContainerGap())
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(okButton)
