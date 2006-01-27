@@ -68,6 +68,11 @@
     -->
   
     <target name="-post-jar">
+        <echo message="Updating ${dist.jar}"/>
+        <jar update="true" basedir="." destfile="${dist.jar}">
+            <include name="images/**/*.gif"/>
+            <include name="images/**/*.png"/>
+        </jar>
         <exec executable="./tools/build-jar" resolveexecutable="true"/>
         <exec executable="launch4j">
             <arg file="launch4j.xml"/>
