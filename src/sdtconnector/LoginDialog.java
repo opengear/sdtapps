@@ -43,6 +43,8 @@ public class LoginDialog extends javax.swing.JDialog {
         
         usernameField.addKeyListener(keyListener);
         passwordField.addKeyListener(keyListener);
+        requestFocus(true);
+        setAlwaysOnTop(true);
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
