@@ -64,7 +64,7 @@ public class GatewayDialog extends javax.swing.JDialog {
         sshPortField.addKeyListener(keyListener);
         usernameField.addKeyListener(keyListener);
         passwordField.addKeyListener(keyListener);
-        descriptionField.addKeyListener(keyListener);
+       //descriptionField.addKeyListener(keyListener);
         
         //
         // Make it so the contents of text fields are selected when they are clicked
