@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.LookUtils;
+import org.jdesktop.swingx.util.OS;
 
 
 /**
@@ -29,22 +30,26 @@ public class Main {
             System.out.println("Default laf = " + lafName);
             if (lafName != null) {
                 // Just use whatever the user wanted
-            
-            } else if (LookUtils.IS_OS_WINDOWS_XP || LookUtils.IS_OS_MAC
-                    || LookUtils.IS_JAVA_6_OR_LATER) {
+            } else if (LookUtils.IS_JAVA_6_OR_LATER ||LookUtils.IS_OS_MAC) {
                 lafName = UIManager.getSystemLookAndFeelClassName();
             } else if (LookUtils.IS_OS_WINDOWS) {
-                lafName = Options.PLASTICXP_NAME;
-                lafName = Options.getSystemLookAndFeelClassName();
+                lafName = Options.getSystemLookAndFeelClassName();            
             } else {
                 // Use The Looks L&F on pre-1.6 java on linux, since
                 // the pre 1.6 GTK L&F did not work that well
-                lafName = "com.birosoft.liquid.LiquidLookAndFeel";
+                //lafName = "com.birosoft.liquid.LiquidLookAndFeel";
                 lafName = Options.PLASTICXP_NAME;
+                //lafName = UIManager.getCrossPlatformLookAndFeelClassName();
             }
+            
             System.out.println("Using " + lafName + " look & feel");
             UIManager.setLookAndFeel(lafName);
         } catch (Exception e) {}
+        if (OS.isMacOSX()) {
+            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+                    "Opengear SDT Connector");
+        }
         new MainWindow().setVisible(true);
     }
     
