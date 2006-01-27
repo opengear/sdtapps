@@ -32,6 +32,8 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellEditor;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -121,13 +123,22 @@ public class MainWindow extends javax.swing.JFrame {
         editButton.setText("");
         deleteButton.setIcon(getButtonIcon("delete"));
         deleteButton.setText("");
-        
+        telnetButton.setIcon(getIcon("48x48/telnet.png"));
+        webButton.setIcon(getIcon("48x48/www.png"));
+        rdpButton.setIcon(getIcon("48x48/tsclient.png"));
+        vncButton.setIcon(getIcon("48x48/vnc.png"));
         // Disable edit/delete actions on an empty list
         if (gatewayList.getSelectionPath() == null) {
             newHostAction.setEnabled(false);
             deleteAction.setEnabled(false);
             editAction.setEnabled(false);
         }
+        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+        gatewayList.setCellRenderer(renderer);
+        renderer.setLeafIcon(getMenuIcon("host"));
+        renderer.setClosedIcon(getMenuIcon("gateway"));
+        renderer.setOpenIcon(getMenuIcon("gateway"));
+      
         //
         // Remove menu items that don't look right on MaxOSX
         //
@@ -171,12 +182,13 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         gatewayList = new javax.swing.JTree();
-        statusBar = new org.jdesktop.swingx.JXStatusBar();
         jToolBar1 = new javax.swing.JToolBar();
         addGatewayButton = new javax.swing.JButton();
         addHostButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        statusBar = new org.jdesktop.swingx.JXStatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         addGatewayMenuItem = new javax.swing.JMenuItem();
@@ -300,9 +312,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(gatewayList);
 
-        statusBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        statusBar.setFocusable(false);
-
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
         addGatewayButton.setIcon(getButtonIcon("gateway"));
@@ -328,6 +337,22 @@ public class MainWindow extends javax.swing.JFrame {
         deleteButton.setFocusable(false);
         deleteButton.setMargin(new java.awt.Insets(3, 3, 3, 3));
         jToolBar1.add(deleteButton);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        statusBar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        statusBar.setDoubleBuffered(false);
+        statusBar.setFocusable(false);
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(statusBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        );
 
         fileMenu.setText("File");
         addGatewayMenuItem.setText("New Gateway");
@@ -385,15 +410,15 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
             .add(layout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 201, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 227, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(30, 30, 30)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jScrollPane2, 0, 0, Short.MAX_VALUE)
-                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jScrollPane2, 0, 0, Short.MAX_VALUE))
+                .add(30, 30, 30))
+            .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         layout.linkSize(new java.awt.Component[] {connectButtonPanel, jScrollPane2}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
@@ -404,12 +429,13 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE))
-                .add(statusBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(32, 32, 32)
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -763,6 +789,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu gatewayListPopup;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
