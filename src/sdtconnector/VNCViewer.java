@@ -15,18 +15,18 @@ import javax.swing.JOptionPane;
 /**
  *
  */
-public class VNCViewer {
+public class VNCViewer extends Launcher {
     
     /** Creates a new instance of VNCViewer */
     public VNCViewer() {
     }
-    public static void launch(String host, int port) {
+    public VNCViewer(String host, int port) {
+        super(host, port);
+    }
+    public void launch(String host, int port) {
         String vncpath = Settings.getProperty("vnc.path");
         try {
             Runtime.getRuntime().exec(vncpath + " " + host + ":" + port);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
+        } catch (IOException ex) { }        
     }
 }

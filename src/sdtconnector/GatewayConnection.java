@@ -160,6 +160,21 @@ public class GatewayConnection {
             return null;
         }
     }
+    //
+    // Wait for the login to complete - runs on the GatewayConnection thread.
+    //
+    public boolean login() {
+        Future<Boolean> f = exec.submit(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return doConnect();
+            }
+        });
+        try {
+            return f.get();
+        } catch (Exception ex) {
+            return false;
+        }        
+    }
     private boolean doConnect()  {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
@@ -221,9 +236,7 @@ public class GatewayConnection {
                             listener.sshTcpChannelFailed(host, port);
                         }
                     });
-                    
-                    ex.printStackTrace();
-                    throw ex;
+                    return null;
                 }
             }
         });

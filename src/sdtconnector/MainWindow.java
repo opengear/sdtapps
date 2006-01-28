@@ -14,6 +14,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -37,6 +38,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.jdesktop.swingworker.SwingWorker;
 import org.jdesktop.swingx.JXLoginDialog;
 import org.jdesktop.swingx.JXLoginPanel;
 import org.jdesktop.swingx.event.ProgressEvent;
@@ -138,7 +140,7 @@ public class MainWindow extends javax.swing.JFrame {
         renderer.setLeafIcon(getMenuIcon("host"));
         renderer.setClosedIcon(getMenuIcon("gateway"));
         renderer.setOpenIcon(getMenuIcon("gateway"));
-      
+        
         //
         // Remove menu items that don't look right on MaxOSX
         //
@@ -444,11 +446,11 @@ public class MainWindow extends javax.swing.JFrame {
         setVisible(false);
         dispose();
     }//GEN-LAST:event_fileMenuExitItemActionPerformed
-        
+    
     private void gatewayListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMouseReleased
         showListPopup(evt);
     }//GEN-LAST:event_gatewayListMouseReleased
-        
+    
     private void gatewayListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMousePressed
         TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
         if (path != null) {
@@ -481,15 +483,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_prefsMenuItemActionPerformed
     
     private void webButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonActionPerformed
-        
-        GatewayConnection.Redirector r = getRedirectorForSelection(80);
-        try {
-            URL url = new URL("http", "localhost", r.getLocalPort(), "/");
-            Browser.displayURL(url);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
-                    JOptionPane.WARNING_MESSAGE);
-        }
+        sshLaunch(new Browser(), 80);
     }//GEN-LAST:event_webButtonActionPerformed
     
     private void removeSelectedNode(TreePath path) {
@@ -501,9 +495,9 @@ public class MainWindow extends javax.swing.JFrame {
             SDTManager.removeHost((Gateway) path.getPathComponent(1), (Host) last);
         }
     }
-        
+    
     private void vncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vncButtonActionPerformed
-        VNCViewer.launch("localhost", getRedirectorForSelection(5900).getLocalPort());
+        sshLaunch(new VNCViewer(), 5900);
     }//GEN-LAST:event_vncButtonActionPerformed
     
     private void gatewayListValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_gatewayListValueChanged
@@ -582,7 +576,7 @@ public class MainWindow extends javax.swing.JFrame {
             gatewayList.scrollPathToVisible(path);
             gatewayList.setSelectionPath(path);
         }
-    }    
+    }
     
     private void editSelectedNode(final TreePath path) {
         boolean isGateway = path.getPathCount() == 2;
@@ -619,7 +613,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
-        Telnet.launch("localhost", getRedirectorForSelection(23).getLocalPort());
+        sshLaunch(new Telnet(), 23);
     }//GEN-LAST:event_telnetButtonActionPerformed
     
     private void updateButtonState() {
@@ -662,6 +656,29 @@ public class MainWindow extends javax.swing.JFrame {
         System.out.println("Adding redirection to " + host + ":" + port + " via "
                 + gw);
         return conn.getRedirector(host.toString(), port);
+    }
+    private void sshLaunch(final Launcher launcher, int port) {
+        
+        TreePath path = gatewayList.getSelectionPath();
+        if (path == null) {
+            return;
+        }
+        launcher.setHost("localhost");
+        launcher.setPort(getRedirectorForSelection(port).getLocalPort());
+        
+        Gateway gw = (Gateway) path.getPathComponent(1);
+        Host host = (Host) path.getLastPathComponent();
+        final GatewayConnection conn = getGatewayConnection(gw);
+        //getGlassPane().setVisible(true);
+        
+        bgExec.execute(new Runnable() {
+            public void run() {
+                if (conn.login()) {
+                    swingExec.execute(launcher);
+                }
+            }
+        });
+        
     }
     
     /**
@@ -768,6 +785,7 @@ public class MainWindow extends javax.swing.JFrame {
         };
         
         Gateway gateway;
+        
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -809,6 +827,8 @@ public class MainWindow extends javax.swing.JFrame {
     private SDTTreeModel treeModel;
     private Map<String, GatewayConnection> connections;
     ExecutorService swingExec = new SwingExecutorService();
+    ExecutorService bgExec = Executors.newSingleThreadExecutor();
+    
     private Action deleteAction = new AbstractAction() {
         public void actionPerformed(ActionEvent evt) {
             deleteActionPerformed(evt);

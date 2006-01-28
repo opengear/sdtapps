@@ -15,12 +15,15 @@ import org.omg.SendingContext.RunTime;
 /**
  *
  */
-public class Telnet {
+public class Telnet extends Launcher {
     
     /** Creates a new instance of Telnet */
-    public Telnet() {
+    public Telnet() {        
     }
-    public static void launch(String host, int port) {
+    public Telnet(String host, int port) {
+        super(host, port);
+    }
+    public void launch(String host, int port) {
         String cmd = "";
         if (LookUtils.IS_OS_WINDOWS) {
             cmd = "cmd /c start telnet " + host + " " + port;            
