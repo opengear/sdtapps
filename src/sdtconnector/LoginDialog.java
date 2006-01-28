@@ -85,6 +85,9 @@ public class LoginDialog extends javax.swing.JDialog {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        org.jdesktop.swingx.JXImagePanel jXImagePanel1;
+        org.jdesktop.swingx.JXPanel jXPanel1;
+
         jXPanel1 = new org.jdesktop.swingx.JXPanel();
         jXImagePanel1 = new org.jdesktop.swingx.JXImagePanel();
         jXPanel2 = new org.jdesktop.swingx.JXPanel();
@@ -188,6 +191,10 @@ public class LoginDialog extends javax.swing.JDialog {
         );
 
         imagePanel.setBackground(new java.awt.Color(255, 255, 255));
+        imagePanel.setFocusable(false);
+        imagePanel.setInheritAlpha(false);
+        imagePanel.setRequestFocusEnabled(false);
+        imagePanel.setVerifyInputWhenFocusTarget(false);
         org.jdesktop.layout.GroupLayout imagePanelLayout = new org.jdesktop.layout.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
@@ -196,19 +203,20 @@ public class LoginDialog extends javax.swing.JDialog {
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 69, Short.MAX_VALUE)
+            .add(0, 71, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout jXPanel1Layout = new org.jdesktop.layout.GroupLayout(jXPanel1);
         jXPanel1.setLayout(jXPanel1Layout);
         jXPanel1Layout.setHorizontalGroup(
             jXPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jXImagePanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(imagePanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(jXImagePanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jXPanel1Layout.setVerticalGroup(
             jXPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jXPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .add(imagePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jXImagePanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -262,9 +270,6 @@ public class LoginDialog extends javax.swing.JDialog {
     private org.jdesktop.swingx.JXImagePanel imagePanel;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private org.jdesktop.swingx.JXImagePanel jXImagePanel1;
-    private org.jdesktop.swingx.JXPanel jXPanel1;
     private org.jdesktop.swingx.JXPanel jXPanel2;
     private javax.swing.JButton okButton;
     private javax.swing.JPasswordField passwordField;
