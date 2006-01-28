@@ -242,7 +242,7 @@ public class GatewayDialog extends javax.swing.JDialog {
             gateway.setDescription(descriptionField.getText());
             try {                
                 sshPortField.commitEdit();
-                gateway.setPort(Integer.valueOf(sshPortField.getText()));
+                gateway.setPort(Integer.valueOf(sshPortField.getValue().toString()));
             } catch (ParseException ex) {
                 ex.printStackTrace();
             }
