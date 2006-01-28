@@ -38,7 +38,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.jdesktop.swingworker.SwingWorker;
 import org.jdesktop.swingx.JXLoginDialog;
 import org.jdesktop.swingx.JXLoginPanel;
 import org.jdesktop.swingx.event.ProgressEvent;
