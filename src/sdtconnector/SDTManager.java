@@ -11,6 +11,7 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -25,7 +26,7 @@ public class SDTManager {
     }
     private static void init() {
         Gateway gw;
-        gatewayList = new BasicEventList<Gateway>();
+        gatewayList = new BasicEventList();
         preferences = Preferences.userRoot().node("opengear/sdtconnector/gateways");
         try {
             for (String id : preferences.childrenNames()) {
@@ -76,7 +77,8 @@ public class SDTManager {
     private SDTManager() {
     }
     public static Gateway getGateway(String address) {
-        for (Gateway gw : gatewayList) {
+        for (Iterator i = gatewayList.iterator(); i.hasNext(); ) {
+            Gateway gw = (Gateway) i.next();
             if (gw.getAddress().equals(address)) {
                 return gw;
             }
@@ -120,8 +122,8 @@ public class SDTManager {
             gwPrefs.sync();
         } catch (BackingStoreException ex) {}
     }
-    public static EventList<Gateway> getGatewayList() {
-        return gatewayList;
+    public static EventList getGatewayList() {
+        return (EventList) gatewayList;
     }
     private static void saveHost(Preferences gwPrefs, Host host) {
         Preferences hostPrefs = gwPrefs.node("hosts/" + host.getAddress());
@@ -164,12 +166,12 @@ public class SDTManager {
         saveHost(gwPrefs, host);
     }
     
-    public static EventList<Host> getHostList(String gwAddress) {
+    public static EventList getHostList(String gwAddress) {
         return getGateway(gwAddress).getHostList();
     }
     public static Host getHost(String gateway, String address) {
         return getGateway(gateway).getHost(address);
     }
-    private static EventList<Gateway> gatewayList;
+    private static EventList gatewayList;
     private static Preferences preferences;
 }

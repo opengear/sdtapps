@@ -14,6 +14,7 @@ import ca.odell.glazedlists.EventList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class Gateway {
     public void setDescription(String description) {
         this.description = description;
     }
-    public EventList<Host> getHostList() {
+    public EventList getHostList() {
         return hostList;
     }
     public void addHost(Host host) {
@@ -85,7 +86,8 @@ public class Gateway {
         }       
     }
     public Host getHost(String address) {
-        for (Host host : hostList) {
+        for (Iterator i = hostList.iterator(); i.hasNext(); ) {
+            Host host = (Host) i.next();
             if (host.getAddress().equals(address)) {
                 return host;
             }
@@ -106,5 +108,5 @@ public class Gateway {
     private String username = "";
     private String password = "";
     private String description = "";
-    private EventList<Host> hostList = new BasicEventList<Host>();
+    private EventList hostList = new BasicEventList();
 }

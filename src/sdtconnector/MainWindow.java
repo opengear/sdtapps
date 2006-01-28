@@ -7,6 +7,7 @@
 package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
+import com.jgoodies.looks.LookUtils;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -21,8 +22,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
+import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
@@ -217,8 +218,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Opengear SDT Connector");
-        setLocationByPlatform(true);
-        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect using ..."));
+        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect"));
         telnetButton.setText("Telnet");
         telnetButton.setEnabled(false);
         telnetButton.setNextFocusableComponent(webButton);
@@ -430,13 +430,13 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(32, 32, 32)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -713,16 +713,15 @@ public class MainWindow extends javax.swing.JFrame {
             password = gw.getPassword();
         }
         public boolean promptAuthentication() {
-            System.out.println("Prompting for password");
             LoginDialog dlg = new LoginDialog(MainWindow.this, true);
-            
             dlg.setUsername(gateway.getUsername());
             dlg.setPassword(password);
-            //dlg.setLocationRelativeTo(MainWindow.this);
-            dlg.setLocation(WindowUtils.getPointForCentering(dlg));
-            dlg.setAlwaysOnTop(true);
+            dlg.setLocationRelativeTo(MainWindow.this);
+            if (LookUtils.IS_JAVA_5_OR_LATER) {
+                dlg.setLocation(WindowUtils.getPointForCentering(dlg));
+            }
+            dlg.pack();
             dlg.setVisible(true);
-            
             if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
                 return false;
             }

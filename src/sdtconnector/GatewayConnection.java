@@ -32,14 +32,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadPoolExecutor;
+import edu.emory.mathcs.backport.java.util.concurrent.Callable;
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutionException;
+import edu.emory.mathcs.backport.java.util.concurrent.Executor;
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
+import edu.emory.mathcs.backport.java.util.concurrent.Executors;
+import edu.emory.mathcs.backport.java.util.concurrent.Future;
+import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
+import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 
 /**
  *
@@ -74,13 +74,13 @@ public class GatewayConnection {
                 return "";
             }
             public String getPassword() {
-                Future<String> f = callback.submit(new Callable<String>() {
+                Future f = callback.submit(new Callable() {
                     public String call() throws Exception {
                         return authentication.getPassword();
                     }
                 });
                 try {
-                    return f.get();
+                    return (String) f.get();
                 } catch (Exception ex) { }
                 return "";
             }
@@ -88,13 +88,13 @@ public class GatewayConnection {
                 return false;
             }
             public boolean promptPassword(String string) {
-                Future<Boolean> f = callback.submit(new Callable<Boolean>() {
+                Future f = callback.submit(new Callable() {
                     public Boolean call() throws Exception {
                         return authentication.promptAuthentication();
                     }
                 });
                 try {
-                    return f.get();
+                    return (Boolean) f.get();
                 } catch (Exception ex) { }
                 return false;
             }
@@ -164,13 +164,13 @@ public class GatewayConnection {
     // Wait for the login to complete - runs on the GatewayConnection thread.
     //
     public boolean login() {
-        Future<Boolean> f = exec.submit(new Callable<Boolean>() {
+        Future f = exec.submit(new Callable() {
             public Boolean call() throws Exception {
                 return doConnect();
             }
         });
         try {
-            return f.get();
+            return (Boolean) f.get();
         } catch (Exception ex) {
             return false;
         }        
@@ -203,7 +203,7 @@ public class GatewayConnection {
         return true;
     }
     public boolean redirectSocket(final String host, final int port, final Socket s) {
-        Future<Channel> f = exec.submit(new Callable<Channel>() {
+        Future f = exec.submit(new Callable() {
             public Channel call() throws Exception {
                 ChannelDirectTCPIP channel;
                 if (!doConnect()) {
@@ -314,8 +314,8 @@ public class GatewayConnection {
         
         
     }
-    private Future<SSHChannel> openShellAsync() {
-        return exec.submit(new Callable<SSHChannel>() {
+    private Future openShellAsync() {
+        return exec.submit(new Callable() {
             public SSHChannel call() throws Exception {
                 try {
                     doConnect();
@@ -333,15 +333,15 @@ public class GatewayConnection {
     
     public SSHChannel openTcpStream(final String host, int port) throws IOException {
         try {
-            return openTcpStreamAsync(host, port).get();
+            return (SSHChannel) openTcpStreamAsync(host, port).get();
         } catch (ExecutionException ex) {
             throw new InterruptedIOException(ex.getMessage());
         } catch (InterruptedException ex) {
             throw new InterruptedIOException(ex.getMessage());
         }
     }
-    public Future<SSHChannel> openTcpStreamAsync(final String host, final int remoteport) {
-        return exec.submit(new Callable<SSHChannel>() {
+    public Future openTcpStreamAsync(final String host, final int remoteport) {
+        return exec.submit(new Callable() {
             public SSHChannel call() throws Exception  {
                 ChannelDirectTCPIP channel;
                 try {

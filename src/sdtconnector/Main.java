@@ -4,11 +4,13 @@
  */
 
 package sdtconnector;
+import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.LookUtils;
 import org.jdesktop.swingx.util.OS;
+import org.jdesktop.swingx.util.WindowUtils;
 
 
 /**
@@ -27,13 +29,13 @@ public class Main {
         // TODO code application logic here
         try {
             String lafName = System.getProperty("swing.defaultlaf");
-            System.out.println("Default laf = " + lafName);
-            if (lafName != null) {
+
+            if (lafName != null || LookUtils.IS_OS_MAC) {
                 // Just use whatever the user wanted
-            } else if (LookUtils.IS_JAVA_6_OR_LATER ||LookUtils.IS_OS_MAC) {
+            } else if (LookUtils.IS_JAVA_6_OR_LATER) {
                 lafName = UIManager.getSystemLookAndFeelClassName();
             } else if (LookUtils.IS_OS_WINDOWS) {
-                lafName = Options.getSystemLookAndFeelClassName();            
+                lafName = Options.getSystemLookAndFeelClassName();
             } else {
                 // Use The Looks L&F on pre-1.6 java on linux, since
                 // the pre 1.6 GTK L&F did not work that well
@@ -41,16 +43,21 @@ public class Main {
                 lafName = Options.PLASTICXP_NAME;
                 //lafName = UIManager.getCrossPlatformLookAndFeelClassName();
             }
-            
-            System.out.println("Using " + lafName + " look & feel");
-            UIManager.setLookAndFeel(lafName);
+            if (lafName != null) {
+                System.out.println("Using " + lafName + " look & feel");
+                UIManager.setLookAndFeel(lafName);
+            }
         } catch (Exception e) {}
         if (OS.isMacOSX()) {
             System.setProperty("com.apple.macos.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name",
                     "Opengear SDT Connector");
         }
-        new MainWindow().setVisible(true);
+        MainWindow window = new MainWindow();
+        if (LookUtils.IS_JAVA_5_OR_LATER) {
+            window.setLocationByPlatform(true);
+        }
+        window.setVisible(true);
     }
     
 }

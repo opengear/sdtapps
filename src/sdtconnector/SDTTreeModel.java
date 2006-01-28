@@ -14,6 +14,7 @@ import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -28,14 +29,15 @@ public class SDTTreeModel implements TreeModel {
     
     /** Creates a new instance of SDTTreeModel */
     public SDTTreeModel() {
-        SDTManager.getGatewayList().addListEventListener(new ListEventListener<Gateway>() {
-            public void listChanged(ListEvent<Gateway> e) {
+        SDTManager.getGatewayList().addListEventListener(new ListEventListener() {
+            public void listChanged(ListEvent e) {
                 gatewayListChanged(e);
             }
         });
         
         // Add listeners for existing gateways
-        for (Gateway gw: SDTManager.getGatewayList()) {
+        for (Iterator i = SDTManager.getGatewayList().iterator(); i.hasNext(); ) {
+            Gateway gw = (Gateway) i.next();
             GatewayNode node = new GatewayNode(gw);
             gw.getHostList().addListEventListener(node);
             gatewayNodes.add(node);
@@ -43,16 +45,16 @@ public class SDTTreeModel implements TreeModel {
         
     }
     
-    public void gatewayListChanged(ListEvent<Gateway> e) {
+    public void gatewayListChanged(ListEvent e) {
         
-        EventList<Gateway> l = e.getSourceList();
+        EventList l = e.getSourceList();
         while (e.next()) {
             GatewayNode node;
             switch (e.getType()) {
                 
                 case ListEvent.INSERT:
                     // replicate in the local list
-                    Gateway gw = l.get(e.getIndex());
+                    Gateway gw = (Gateway) l.get(e.getIndex());
                     node = new GatewayNode(gw);
                     gw.getHostList().addListEventListener(node);
                     gatewayNodes.add(node);
@@ -71,17 +73,17 @@ public class SDTTreeModel implements TreeModel {
         }
         
     }
-    class GatewayNode implements ListEventListener<Host> {
+    class GatewayNode implements ListEventListener {
         public GatewayNode(Gateway gw) {
             this.gateway = gw;
         }
-        public void listChanged(ListEvent<Host> e) {
-            EventList<Host> l = e.getSourceList();
+        public void listChanged(ListEvent e) {
+            EventList l = (EventList) e.getSourceList();
             while (e.next()) {
                 switch (e.getType()) {
                     case ListEvent.INSERT:
                         
-                        Host host = l.get(e.getIndex());
+                        Host host = (Host) l.get(e.getIndex());
                         fireTreeNodesInserted(new TreeModelEvent(this,
                                 new Object[] { root, gateway }, new int[] { e.getIndex() },
                                 new Object[] { host }));
