@@ -114,8 +114,6 @@ public class GatewayDialog extends javax.swing.JDialog {
         sshPortField = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationByPlatform(true);
-        setMinimumSize(new java.awt.Dimension(420, 220));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -236,21 +234,20 @@ public class GatewayDialog extends javax.swing.JDialog {
     
     private void doClose(int retStatus) {
         returnStatus = retStatus;
-        setVisible(false);
-        dispose();
+        setVisible(false);        
         if (retStatus == RET_OK) {
             gateway.setAddress(addressField.getText());
             gateway.setUsername(usernameField.getText());
             gateway.setPassword(new String(passwordField.getPassword()));
             gateway.setDescription(descriptionField.getText());
-            try {
-                
+            try {                
                 sshPortField.commitEdit();
-                gateway.setPort(((Integer) sshPortField.getValue()).intValue());
+                gateway.setPort(Integer.valueOf(sshPortField.getText()));
             } catch (ParseException ex) {
                 ex.printStackTrace();
             }
         }
+        dispose();
     }
     
     

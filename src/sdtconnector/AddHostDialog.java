@@ -103,7 +103,6 @@ public class AddHostDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationByPlatform(true);
         hostField.setNextFocusableComponent(telnetCheckbox);
 
         jLabel1.setText("Host Address");
