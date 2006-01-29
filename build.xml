@@ -66,7 +66,17 @@
     nbproject/build-impl.xml file. 
 
     -->
-  
+    <taskdef name="retroweaver"
+        classname="com.rc.retroweaver.ant.RetroWeaverTask">
+        <classpath>
+            <fileset dir="antlib" includes="**/*"/>            
+        </classpath>
+    </taskdef>
+
+    <target name="-pre-jar">
+        <echo message="Running retroweaver"/>
+        <retroweaver srcdir="${build.classes.dir}"/>
+    </target>
     <target name="-post-jar">
         <echo message="Updating ${dist.jar}"/>
         <jar update="true" basedir="." destfile="${dist.jar}">
