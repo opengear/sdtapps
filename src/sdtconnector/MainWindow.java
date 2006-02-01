@@ -741,6 +741,7 @@ public class MainWindow extends javax.swing.JFrame {
         public GatewayAuth(Gateway gw) {
             this.gateway = gw;
             password = gw.getPassword();
+            username = gw.getUsername();
         }
         public boolean promptAuthentication() {
             LoginDialog dlg = new LoginDialog(MainWindow.this, true);
@@ -756,11 +757,12 @@ public class MainWindow extends javax.swing.JFrame {
                 return false;
             }
             password = dlg.getPassword();
+            username = dlg.getUsername();
             return true;
         }
         
         public String getUsername() {
-            return gateway.getUsername();
+            return username;
         }
         
         public String getPassword() {
@@ -768,6 +770,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         Gateway gateway;
         String passphrase;
+        String username;
         String password;
     }
     class SSHListener implements GatewayConnection.Listener {
