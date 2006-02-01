@@ -170,6 +170,14 @@ public class MainWindow extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        javax.swing.JPanel connectButtonPanel;
+        javax.swing.JMenuBar jMenuBar1;
+        javax.swing.JPanel jPanel1;
+        javax.swing.JScrollPane jScrollPane1;
+        javax.swing.JScrollPane jScrollPane2;
+        javax.swing.JSeparator jSeparator1;
+        javax.swing.JToolBar jToolBar1;
+
         gatewayListPopup = new javax.swing.JPopupMenu();
         listMenuAddGatewayItem = new javax.swing.JMenuItem();
         listMenuAddHostItem = new javax.swing.JMenuItem();
@@ -695,7 +703,7 @@ public class MainWindow extends javax.swing.JFrame {
         bgExec.execute(new Runnable() {
             public void run() {
                 if (conn.login()) {
-                    swingExec.execute(launcher);
+                    launcher.launch();
                 }
             }
         });
@@ -814,7 +822,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem addGatewayMenuItem;
     private javax.swing.JButton addHostButton;
     private javax.swing.JMenuItem addHostMenu;
-    private javax.swing.JPanel connectButtonPanel;
     private javax.swing.JButton deleteButton;
     private javax.swing.JTextArea descriptionArea;
     private javax.swing.JButton editButton;
@@ -826,12 +833,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTree gatewayList;
     private javax.swing.JPopupMenu gatewayListPopup;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem listEditMenuItem;
     private javax.swing.JMenuItem listMenuAddGatewayItem;
     private javax.swing.JMenuItem listMenuAddHostItem;

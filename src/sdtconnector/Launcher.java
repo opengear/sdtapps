@@ -40,6 +40,9 @@ public abstract class Launcher implements Runnable {
     public void run() {
         launch(host, port);
     }
+    public void launch() {
+        run();
+    }
     protected abstract void launch(String host, int port);
     
     protected String host;
