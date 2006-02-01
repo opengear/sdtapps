@@ -112,6 +112,9 @@ public class LoginDialog extends javax.swing.JDialog {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Username");
 
+        usernameField.setEditable(false);
+        usernameField.setFocusable(false);
+
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Password");
 
