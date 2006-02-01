@@ -48,97 +48,14 @@ import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 public class GatewayConnection {
     
     /** Creates a new instance of GatewayConnection */
-    public GatewayConnection(Gateway gw, UserInfo ui, ExecutorService callback) {
-        this.gateway = gw;
-        this.callback = callback;
-        try {
-            jsch = new JSch();
-            session = jsch.getSession(gw.getUsername(), gw.getAddress(), gw.getPort());
-            session.setUserInfo(ui);
-            
-            Hashtable<String, String> config = new Hashtable<String, String>();
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.setPassword(gw.getPassword());
-        } catch (com.jcraft.jsch.JSchException jsche) {
-            System.out.println("Jsch exception " + jsche);
-        }
-    }
     
     public GatewayConnection(Gateway gw, final Authentication auth, ExecutorService exec) {
         this.gateway = gw;
         this.callback = exec;
         this.authentication = auth;
-        UserInfo ui = new UserInfo() {
-            public String getPassphrase() {
-                return "";
-            }
-            public String getPassword() {
-                Future f = callback.submit(new Callable() {
-                    public String call() throws Exception {
-                        return authentication.getPassword();
-                    }
-                });
-                try {
-                    return (String) f.get();
-                } catch (Exception ex) { }
-                return "";
-            }
-            public boolean promptPassphrase(String string) {
-                return false;
-            }
-            public boolean promptPassword(String string) {
-                Future f = callback.submit(new Callable() {
-                    public Boolean call() throws Exception {
-                        return authentication.promptAuthentication();
-                    }
-                });
-                try {
-                    return (Boolean) f.get();
-                } catch (Exception ex) { }
-                return false;
-            }
-            public boolean promptYesNo(String string) {
-                return false;
-            }
-            public void showMessage(String string) {
-                
-            }
-        };
-        
-        listener = new Listener() {
-            public void sshLoginStarted() {
-            }
-            
-            public void sshLoginSucceeded() {
-            }
-            
-            public void sshLoginFailed() {
-            }
-            
-            public void sshTcpChannelStarted(String host, int port) {
-            }
-            
-            public void sshTcpChannelEstablished(String host, int port) {
-            }
-            
-            public void sshTcpChannelFailed(String host, int port) {
-            }
-            
-        };
-        
-        try {
-            jsch = new JSch();
-            session = jsch.getSession(gw.getUsername(), gw.getAddress(), gw.getPort());
-            session.setUserInfo(ui);
-            
-            Hashtable<String, String> config = new Hashtable<String, String>();
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.setPassword(gw.getPassword());
-        } catch (com.jcraft.jsch.JSchException jsche) {
-            System.out.println("Jsch exception " + jsche);
-        }
+        this.username = gw.getUsername();
+        this.password = gw.getPassword();
+        setupSession(username, password);
     }
     
     public void setListener(Listener l) {
@@ -160,21 +77,38 @@ public class GatewayConnection {
             return null;
         }
     }
+    
     //
     // Wait for the login to complete - runs on the GatewayConnection thread.
     //
     public boolean login() {
-        Future f = exec.submit(new Callable() {
-            public Boolean call() throws Exception {
-                return doConnect();
-            }
-        });
         try {
+            Future f = exec.submit(new Callable() {
+                public Boolean call() throws Exception {
+                    return doConnect();
+                }
+            });
             return (Boolean) f.get();
         } catch (Exception ex) {
             return false;
-        }        
+        }
     }
+    
+    private void setupSession(String username, String password) {
+        try {
+            jsch = new JSch();
+            session = jsch.getSession(username, gateway.getAddress(), gateway.getPort());
+            session.setUserInfo(userinfo);
+            
+            Hashtable<String, String> config = new Hashtable<String, String>();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword(password);
+        } catch (com.jcraft.jsch.JSchException jsche) {
+            System.out.println("Jsch exception " + jsche);
+        }
+    }
+    
     private boolean doConnect()  {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
@@ -191,6 +125,8 @@ public class GatewayConnection {
                         listener.sshLoginFailed();
                     }
                 });
+                // Reset the session
+                setupSession(username, password);
                 return false;
             }
             callback.execute(new Runnable() {
@@ -289,77 +225,7 @@ public class GatewayConnection {
         private int port;
     }
     
-    class SSHChannel {
-        public SSHChannel(Channel channel) throws IOException {
-            this.channel = channel;
-            outputStream = channel.getOutputStream();
-            inputStream = channel.getInputStream();
-        }
-        public OutputStream getOutputStream() {
-            return outputStream;
-        }
-        
-        public InputStream getInputStream() {
-            return inputStream;
-        }
-        
-        public Channel getChannel() {
-            return channel;
-        }
-        Channel channel;
-        
-        
-        InputStream inputStream;
-        OutputStream outputStream;
-        
-        
-    }
-    private Future openShellAsync() {
-        return exec.submit(new Callable() {
-            public SSHChannel call() throws Exception {
-                try {
-                    doConnect();
-                    System.out.println("Opening shell");
-                    ChannelShell shell = (ChannelShell) session.openChannel("shell");
-                    System.out.println("Shell opened");
-                    return new SSHChannel(shell);
-                } catch (JSchException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            }
-        });
-    }
     
-    public SSHChannel openTcpStream(final String host, int port) throws IOException {
-        try {
-            return (SSHChannel) openTcpStreamAsync(host, port).get();
-        } catch (ExecutionException ex) {
-            throw new InterruptedIOException(ex.getMessage());
-        } catch (InterruptedException ex) {
-            throw new InterruptedIOException(ex.getMessage());
-        }
-    }
-    public Future openTcpStreamAsync(final String host, final int remoteport) {
-        return exec.submit(new Callable() {
-            public SSHChannel call() throws Exception  {
-                ChannelDirectTCPIP channel;
-                try {
-                    doConnect();
-                    channel  = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
-                    channel.setHost(host);
-                    channel.setPort(remoteport);
-                    channel.connect();
-                    
-                    return new SSHChannel(channel);
-                } catch (JSchException ex) {
-                    ex.printStackTrace();
-                    throw ex;
-                }
-            }
-            
-        });
-    }
     public void shutdown() {
         for (Redirector r : redirectors) {
             r.shutdown();
@@ -373,33 +239,6 @@ public class GatewayConnection {
     }
     public static void main(String[] arg) {
         System.out.println("GatewayConnection");
-        Gateway gw = new Gateway("192.168.99.11", "root", "default", "CM41xx");
-        GatewayConnection conn = new GatewayConnection(gw, new MyUserInfo(),
-                Executors.newSingleThreadExecutor());
-        //conn.forwardLocalPort(5000, "192.168.99.2", 80);
-        try {
-            SSHChannel channel = conn.openTcpStream("192.168.99.2", 80);
-            PrintStream ps = new PrintStream(channel.getOutputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-            
-            System.out.println("Connected");
-            ps.println("GET / HTTP/1.0\n\n");
-            ps.flush();
-            String s;
-            
-            while ((s = br.readLine()) != null) {
-                System.out.println("read in: " + s);
-            }
-            
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            //System.exit(0);
-        }
-        
-        Redirector r = conn.getRedirector("192.168.99.2", 80);
-        System.out.println("Redirecting port " + r.getLocalPort() + " to 192.168.99.2:80");
-//        conn.openShell();
     }
     public interface Authentication {
         public boolean promptAuthentication();
@@ -414,47 +253,65 @@ public class GatewayConnection {
         public void sshTcpChannelEstablished(String host, int port);
         public void sshTcpChannelFailed(String host, int port);
     }
-    public void openShell() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    
     private Gateway gateway;
     private JSch jsch;
     private Session session;
     private ExecutorService exec = Executors.newSingleThreadExecutor();
     private ExecutorService callback;
     private List<Redirector> redirectors = new ArrayList<Redirector>();
+    private String username = "";
+    private String password = "";
     
     private Authentication authentication;
-    private Listener listener;
+    private Listener listener = new Listener() {
+        public void sshLoginStarted() {}
+        public void sshLoginSucceeded() {}
+        public void sshLoginFailed() {}
+        public void sshTcpChannelStarted(String host, int port) {}
+        public void sshTcpChannelEstablished(String host, int port) {}
+        public void sshTcpChannelFailed(String host, int port) {}
+    };
+    UserInfo userinfo = new UserInfo() {
+        public String getPassphrase() {
+            return "";
+        }
+        public String getPassword() {
+            Future passFuture = callback.submit(new Callable() {
+                public String call() throws Exception {
+                    return authentication.getPassword();
+                }
+            });
+            
+            try {
+                return (String) passFuture.get();
+            } catch (Exception ex) { }
+            return "";
+        }
+        public boolean promptPassphrase(String string) {
+            return false;
+        }
+        public boolean promptPassword(String string) {
+            Future promptFuture = callback.submit(new Callable() {
+                public Boolean call() throws Exception {
+                    return authentication.promptAuthentication();
+                }
+            });
+            
+            try {
+                return (Boolean) promptFuture.get();
+                
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+        public boolean promptYesNo(String string) {
+            return false;
+        }
+        public void showMessage(String string) {
+            
+        }
+    };
+    
 }
-class MyUserInfo implements UserInfo {
-    public String getPassword() {
-        return passwd;
-    }
-    public boolean promptYesNo(String str) {
-        return false;
-        
-    }
-    
-    String passwd = "test";
-    
-    
-    public String getPassphrase() {
-        System.out.println("getPassphrase");
-        return null;
-    }
-    public boolean promptPassphrase(String message) {
-        System.out.println("promptPassphrase");
-        return true;
-    }
-    public boolean promptPassword(String message) {
-        System.out.println("promptPassword");
-        return false;
-        
-    }
-    
-    public void showMessage(String string) {
-        System.out.println("showMessage: " + string);
-    }
-    
-}
+
