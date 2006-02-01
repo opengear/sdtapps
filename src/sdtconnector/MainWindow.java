@@ -248,6 +248,11 @@ public class MainWindow extends javax.swing.JFrame {
         rdpButton.setText("RDP");
         rdpButton.setEnabled(false);
         rdpButton.setNextFocusableComponent(vncButton);
+        rdpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdpButtonActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout connectButtonPanelLayout = new org.jdesktop.layout.GroupLayout(connectButtonPanel);
         connectButtonPanel.setLayout(connectButtonPanelLayout);
@@ -437,7 +442,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(18, 18, 18)
@@ -447,6 +452,10 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void rdpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdpButtonActionPerformed
+        sshLaunch(new RDPViewer(), 3389);
+    }//GEN-LAST:event_rdpButtonActionPerformed
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         JDialog dlg = new AboutDialog(this, true);
@@ -493,7 +502,7 @@ public class MainWindow extends javax.swing.JFrame {
         dlg.setVisible(true);
         updateButtonState();
     }//GEN-LAST:event_prefsMenuItemActionPerformed
-    
+ 
     private void webButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonActionPerformed
         sshLaunch(new Browser(), 80);
     }//GEN-LAST:event_webButtonActionPerformed
@@ -768,7 +777,7 @@ public class MainWindow extends javax.swing.JFrame {
         public void sshLoginSucceeded() {
             statusBar.setLeadingMessage("Successfully logged in to " +
                     gateway.getAddress());
-            statusBar.progressStarted(progress);
+            statusBar.progressEnded(progress);
         }
         public void sshLoginFailed() {
             statusBar.setLeadingMessage("Failed to authenticate to " +

@@ -141,7 +141,7 @@
               <Component id="jToolBar1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="375" max="32767" attributes="2"/>
+                  <Component id="jScrollPane1" pref="344" max="32767" attributes="2"/>
                   <Group type="102" attributes="0">
                       <Component id="connectButtonPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
@@ -241,6 +241,9 @@
               <ComponentRef name="vncButton"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rdpButtonActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
