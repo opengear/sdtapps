@@ -460,11 +460,11 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void rdpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdpButtonActionPerformed
         sshLaunch(new RDPViewer(), 3389);
     }//GEN-LAST:event_rdpButtonActionPerformed
-
+    
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         JDialog dlg = new AboutDialog(this, true);
         dlg.setLocationRelativeTo(this);
@@ -510,7 +510,7 @@ public class MainWindow extends javax.swing.JFrame {
         dlg.setVisible(true);
         updateButtonState();
     }//GEN-LAST:event_prefsMenuItemActionPerformed
- 
+    
     private void webButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonActionPerformed
         sshLaunch(new Browser(), 80);
     }//GEN-LAST:event_webButtonActionPerformed
@@ -562,11 +562,26 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void deleteActionPerformed(ActionEvent evt) {
-        if (gatewayList.isSelectionEmpty()) {
+        TreePath path = gatewayList.getSelectionPath();
+        if (path == null) {
             return;
         }
-        removeSelectedNode(gatewayList.getSelectionPath());
+        Object last = path.getLastPathComponent();
+        String msg = "";
+        if (last instanceof Gateway) {
+            msg = "Are you sure you want to delete gateway " 
+                    + last.toString() + "\n"
+                    + "and all the hosts connected to it?";            
+        } else {
+            msg = "Are you sure you want to delete host " + last.toString();
+        }
+        int retVal = JOptionPane.showConfirmDialog(this, msg, "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (retVal == JOptionPane.OK_OPTION) {
+            removeSelectedNode(gatewayList.getSelectionPath());
+        }
     }
+    
     private void addGatewayActionPerformed(ActionEvent evt) {
         Gateway gw = new Gateway();
         GatewayDialog dlg = new GatewayDialog(this, true, gw);
