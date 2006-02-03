@@ -53,9 +53,7 @@ public class SwingExecutorService extends AbstractExecutorService {
                 SwingUtilities.invokeAndWait(command);
             }
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
         } catch (InvocationTargetException ex) {
-            ex.printStackTrace();
         }
     }
     private boolean _running = true;
