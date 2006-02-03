@@ -6,9 +6,10 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-        
+
 package sdtconnector;
 import edu.emory.mathcs.backport.java.util.concurrent.Callable;
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutionException;
 import edu.emory.mathcs.backport.java.util.concurrent.Executor;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import java.lang.reflect.InvocationHandler;
@@ -39,19 +40,18 @@ class ExecutorProxyHandler implements InvocationHandler {
     
     public Object invoke(final Object proxy, final Method method,
             final Object[] args) throws Throwable {
-        // Tell Ecore to execute this method from the main Ecore thread
+        // Execute this method on the Executor and wait for it to complete
         FutureTask ft = new FutureTask(new Callable() {
-            
-            public Object call() {
-                try {
-                    return method.invoke(_handler, args);
-                } catch (Throwable t) {
-                    return null;
-                }
+            public Object call() throws Exception {
+                return method.invoke(_handler, args);                
             }
         });
         _exec.execute(ft);
-        return ft.get();
+        try {
+            return ft.get();
+        } catch (Exception ex) {        
+            throw ex.getCause();
+        }
     }
     private Object _handler;
     private Executor _exec;
