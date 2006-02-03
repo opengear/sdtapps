@@ -25,18 +25,20 @@ public class SwingExecutorService extends AbstractExecutorService {
     }
     
     public void shutdown() {
+        _running = false;
     }
     
     public List<Runnable> shutdownNow() {
+        _running = false;
         return Collections.emptyList();
     }
     
     public boolean isShutdown() {
-        return false;
+        return !_running;
     }
     
     public boolean isTerminated() {
-        return false;
+        return !_running;
     }
     
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
@@ -56,5 +58,5 @@ public class SwingExecutorService extends AbstractExecutorService {
             ex.printStackTrace();
         }
     }
-    
+    private boolean _running = true;
 }
