@@ -52,14 +52,15 @@ public class GatewayConnection {
     public GatewayConnection(Gateway gw, final Authentication auth, ExecutorService exec) {
         this.gateway = gw;
         this.callback = exec;
-        this.authentication = auth;
+        this.authentication = (Authentication) ExecutorProxy.create(exec,
+                Authentication.class, auth);
         this.username = gw.getUsername();
         this.password = gw.getPassword();
         setupSession(username, password);
     }
     
     public void setListener(Listener l) {
-        listener = l;
+        listener = (Listener) ExecutorProxy.create(callback, Listener.class, l);
     }
     public Redirector getRedirector(String host, int port) {
         for (Redirector r : redirectors) {
@@ -112,28 +113,16 @@ public class GatewayConnection {
     private boolean doConnect()  {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
-            callback.execute(new Runnable() {
-                public void run() {
-                    listener.sshLoginStarted();
-                }
-            });
+            listener.sshLoginStarted();
             try {
                 session.connect(5000);
             } catch (JSchException ex) {
-                callback.execute(new Runnable() {
-                    public void run() {
-                        listener.sshLoginFailed();
-                    }
-                });
+                listener.sshLoginFailed();
                 // Reset the session
                 setupSession(username, password);
                 return false;
             }
-            callback.execute(new Runnable() {
-                public void run() {
-                    listener.sshLoginSucceeded();
-                }
-            });
+            listener.sshLoginSucceeded();
             System.out.println("Connected");
         }
         return true;
@@ -152,26 +141,14 @@ public class GatewayConnection {
                     channel.setPort(port);
                     channel.setInputStream(s.getInputStream());
                     channel.setOutputStream(s.getOutputStream());
-                    callback.execute(new Runnable() {
-                        public void run() {
-                            listener.sshTcpChannelStarted(host, port);
-                        }
-                    });
                     
+                    listener.sshTcpChannelStarted(host, port);
                     channel.connect();
-                    callback.execute(new Runnable() {
-                        public void run() {
-                            listener.sshTcpChannelEstablished(host, port);
-                        }
-                    });
+                    listener.sshTcpChannelEstablished(host, port);
                     
                     return channel;
                 } catch (JSchException ex) {
-                    callback.execute(new Runnable() {
-                        public void run() {
-                            listener.sshTcpChannelFailed(host, port);
-                        }
-                    });
+                    listener.sshTcpChannelFailed(host, port);
                     return null;
                 }
             }
@@ -277,33 +254,13 @@ public class GatewayConnection {
             return "";
         }
         public String getPassword() {
-            Future passFuture = callback.submit(new Callable() {
-                public String call() throws Exception {
-                    return authentication.getPassword();
-                }
-            });
-            
-            try {
-                return (String) passFuture.get();
-            } catch (Exception ex) { }
-            return "";
+            return authentication.getPassword();
         }
         public boolean promptPassphrase(String string) {
             return false;
         }
-        public boolean promptPassword(String string) {
-            Future promptFuture = callback.submit(new Callable() {
-                public Boolean call() throws Exception {
-                    return authentication.promptAuthentication();
-                }
-            });
-            
-            try {
-                return (Boolean) promptFuture.get();
-                
-            } catch (Exception ex) {
-                return false;
-            }
+        public boolean promptPassword(String string) {            
+            return authentication.promptAuthentication();            
         }
         public boolean promptYesNo(String string) {
             return false;
