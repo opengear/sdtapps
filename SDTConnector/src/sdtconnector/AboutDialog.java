@@ -9,6 +9,8 @@ package sdtconnector;
 import java.awt.Image;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -23,6 +25,11 @@ public class AboutDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         imagePanel.setImage(getImage("opengear.gif"));
+        textPane.setEditorKit(new HTMLEditorKit());
+        textPane.setText("<html><body><center>"
+              //  + "<font face=\"Verdana,Helvetica,Arial\">"
+                + "Copyright (c) 2006 <a href=\"http://www.opengear.com\">Opengear</a>"
+                + "</font></center></body></html>");
         pack();
     }
     private Image getImage(String path) {
@@ -40,25 +47,56 @@ public class AboutDialog extends javax.swing.JDialog {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        javax.swing.JScrollPane jScrollPane1;
+        org.jdesktop.swingx.JXPanel jXPanel1;
+        org.jdesktop.swingx.JXPanel jXPanel5;
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textArea = new javax.swing.JTextArea();
         jXPanel1 = new org.jdesktop.swingx.JXPanel();
         jXPanel5 = new org.jdesktop.swingx.JXPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        closeButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        textPane = new javax.swing.JTextPane();
         imagePanel = new org.jdesktop.swingx.JXImagePanel();
+
+        jScrollPane1.setBorder(null);
+        textArea.setColumns(20);
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setRows(5);
+        textArea.setText("\nCopyright 2006 Opengear");
+        textArea.setWrapStyleWord(true);
+        textArea.setAutoscrolls(false);
+        textArea.setFocusable(false);
+        textArea.setOpaque(false);
+        textArea.setRequestFocusEnabled(false);
+        jScrollPane1.setViewportView(textArea);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         jXPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jXPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jScrollPane1.setBorder(null);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("\nCopyright 2006 Opengear");
-        jTextArea1.setWrapStyleWord(true);
-        jTextArea1.setAutoscrolls(false);
-        jTextArea1.setFocusable(false);
-        jTextArea1.setOpaque(false);
-        jScrollPane1.setViewportView(jTextArea1);
+        closeButton.setText("Close");
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeButtonAction(evt);
+            }
+        });
+
+        jScrollPane2.setBorder(null);
+        jScrollPane2.setOpaque(false);
+        jScrollPane2.setRequestFocusEnabled(false);
+        textPane.setBorder(null);
+        textPane.setEditable(false);
+        textPane.setOpaque(false);
+        textPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
+            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
+                hyperlinkEvent(evt);
+            }
+        });
+
+        jScrollPane2.setViewportView(textPane);
 
         org.jdesktop.layout.GroupLayout jXPanel5Layout = new org.jdesktop.layout.GroupLayout(jXPanel5);
         jXPanel5.setLayout(jXPanel5Layout);
@@ -66,18 +104,28 @@ public class AboutDialog extends javax.swing.JDialog {
             jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jXPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .add(jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, closeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jXPanel5Layout.setVerticalGroup(
             jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jXPanel5Layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jXPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 14, Short.MAX_VALUE)
+                .add(closeButton)
                 .addContainerGap())
         );
 
         imagePanel.setBackground(new java.awt.Color(255, 255, 255));
+        imagePanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                imagePanelMouseClicked(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout imagePanelLayout = new org.jdesktop.layout.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
@@ -116,6 +164,23 @@ public class AboutDialog extends javax.swing.JDialog {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
+        new Browser("www.opengear.com", 80).launch();
+    }//GEN-LAST:event_imagePanelMouseClicked
+    
+    private void hyperlinkEvent(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_hyperlinkEvent
+        if (evt.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+            return;
+        }
+        URL url = evt.getURL();       
+        new Browser(url.getHost(), url.getPort()).launch();
+    }//GEN-LAST:event_hyperlinkEvent
+    
+    private void closeButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonAction
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_closeButtonAction
     
     /**
      * @param args the command line arguments
@@ -129,11 +194,11 @@ public class AboutDialog extends javax.swing.JDialog {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton closeButton;
     private org.jdesktop.swingx.JXImagePanel imagePanel;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private org.jdesktop.swingx.JXPanel jXPanel1;
-    private org.jdesktop.swingx.JXPanel jXPanel5;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea textArea;
+    private javax.swing.JTextPane textPane;
     // End of variables declaration//GEN-END:variables
     
 }
