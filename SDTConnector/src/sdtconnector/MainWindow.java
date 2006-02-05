@@ -587,14 +587,14 @@ public class MainWindow extends javax.swing.JFrame {
         Object last = path.getLastPathComponent();
         String msg = "";
         if (last instanceof Gateway) {
-            msg = "Are you sure you want to delete gateway " 
+            msg = "Are you sure you want to delete gateway "
                     + last.toString() + "\n"
-                    + "and all the hosts connected to it?";            
+                    + "and all the hosts connected to it?";
         } else {
             msg = "Are you sure you want to delete host " + last.toString();
         }
         int retVal = JOptionPane.showConfirmDialog(this, msg, "Confirm Deletion",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (retVal == JOptionPane.OK_OPTION) {
             removeSelectedNode(gatewayList.getSelectionPath());
         }
@@ -756,9 +756,13 @@ public class MainWindow extends javax.swing.JFrame {
     
     private GatewayConnection getGatewayConnection(Gateway gw) {
         GatewayConnection conn = connections.get(gw.getAddress());
-        if (conn == null) {
-            conn = new GatewayConnection(gw, new GatewayAuth(gw), swingExec);
-            conn.setListener(new SSHListener(gw));
+        if (conn == null) {            
+            conn = new GatewayConnection(gw, 
+                    (GatewayConnection.Authentication) SwingInvocationProxy.create(
+                    GatewayConnection.Authentication.class,
+                    new GatewayAuth(gw)));
+            conn.setListener((GatewayConnection.Listener) SwingInvocationProxy.create(
+                    GatewayConnection.Listener.class, new SSHListener(gw)));          
             connections.put(gw.getAddress(), conn);
         }
         return conn;

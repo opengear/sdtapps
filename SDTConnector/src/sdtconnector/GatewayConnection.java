@@ -49,18 +49,16 @@ public class GatewayConnection {
     
     /** Creates a new instance of GatewayConnection */
     
-    public GatewayConnection(Gateway gw, final Authentication auth, ExecutorService exec) {
+    public GatewayConnection(Gateway gw, final Authentication auth) {
         this.gateway = gw;
-        this.callback = exec;
-        this.authentication = (Authentication) ExecutorProxy.create(exec,
-                Authentication.class, auth);
+        this.authentication =  auth;
         this.username = gw.getUsername();
         this.password = gw.getPassword();
         setupSession(username, password);
     }
     
     public void setListener(Listener l) {
-        listener = (Listener) ExecutorProxy.create(callback, Listener.class, l);
+        listener = l;
     }
     public Redirector getRedirector(String host, int port) {
         for (Redirector r : redirectors) {
@@ -235,7 +233,6 @@ public class GatewayConnection {
     private JSch jsch;
     private Session session;
     private ExecutorService exec = Executors.newSingleThreadExecutor();
-    private ExecutorService callback;
     private List<Redirector> redirectors = new ArrayList<Redirector>();
     private String username = "";
     private String password = "";
