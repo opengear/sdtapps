@@ -149,7 +149,7 @@ public class LoginDialog extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        okButton.setText("OK");
+        okButton.setText("Login");
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -168,22 +168,22 @@ public class LoginDialog extends javax.swing.JDialog {
         jXImagePanel1Layout.setHorizontalGroup(
             jXImagePanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jXImagePanel1Layout.createSequentialGroup()
-                .addContainerGap(192, Short.MAX_VALUE)
-                .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(12, 12, 12)
-                .add(cancelButton)
-                .addContainerGap())
-            .add(jXImagePanel1Layout.createSequentialGroup()
                 .add(67, 67, 67)
                 .add(jXPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(66, Short.MAX_VALUE))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jXImagePanel1Layout.createSequentialGroup()
+                .addContainerGap(198, Short.MAX_VALUE)
+                .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cancelButton)
+                .addContainerGap())
         );
 
         jXImagePanel1Layout.linkSize(new java.awt.Component[] {cancelButton, okButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         jXImagePanel1Layout.setVerticalGroup(
             jXImagePanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jXImagePanel1Layout.createSequentialGroup()
+            .add(jXImagePanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jXPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 18, Short.MAX_VALUE)
