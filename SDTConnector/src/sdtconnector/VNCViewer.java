@@ -25,8 +25,9 @@ public class VNCViewer extends Launcher {
     }
     public void launch(String host, int port) {
         String vncpath = Settings.getProperty("vnc.path");
+        String cmd = vncpath + " /nostatus " + host + "::" + port;
         try {
-            Runtime.getRuntime().exec(vncpath + " " + host + ":" + port);
+            Runtime.getRuntime().exec(cmd);
         } catch (IOException ex) { }        
     }
 }
