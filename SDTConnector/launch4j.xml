@@ -2,12 +2,13 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>0</headerType>
   <jar>dist/sdtcon.jar</jar>
-  <outfile>dist/sdtcon.exe</outfile>
+  <outfile>dist/SDTConnector.exe</outfile>
   <errTitle></errTitle>
   <jarArgs></jarArgs>
   <chdir></chdir>
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
+  <icon>images/program.ico</icon>
   <jre>
     <path></path>
     <minVersion>1.4.2</minVersion>
