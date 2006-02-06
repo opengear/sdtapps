@@ -72,10 +72,14 @@
             <fileset dir="antlib" includes="**/*"/>            
         </classpath>
     </taskdef>
-
+    <!--
+    <taskdef name="jarbundler"
+      classpath="antlib/jarbundler-1.4.jar" classname="com.loomcom.ant.tasks.jarbundler.JarBundler">
+    </taskdef>
+    -->
     <target name="-pre-jar">
         <echo message="Running retroweaver"/>
-        <retroweaver srcdir="${build.classes.dir}"/>
+        <retroweaver srcdir="${build.classes.dir}" version="1.4"/>
     </target>
     <target name="-post-jar">
         <echo message="Updating ${dist.jar}"/>
@@ -87,6 +91,31 @@
         <exec executable="launch4j">
             <arg file="launch4j.xml"/>
         </exec>
+        <!--
+        <jarbundler dir="${dist.dir}"
+                    name="SDTConnector 1.0"
+                    mainclass="sdtconnector.Main"
+                    icon="images/program.ico"
+                    version="1.0"
+                    infostring="SDTConnector 1.0, (c) 2006"
+                    aboutmenuname="SDTConnector"
+                    bundleid="sdtconnector.SDTConnectorBundle"
+                    developmentregion="Australia"
+                    signature="SDTCON"
+                    type="TEST"
+                    jvmversion="1.4+"
+                    vmoptions="-Xmx256m"
+                    antialiasedgraphics="true"
+                    antialiasedtext="true"
+                    growbox="false"
+                    growboxintrudes="true"
+                    screenmenu="true">
+            <jarfileset dir="${dist.dir}">
+                <include name="SDTConnector.jar"/>
+                <include name="lib/*.jar"/>            
+            </jarfileset>
+        </jarbundler>
+        -->
     </target>
   
 </project>
