@@ -30,6 +30,7 @@ public class AboutDialog extends javax.swing.JDialog {
               //  + "<font face=\"Verdana,Helvetica,Arial\">"
                 + "Copyright (c) 2006 <a href=\"http://www.opengear.com\">Opengear</a>"
                 + "</font></center></body></html>");
+        closeButton.setIcon(IconLoader.getMenuIcon("button_ok"));
         pack();
     }
     private Image getImage(String path) {
@@ -105,7 +106,9 @@ public class AboutDialog extends javax.swing.JDialog {
             .add(jXPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, closeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jXPanel5Layout.createSequentialGroup()
+                        .add(241, 241, 241)
+                        .add(closeButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
                     .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
                 .addContainerGap())
         );
