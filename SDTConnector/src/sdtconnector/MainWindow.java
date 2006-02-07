@@ -46,7 +46,9 @@ import org.jdesktop.swingx.JXLoginPanel;
 import org.jdesktop.swingx.event.ProgressEvent;
 import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
-
+import static sdtconnector.IconLoader.getIcon;
+import static sdtconnector.IconLoader.getMenuIcon;
+import static sdtconnector.IconLoader.getToolbarIcon;
 
 /**
  *
@@ -115,17 +117,17 @@ public class MainWindow extends javax.swing.JFrame {
         prefsMenuItem.setIcon(getMenuIcon("preferences"));
         
         
-        aboutMenuItem.setIcon(getMenuIcon("about"));
+        aboutMenuItem.setIcon(getMenuIcon("info"));
         fileMenuExitItem.setIcon(getMenuIcon("exit"));
-        addGatewayButton.setIcon(getButtonIcon("gateway"));
+        addGatewayButton.setIcon(getToolbarIcon("gateway"));
         addGatewayButton.setText("");
         addGatewayButton.setToolTipText("Create a new Secure Desktop Tunnel");
-        addHostButton.setIcon(getButtonIcon("host"));
+        addHostButton.setIcon(getToolbarIcon("host"));
         addHostButton.setText("");
         addHostButton.setToolTipText("Add a Host via the Secure Desktop Tunnel");
-        editButton.setIcon(getButtonIcon("edit"));
+        editButton.setIcon(getToolbarIcon("edit"));
         editButton.setText("");
-        deleteButton.setIcon(getButtonIcon("delete"));
+        deleteButton.setIcon(getToolbarIcon("delete"));
         deleteButton.setText("");
         telnetButton.setIcon(getIcon("48x48/telnet.png"));
         webButton.setIcon(getIcon("48x48/www.png"));
@@ -166,20 +168,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         pack();
     }
-    private ImageIcon getIcon(String path) {
-        URL url = getClass().getResource("/images/" + path);
-        if (url != null) {
-            return new ImageIcon(url);
-        } else {
-            return new ImageIcon(getToolkit().getImage("images/" + path));
-        }
-    }
-    private ImageIcon getMenuIcon(String name) {
-        return getIcon("16x16/" + name + ".png");
-    }
-    private ImageIcon getButtonIcon(String name) {
-        return getIcon("22x22/" + name + ".png");
-    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -330,7 +319,6 @@ public class MainWindow extends javax.swing.JFrame {
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
         jToolBar1.setMargin(new java.awt.Insets(0, 5, 0, 0));
-        addGatewayButton.setIcon(getButtonIcon("gateway"));
         addGatewayButton.setText("gw");
         addGatewayButton.setFocusable(false);
         addGatewayButton.setMargin(new java.awt.Insets(5, 5, 5, 5));
@@ -471,7 +459,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(18, 18, 18)
                         .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 151, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );

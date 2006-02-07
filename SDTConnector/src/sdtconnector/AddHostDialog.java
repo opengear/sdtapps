@@ -59,7 +59,8 @@ public class AddHostDialog extends javax.swing.JDialog {
         webCheckbox.addKeyListener(keyListener);
         rdpCheckbox.addKeyListener(keyListener);
         vncCheckbox.addKeyListener(keyListener);
-        
+        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
+        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
         //
         // Make it so the contents of text fields are selected when they are clicked
         //
@@ -108,6 +109,8 @@ public class AddHostDialog extends javax.swing.JDialog {
         jLabel1.setText("Host Address");
 
         okButton.setText("OK");
+        okButton.setIconTextGap(6);
+        okButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         okButton.setNextFocusableComponent(cancelButton);
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -143,6 +146,8 @@ public class AddHostDialog extends javax.swing.JDialog {
         vncCheckbox.setNextFocusableComponent(descriptionField);
 
         cancelButton.setText("Cancel");
+        cancelButton.setIconTextGap(6);
+        cancelButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
@@ -185,9 +190,9 @@ public class AddHostDialog extends javax.swing.JDialog {
 
         layout.linkSize(new java.awt.Component[] {telnetCheckbox, webCheckbox}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
-        layout.linkSize(new java.awt.Component[] {cancelButton, okButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
         layout.linkSize(new java.awt.Component[] {rdpCheckbox, vncCheckbox}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+        layout.linkSize(new java.awt.Component[] {cancelButton, okButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -216,8 +221,6 @@ public class AddHostDialog extends javax.swing.JDialog {
                     .add(descLabel))
                 .addContainerGap())
         );
-
-        layout.linkSize(new java.awt.Component[] {cancelButton, okButton}, org.jdesktop.layout.GroupLayout.VERTICAL);
 
         layout.linkSize(new java.awt.Component[] {hostField, jLabel1}, org.jdesktop.layout.GroupLayout.VERTICAL);
 

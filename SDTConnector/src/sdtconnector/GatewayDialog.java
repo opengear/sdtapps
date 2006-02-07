@@ -59,7 +59,8 @@ public class GatewayDialog extends javax.swing.JDialog {
             }
         };
         addKeyListener(keyListener);
-        
+        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
+        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
         addressField.addKeyListener(keyListener);
         sshPortField.addKeyListener(keyListener);
         usernameField.addKeyListener(keyListener);
@@ -85,6 +86,7 @@ public class GatewayDialog extends javax.swing.JDialog {
         usernameField.addFocusListener(focus);
         passwordField.addFocusListener(focus);
 //        descriptionField.addFocusListener(focus);
+        pack();
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -121,6 +123,8 @@ public class GatewayDialog extends javax.swing.JDialog {
         });
 
         okButton.setText("OK");
+        okButton.setIconTextGap(6);
+        okButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -128,6 +132,8 @@ public class GatewayDialog extends javax.swing.JDialog {
         });
 
         cancelButton.setText("Cancel");
+        cancelButton.setIconTextGap(6);
+        cancelButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);

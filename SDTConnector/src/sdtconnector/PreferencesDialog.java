@@ -28,6 +28,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
         initComponents();
         rdpField.setText(Settings.getProperty("rdp.path"));
         vncField.setText(Settings.getProperty("vnc.path"));
+        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
+        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
+        pack();
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -67,6 +70,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         okButton.setText("OK");
+        okButton.setIconTextGap(6);
+        okButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -74,6 +79,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         cancelButton.setText("Cancel");
+        cancelButton.setIconTextGap(6);
+        cancelButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
@@ -178,7 +185,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 8, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 10, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cancelButton)
                     .add(okButton))
