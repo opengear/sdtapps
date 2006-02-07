@@ -90,7 +90,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("RDP Client"));
         rdpField.setMinimumSize(new java.awt.Dimension(4, 30));
 
+        rdpBrowseButton.setIcon(IconLoader.getButtonIcon("fileopen"));
         rdpBrowseButton.setText("Browse ...");
+        rdpBrowseButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
         rdpBrowseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rdpBrowseButtonActionPerformed(evt);
@@ -109,7 +111,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, rdpField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
                         .add(jLabel2)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 13, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 31, Short.MAX_VALUE)
                         .add(rdpBrowseButton)))
                 .addContainerGap())
         );
@@ -128,7 +130,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jLabel1.setText("Enter the location of your VNC client");
 
+        vncBrowseButton.setIcon(IconLoader.getButtonIcon("fileopen"));
         vncBrowseButton.setText("Browse ...");
+        vncBrowseButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
         vncBrowseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 vncBrowseButtonActionPerformed(evt);
@@ -145,7 +149,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                     .add(vncField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
                         .add(jLabel1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 30, Short.MAX_VALUE)
                         .add(vncBrowseButton)))
                 .addContainerGap())
         );

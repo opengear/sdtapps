@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 public class IconLoader {
     
     /** Creates a new instance of IconLoader */
-    public IconLoader() {
+    private IconLoader() {
     }
     public static ImageIcon getIcon(String path) {
         URL url = IconLoader.class.getResource("/images/" + path);
@@ -31,6 +31,9 @@ public class IconLoader {
         }
     }
     public static ImageIcon getMenuIcon(String name) {
+        return getIcon("16x16/" + name + ".png");
+    }
+    public static ImageIcon getButtonIcon(String name) {
         return getIcon("16x16/" + name + ".png");
     }
     public static ImageIcon getToolbarIcon(String name) {
