@@ -54,6 +54,9 @@ public class GatewayConnection {
         this.authentication =  auth;
         this.username = gw.getUsername();
         this.password = gw.getPassword();
+        config.put("StrictHostKeyChecking", "no");
+        config.put("cipher.s2c", "aes128-cbc,3des-cbc,blowfish-cbc");
+        config.put("cipher.c2s", "aes128-cbc,3des-cbc,blowfish-cbc");
         setupSession(username, password);
     }
     
@@ -99,8 +102,7 @@ public class GatewayConnection {
             session = jsch.getSession(username, gateway.getAddress(), gateway.getPort());
             session.setUserInfo(userinfo);
             
-            Hashtable<String, String> config = new Hashtable<String, String>();
-            config.put("StrictHostKeyChecking", "no");
+            
             session.setConfig(config);
             session.setPassword(password);
         } catch (com.jcraft.jsch.JSchException jsche) {
@@ -236,8 +238,9 @@ public class GatewayConnection {
     private List<Redirector> redirectors = new ArrayList<Redirector>();
     private String username = "";
     private String password = "";
-    
+    Hashtable<String, String> config = new Hashtable<String, String>();        
     private Authentication authentication;
+
     private Listener listener = new Listener() {
         public void sshLoginStarted() {}
         public void sshLoginSucceeded() {}
@@ -256,8 +259,8 @@ public class GatewayConnection {
         public boolean promptPassphrase(String string) {
             return false;
         }
-        public boolean promptPassword(String string) {            
-            return authentication.promptAuthentication();            
+        public boolean promptPassword(String string) {
+            return authentication.promptAuthentication();
         }
         public boolean promptYesNo(String string) {
             return false;
