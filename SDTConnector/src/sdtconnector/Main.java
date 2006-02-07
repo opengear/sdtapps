@@ -41,12 +41,8 @@ public class Main {
                 // Just use whatever the user wanted
             } else if (LookUtils.IS_OS_MAC) {
                 lafName = "ch.randelshofer.quaqua.QuaquaLookAndFeel";
-            } else if (LookUtils.IS_OS_WINDOWS_XP) {
-                lafName = Options.getSystemLookAndFeelClassName();
-                //lafName = Options.PLASTICXP_NAME;
             } else if (LookUtils.IS_OS_WINDOWS) {
                 lafName = Options.getSystemLookAndFeelClassName();
-                //lafName = Options.PLASTICXP_NAME;
             } else {
                 // Use The Looks L&F on pre-1.6 java on linux, since
                 // the pre 1.6 GTK L&F did not work that well
@@ -55,14 +51,18 @@ public class Main {
                 //lafName = "com.birosoft.liquid.LiquidLookAndFeel";
                 //lafName = "org.jvnet.substance.SubstanceLookAndFeel";
                 //lafName = UIManager.getCrossPlatformLookAndFeelClassName();
-                UIManager.setLookAndFeel(lafName);
+                //UIManager.setLookAndFeel(lafName);
                 //SubstanceLookAndFeel.setCurrentTheme(new SubstanceSteelBlueTheme());
                 //SubstanceLookAndFeel.setCurrentGradientPainter(new SpecularGradientPainter());
                 //SubstanceLookAndFeel.setCurrentButtonShaper(new ClassicButtonShaper());
             }
+            
             if (lafName != null) {
                 System.out.println("Using " + lafName + " look & feel");
                 UIManager.setLookAndFeel(lafName);
+                if (lafName.startsWith("com.jgoodies")) {
+                    Options.setUseNarrowButtons(false);
+                }
             }
             
         } catch (Exception e) {}
