@@ -13,11 +13,6 @@ import net.roydesign.app.Application;
 import net.roydesign.mac.MRJAdapter;
 import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.button.ClassicButtonShaper;
-import org.jvnet.substance.painter.SpecularGradientPainter;
-import org.jvnet.substance.painter.WaveGradientPainter;
-import org.jvnet.substance.theme.SubstanceSteelBlueTheme;
 
 
 /**
@@ -56,13 +51,12 @@ public class Main {
                 //SubstanceLookAndFeel.setCurrentGradientPainter(new SpecularGradientPainter());
                 //SubstanceLookAndFeel.setCurrentButtonShaper(new ClassicButtonShaper());
             }
-            
+            if (lafName.startsWith("com.jgoodies")) {
+                Options.setUseNarrowButtons(false);
+            }
             if (lafName != null) {
                 System.out.println("Using " + lafName + " look & feel");
                 UIManager.setLookAndFeel(lafName);
-                if (lafName.startsWith("com.jgoodies")) {
-                    Options.setUseNarrowButtons(false);
-                }
             }
             
         } catch (Exception e) {}
