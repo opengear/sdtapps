@@ -300,6 +300,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         gatewayList.setRootVisible(false);
+        gatewayList.setRowHeight(22);
         gatewayList.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 gatewayListValueChanged(evt);
@@ -318,7 +319,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
-        jToolBar1.setMargin(new java.awt.Insets(0, 5, 0, 0));
+        jToolBar1.setMargin(new java.awt.Insets(0, 2, 0, 0));
         addGatewayButton.setText("gw");
         addGatewayButton.setFocusable(false);
         addGatewayButton.setMargin(new java.awt.Insets(5, 5, 5, 5));
