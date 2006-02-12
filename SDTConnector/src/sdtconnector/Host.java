@@ -46,11 +46,17 @@ public class Host {
     public boolean equals(Object obj) {
         return address.equals(((Host) obj).getAddress());
     }
-    
+    public int hashCode() {
+        if (_hashCode == 0) {
+            _hashCode = address.hashCode();
+        }
+        return _hashCode;
+    }
     private String address = "";
     private String description = "";
     public boolean telnet = false;
     public boolean www = false;
     public boolean vnc = false;
     public boolean rdp = false;
+    private int _hashCode = 0;
 }

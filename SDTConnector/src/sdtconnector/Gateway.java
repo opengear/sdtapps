@@ -75,6 +75,12 @@ public class Gateway {
     public void addHost(Host host) {
         hostList.add(host);
     }
+    public int hashCode() {
+        if (_hashCode == 0) {
+            _hashCode = address.hashCode();
+        }
+        return _hashCode;
+    }
     public void removeHost(String address) {
         ListIterator it;
         for (it = hostList.listIterator(); it.hasNext(); ) {
@@ -109,4 +115,6 @@ public class Gateway {
     private String password = "";
     private String description = "";
     private EventList hostList = new BasicEventList();
+
+    private int _hashCode = 0;
 }
