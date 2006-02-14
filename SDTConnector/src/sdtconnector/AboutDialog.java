@@ -30,7 +30,7 @@ public class AboutDialog extends javax.swing.JDialog {
               //  + "<font face=\"Verdana,Helvetica,Arial\">"
                 + "Copyright (c) 2006 <a href=\"http://www.opengear.com\">Opengear</a>"
                 + "</font></center></body></html>");
-        closeButton.setIcon(IconLoader.getMenuIcon("button_ok"));
+        closeButton.setIcon(IconLoader.getButtonIcon("ok"));
         pack();
     }
     private Image getImage(String path) {

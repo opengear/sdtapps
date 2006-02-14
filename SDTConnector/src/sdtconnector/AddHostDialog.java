@@ -59,8 +59,8 @@ public class AddHostDialog extends javax.swing.JDialog {
         webCheckbox.addKeyListener(keyListener);
         rdpCheckbox.addKeyListener(keyListener);
         vncCheckbox.addKeyListener(keyListener);
-        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
-        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
+        okButton.setIcon(IconLoader.getButtonIcon("ok"));
+        cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         //
         // Make it so the contents of text fields are selected when they are clicked
         //

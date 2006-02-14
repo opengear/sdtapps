@@ -59,8 +59,8 @@ public class GatewayDialog extends javax.swing.JDialog {
             }
         };
         addKeyListener(keyListener);
-        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
-        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
+        okButton.setIcon(IconLoader.getButtonIcon("ok"));
+        cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         addressField.addKeyListener(keyListener);
         sshPortField.addKeyListener(keyListener);
         usernameField.addKeyListener(keyListener);

@@ -53,6 +53,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import static sdtconnector.IconLoader.getIcon;
 import static sdtconnector.IconLoader.getMenuIcon;
 import static sdtconnector.IconLoader.getToolbarIcon;
+import static sdtconnector.IconLoader.getLargeIcon;
 
 /**
  *
@@ -63,7 +64,7 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        setIconImage(getMenuIcon("gateway").getImage());
+        setIconImage(getIcon("16x16", "gateway").getImage());
         
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -133,10 +134,10 @@ public class MainWindow extends javax.swing.JFrame {
         editButton.setText("");
         deleteButton.setIcon(getToolbarIcon("delete"));
         deleteButton.setText("");
-        telnetButton.setIcon(getIcon("48x48/telnet.png"));
-        webButton.setIcon(getIcon("48x48/www.png"));
-        rdpButton.setIcon(getIcon("48x48/tsclient.png"));
-        vncButton.setIcon(getIcon("48x48/vnc.png"));
+        telnetButton.setIcon(getLargeIcon("telnet"));
+        webButton.setIcon(getLargeIcon("www"));
+        rdpButton.setIcon(getLargeIcon("tsclient"));
+        vncButton.setIcon(getLargeIcon("vnc"));
         // Disable edit/delete actions on an empty list
         if (gatewayList.getSelectionPath() == null) {
             newHostAction.setEnabled(false);

@@ -28,8 +28,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         initComponents();
         rdpField.setText(Settings.getProperty("rdp.path"));
         vncField.setText(Settings.getProperty("vnc.path"));
-        okButton.setIcon(IconLoader.getMenuIcon("button_ok"));
-        cancelButton.setIcon(IconLoader.getMenuIcon("button_cancel"));
+        okButton.setIcon(IconLoader.getButtonIcon("ok"));
+        cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         pack();
     }
     
@@ -189,7 +189,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 10, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 12, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cancelButton)
                     .add(okButton))
