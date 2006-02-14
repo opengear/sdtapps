@@ -35,32 +35,34 @@ public class IconLoader {
             return new ImageIcon(Toolkit.getDefaultToolkit().getImage(path));
         }
     }
-    public static Icon getMenuIcon(String name) {
+    private static Icon getIcon(GtkIcon.Size gtksize, String name) {
         if (isGTK()) {
-            Icon ico = GtkIcon.getIcon(name, GtkIcon.Size.MENU);
+            Icon ico = GtkIcon.getIcon(name, gtksize);
             if (ico != null) {
                 return ico;
             }
         }
-        return getIcon("16x16", name);
+        switch (gtksize) {
+            case MENU:
+            case BUTTON:
+            case SMALL_TOOLBAR:
+                return getIcon("16x16", name);
+            case LARGE_TOOLBAR:
+                return getIcon("22x22", name);
+            default:
+                break;
+        }
+        return null;
+    }
+    public static Icon getMenuIcon(String name) {
+        return getIcon(GtkIcon.Size.MENU, name);
     }
     public static Icon getButtonIcon(String name) {
-        if (isGTK()) {
-            Icon ico = GtkIcon.getIcon(name, GtkIcon.Size.BUTTON);
-            if (ico != null) {
-                return ico;
-            }
-        }
-        return getIcon("16x16", name);
+        return getIcon(GtkIcon.Size.BUTTON, name);
+        
     }
     public static Icon getToolbarIcon(String name) {
-        if (isGTK()) {
-            Icon ico = GtkIcon.getIcon(name, GtkIcon.Size.LARGE_TOOLBAR);
-            if (ico != null) {
-                return ico;
-            }
-        }
-        return getIcon("22x22", name);
+        return getIcon(GtkIcon.Size.LARGE_TOOLBAR, name);
     }
     public static Icon getLargeIcon(String name) {
         return getIcon("48x48", name);
