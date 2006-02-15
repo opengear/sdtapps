@@ -6,6 +6,8 @@
 package sdtconnector;
 import java.awt.Dimension;
 import javax.swing.JFrame;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.LookUtils;
@@ -28,6 +30,10 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        final SplashWindow splash = new SplashWindow("images/opengear-splash.png");
+        if (!OS.isWindows()) {
+            splash.setVisible(true);
+        }
         // Initialise the L&F
         try {
             String lafName = System.getProperty("swing.defaultlaf");
@@ -67,7 +73,12 @@ public class Main {
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);
         }
-        
+        // Close the splash window after everything is up and initialised
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                splash.setVisible(false);
+            }
+        });
         window.setVisible(true);
     }
     

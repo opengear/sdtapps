@@ -17,4 +17,10 @@
     <maxHeapSize>0</maxHeapSize>
     <args></args>
   </jre>
+  <splash>
+    <file>images/opengear-splash.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>10</timeout>
+    <timeoutErr>false</timeoutErr>
+  </splash>
 </launch4jConfig>
