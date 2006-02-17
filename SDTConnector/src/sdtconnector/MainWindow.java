@@ -8,6 +8,11 @@ package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
+import sdtconnector.Gateway;
+import sdtconnector.GatewayConnection;
+import sdtconnector.LoginDialog;
+import com.opengear.util.SwingExecutorService;
+import com.opengear.util.SwingInvocationProxy;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -50,10 +55,10 @@ import org.jdesktop.swingx.JXLoginPanel;
 import org.jdesktop.swingx.event.ProgressEvent;
 import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
-import static sdtconnector.IconLoader.getIcon;
-import static sdtconnector.IconLoader.getMenuIcon;
-import static sdtconnector.IconLoader.getToolbarIcon;
-import static sdtconnector.IconLoader.getLargeIcon;
+import static com.opengear.util.IconLoader.getIcon;
+import static com.opengear.util.IconLoader.getMenuIcon;
+import static com.opengear.util.IconLoader.getToolbarIcon;
+import static com.opengear.util.IconLoader.getLargeIcon;
 
 /**
  *

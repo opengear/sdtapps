@@ -4,6 +4,7 @@
  */
 
 package sdtconnector;
+import com.opengear.ui.SplashWindow;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JWindow;

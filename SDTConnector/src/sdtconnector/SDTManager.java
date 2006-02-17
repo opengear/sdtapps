@@ -11,6 +11,7 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import sdtconnector.Gateway;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;

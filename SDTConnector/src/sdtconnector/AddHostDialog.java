@@ -6,6 +6,7 @@
 
 package sdtconnector;
 
+import com.opengear.util.IconLoader;
 import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;

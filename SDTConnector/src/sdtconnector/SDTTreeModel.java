@@ -12,6 +12,7 @@ package sdtconnector;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import sdtconnector.Gateway;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

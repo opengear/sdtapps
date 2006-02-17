@@ -6,6 +6,8 @@
 
 package sdtconnector;
 
+import sdtconnector.Gateway;
+import com.opengear.util.IconLoader;
 import java.awt.Component;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
