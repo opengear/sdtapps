@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import static com.opengear.util.ImageLoader.getImage;
 
 /**
  *
@@ -51,14 +52,7 @@ public class LoginDialog extends javax.swing.JDialog {
         pack();
         requestFocus(true);
     }
-    private Image getImage(String path) {
-        URL url = getClass().getResource("/images/" + path);
-        if (url != null) {
-            return new ImageIcon(url).getImage();
-        } else {
-            return getToolkit().getImage("images/" + path);
-        }
-    }
+ 
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
     public int getReturnStatus() {
         return returnStatus;

@@ -7,6 +7,7 @@
 package sdtconnector;
 
 import com.opengear.util.IconLoader;
+import com.opengear.util.ImageLoader;
 import java.awt.Image;
 import java.net.URL;
 import javax.swing.ImageIcon;
@@ -25,7 +26,7 @@ public class AboutDialog extends javax.swing.JDialog {
     public AboutDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        imagePanel.setImage(getImage("opengear.gif"));
+        imagePanel.setImage(ImageLoader.getImage("opengear.gif"));
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
               //  + "<font face=\"Verdana,Helvetica,Arial\">"
@@ -34,14 +35,7 @@ public class AboutDialog extends javax.swing.JDialog {
         closeButton.setIcon(IconLoader.getButtonIcon("ok"));
         pack();
     }
-    private Image getImage(String path) {
-        URL url = getClass().getResource("/images/" + path);
-        if (url != null) {
-            return new ImageIcon(url).getImage();
-        } else {
-            return getToolkit().getImage("images/" + path);
-        }
-    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
