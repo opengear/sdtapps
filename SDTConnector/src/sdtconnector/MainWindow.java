@@ -178,6 +178,7 @@ public class MainWindow extends javax.swing.JFrame {
         String lafName = UIManager.getLookAndFeel().getClass().getName();
         if (lafName.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
             descriptionScrollPane.setBorder(null);
+            gatewayList.setRowHeight(24); // GTK needs a larger row height
         }
         pack();
     }
