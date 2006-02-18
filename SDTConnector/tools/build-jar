@@ -1,4 +1,5 @@
 #!/bin/sh
+CP=$1
 ROOTDIR=$PWD
 DISTDIR=$PWD/dist
 OUTJAR=$DISTDIR/sdtcon.jar
@@ -8,7 +9,13 @@ rm -rf tmp
 mkdir tmp
 cd tmp
 mkdir main
+
 cp -al $DISTDIR/lib lib
+
+# Copy the classpath 
+for f in $(echo $CP | sed s/:/\ /g); do
+    cp -avl $ROOTDIR/$f lib
+done
 cp -al $DISTDIR/SDTConnector.jar main/main.jar
 
 jar xf $ROOTDIR/tools/one-jar-boot-0.95.jar
