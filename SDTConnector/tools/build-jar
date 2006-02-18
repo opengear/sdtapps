@@ -8,7 +8,7 @@ cd $DISTDIR;
 rm -rf tmp
 mkdir tmp
 cd tmp
-mkdir main
+mkdir main lib
 
 cp -al $DISTDIR/lib lib
 
