@@ -87,7 +87,9 @@
             <include name="images/**/*.gif"/>
             <include name="images/**/*.png"/>
         </jar>
-        <exec executable="./tools/build-jar" resolveexecutable="true"/>
+        <exec executable="/bin/sh">
+            <arg file="./tools/build-jar"/>
+        </exec>
         <exec executable="launch4j">
             <arg file="launch4j.xml"/>
         </exec>
