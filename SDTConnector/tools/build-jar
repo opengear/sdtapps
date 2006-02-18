@@ -14,7 +14,7 @@ cp -al $DISTDIR/lib lib
 
 # Copy the classpath 
 for f in $(echo $CP | sed s/:/\ /g); do
-    cp -avl $ROOTDIR/$f lib
+    cp -al $ROOTDIR/$f lib
 done
 cp -al $DISTDIR/SDTConnector.jar main/main.jar
 
