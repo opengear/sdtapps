@@ -69,7 +69,7 @@
     <taskdef name="retroweaver"
         classname="com.rc.retroweaver.ant.RetroWeaverTask">
         <classpath>
-            <fileset dir="antlib" includes="**/*"/>            
+            <fileset dir="../antlib" includes="**/*"/>            
         </classpath>
     </taskdef>
     <!--
