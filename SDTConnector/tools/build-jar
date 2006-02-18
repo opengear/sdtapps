@@ -12,9 +12,9 @@ cp -al $DISTDIR/lib lib
 cp -al $DISTDIR/SDTConnector.jar main/main.jar
 
 jar xf $ROOTDIR/tools/one-jar-boot-0.95.jar
-jar -cfm $OUTJAR boot-manifest.mf .
+jar -cfm $OUTJAR $ROOTDIR/boot-manifest.mf .
 
 cp -al $ROOTDIR/classlib/quaqua*.jar lib
-jar -cfm $DISTDIR/sdtcon-mac.jar boot-manifest.mf .
+jar -cfm $DISTDIR/sdtcon-mac.jar $ROOTDIR/boot-manifest.mf .
 cd $DISTDIR
 rm -rf tmp
