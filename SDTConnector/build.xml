@@ -89,6 +89,7 @@
         </jar>
         <exec executable="/bin/sh">
             <arg file="./tools/build-jar"/>
+            <arg line="${javac.classpath}"/>
         </exec>
         <exec executable="launch4j">
             <arg file="launch4j.xml"/>
