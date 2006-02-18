@@ -72,6 +72,11 @@
             <fileset dir="../antlib" includes="**/*"/>            
         </classpath>
     </taskdef>
+    <property name="launch4j.dir" location="../launch4j"/>
+    <taskdef name="launch4j" 
+        classname="net.sf.launch4j.ant.Launch4jTask"
+        classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar">
+    </taskdef>
     <!--
     <taskdef name="jarbundler"
       classpath="antlib/jarbundler-1.4.jar" classname="com.loomcom.ant.tasks.jarbundler.JarBundler">
@@ -91,9 +96,8 @@
             <arg file="./tools/build-jar"/>
             <arg line="${javac.classpath}"/>
         </exec>
-        <exec executable="launch4j">
-            <arg file="launch4j.xml"/>
-        </exec>
+        <launch4j configFile="launch4j.xml"/>
+
         <!--
         <jarbundler dir="${dist.dir}"
                     name="SDTConnector 1.0"

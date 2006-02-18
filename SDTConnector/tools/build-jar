@@ -6,22 +6,20 @@ OUTJAR=$DISTDIR/sdtcon.jar
 
 cd $DISTDIR;
 rm -rf tmp
-mkdir tmp
+mkdir -p tmp tmp/main tmp/lib
 cd tmp
-mkdir main lib
-
-cp -al $DISTDIR/lib lib
+cp -al $DISTDIR/lib/*.jar ./lib
 
 # Copy the classpath 
 for f in $(echo $CP | sed s/:/\ /g); do
-    cp -al $ROOTDIR/$f lib
+    (cd $ROOTDIR; cp -afl $f $DISTDIR/tmp/lib)
 done
 cp -al $DISTDIR/SDTConnector.jar main/main.jar
 
 jar xf $ROOTDIR/tools/one-jar-boot-0.95.jar
-jar -cfm $OUTJAR $ROOTDIR/boot-manifest.mf .
+jar -cfm $OUTJAR boot-manifest.mf .
 
 cp -al $ROOTDIR/../classlib/quaqua*.jar lib
 jar -cfm $DISTDIR/sdtcon-mac.jar $ROOTDIR/boot-manifest.mf .
 cd $DISTDIR
-rm -rf tmp
+#rm -rf tmp
