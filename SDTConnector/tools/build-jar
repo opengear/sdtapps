@@ -22,4 +22,4 @@ jar -cfm $OUTJAR boot-manifest.mf .
 cp -al $ROOTDIR/../classlib/quaqua*.jar lib
 jar -cfm $DISTDIR/sdtcon-mac.jar $ROOTDIR/boot-manifest.mf .
 cd $DISTDIR
-#rm -rf tmp
+rm -rf tmp
