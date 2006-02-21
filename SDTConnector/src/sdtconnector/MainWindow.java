@@ -499,7 +499,11 @@ public class MainWindow extends javax.swing.JFrame {
     private void fileMenuExitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuExitItemActionPerformed
         setVisible(false);
         dispose();
-        System.exit(0);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                System.exit(0);
+            }
+        });        
     }//GEN-LAST:event_fileMenuExitItemActionPerformed
     
     private void gatewayListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMouseReleased
@@ -743,12 +747,12 @@ public class MainWindow extends javax.swing.JFrame {
         
         bgExec.execute(new Runnable() {
             public void run() {
-                if (conn.login()) {                    
+                if (conn.login()) {
                     String cmd = launcher.getCommand();
                     statusBar.setText("Launching " + cmd);
                     if (!launcher.launch()) {
                         statusBar.setText(cmd + " failed");
-                    }                    
+                    }
                 }
             }
         });
