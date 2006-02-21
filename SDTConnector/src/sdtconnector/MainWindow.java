@@ -8,6 +8,7 @@ package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
+import javax.swing.SwingUtilities;
 import sdtconnector.Gateway;
 import sdtconnector.GatewayConnection;
 import sdtconnector.LoginDialog;
@@ -742,8 +743,12 @@ public class MainWindow extends javax.swing.JFrame {
         
         bgExec.execute(new Runnable() {
             public void run() {
-                if (conn.login()) {
-                    launcher.launch();
+                if (conn.login()) {                    
+                    String cmd = launcher.getCommand();
+                    statusBar.setText("Launching " + cmd);
+                    if (!launcher.launch()) {
+                        statusBar.setText(cmd + " failed");
+                    }                    
                 }
             }
         });
@@ -763,13 +768,13 @@ public class MainWindow extends javax.swing.JFrame {
     
     private GatewayConnection getGatewayConnection(Gateway gw) {
         GatewayConnection conn = connections.get(gw.getAddress());
-        if (conn == null) {            
-            conn = new GatewayConnection(gw, 
+        if (conn == null) {
+            conn = new GatewayConnection(gw,
                     (GatewayConnection.Authentication) SwingInvocationProxy.create(
                     GatewayConnection.Authentication.class,
                     new GatewayAuth(gw)));
             conn.setListener((GatewayConnection.Listener) SwingInvocationProxy.create(
-                    GatewayConnection.Listener.class, new SSHListener(gw)));          
+                    GatewayConnection.Listener.class, new SSHListener(gw)));
             connections.put(gw.getAddress(), conn);
         }
         return conn;

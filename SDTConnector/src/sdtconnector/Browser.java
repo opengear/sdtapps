@@ -23,7 +23,7 @@ public class Browser extends Launcher {
     public Browser(String host, int port) {
         super(host, port);
     }
-    public void launch(String host, int port) {
+    public String getCommand() {
         try {
             
             URL url = new URL("http", host, port, "/");
@@ -31,8 +31,9 @@ public class Browser extends Launcher {
             if (LookUtils.IS_OS_WINDOWS) {
                 browser = "rundll32 url.dll,FileProtocolHandler";
             }
-            Runtime.getRuntime().exec(browser + " " + url.toString());
+            return browser + " " + url.toString();
         } catch (MalformedURLException ex) {
-        } catch (IOException ex) { }
+            return "";
+        }
     }   
 }

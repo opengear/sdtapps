@@ -8,6 +8,8 @@
 
 package sdtconnector;
 
+import java.io.IOException;
+
 /**
  *
  */
@@ -38,16 +40,19 @@ public abstract class Launcher implements Runnable {
         return port;
     }
     public void run() {
-        launch(host, port);
+        launch();
     }
-    public void launch() {
-        run();
+    public boolean launch() {
+        try {
+            Runtime.getRuntime().exec(getCommand());            
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }        
     }
-    protected abstract void launch(String host, int port);
+    public abstract String getCommand();
     
     protected String host;
     protected int port;
-    
-    
     
 }

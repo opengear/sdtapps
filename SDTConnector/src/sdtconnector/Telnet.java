@@ -23,15 +23,11 @@ public class Telnet extends Launcher {
     public Telnet(String host, int port) {
         super(host, port);
     }
-    public void launch(String host, int port) {
-        String cmd = "";
+    public String getCommand() {
         if (LookUtils.IS_OS_WINDOWS) {
-            cmd = "cmd /c start telnet " + host + " " + port;            
+            return "cmd /c start telnet " + host + " " + port;            
         } else {
-            cmd = "xterm -e telnet " + host + " " + port;
+            return "xterm -e telnet " + host + " " + port;
         }
-        try {
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException ex) {}
     }
 }

@@ -11,6 +11,7 @@ package sdtconnector;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
+import org.jdesktop.swingx.util.OS;
 
 /**
  *
@@ -23,11 +24,12 @@ public class VNCViewer extends Launcher {
     public VNCViewer(String host, int port) {
         super(host, port);
     }
-    public void launch(String host, int port) {
+    public String getCommand() {
         String vncpath = Settings.getProperty("vnc.path");
-        String cmd = vncpath + " /nostatus " + host + "::" + port;
-        try {
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException ex) { }        
-    }
+        if (OS.isWindows()) {
+            return vncpath + " /nostatus " + host + "::" + port;
+        } else {
+            return vncpath + " " + host + ":" + port;
+        }
+    }   
 }

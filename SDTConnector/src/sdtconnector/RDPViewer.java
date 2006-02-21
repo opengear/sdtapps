@@ -21,17 +21,12 @@ public class RDPViewer extends Launcher {
      */
     public RDPViewer() {
     }
-    public void launch(String host, int port) {
+    public String getCommand() {
         String rdppath = Settings.getProperty("rdp.path");
-        String cmd = "";
         if (OS.isWindows()) {
-            cmd = rdppath + " /console /v:" + host + ":" + port;
+            return rdppath + " /console /v:" + host + ":" + port;
         } else {
-            cmd = rdppath + " " + host + ":" + port;
+            return rdppath + " " + host + ":" + port;
         }
-                
-        try {
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException ex) { }        
     }
 }
