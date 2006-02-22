@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- *
- */
+
 public class Browser extends Launcher {
     
     /** Creates a new instance of Browser */

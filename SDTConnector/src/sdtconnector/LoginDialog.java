@@ -14,10 +14,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import static com.opengear.util.ImageLoader.getImage;
 
-/**
- *
- * @author  wayne
- */
+
 public class LoginDialog extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;

@@ -2,17 +2,11 @@
  * Host.java
  *
  * Created on January 18, 2006, 4:02 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
 
-/**
- *
- * @author wayne
- */
+
 public class Host {
     
     /** Creates a new instance of Host */

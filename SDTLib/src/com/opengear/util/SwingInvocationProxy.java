@@ -32,10 +32,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import javax.swing.SwingUtilities;
 
-/**
- *
- * @author wayne
- */
 public class SwingInvocationProxy {
     
     /** Creates a new instance of SwingInvocationProxy */

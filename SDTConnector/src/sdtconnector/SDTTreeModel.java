@@ -3,8 +3,6 @@
  *
  * Created on January 20, 2006, 6:43 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -22,10 +20,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-/**
- *
- * @author wayne
- */
+
 public class SDTTreeModel implements TreeModel {
     
     /** Creates a new instance of SDTTreeModel */

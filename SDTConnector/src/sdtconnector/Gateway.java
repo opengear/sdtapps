@@ -19,10 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-/**
- *
- * @author wayne
- */
+
 public class Gateway {
     
     /**

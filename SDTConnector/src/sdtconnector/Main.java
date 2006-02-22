@@ -18,9 +18,6 @@ import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
 
 
-/**
- *
- */
 public class Main {
     
     /** Creates a new instance of Main */

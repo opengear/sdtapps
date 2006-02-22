@@ -61,10 +61,7 @@ import static com.opengear.util.IconLoader.getMenuIcon;
 import static com.opengear.util.IconLoader.getToolbarIcon;
 import static com.opengear.util.IconLoader.getLargeIcon;
 
-/**
- *
- * @author  wayne
- */
+
 public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */

@@ -13,10 +13,6 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.swingx.util.OS;
 
-/**
- *
- * @author  wayne
- */
 public class PreferencesDialog extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;

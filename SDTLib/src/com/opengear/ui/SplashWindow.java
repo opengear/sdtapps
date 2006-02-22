@@ -2,9 +2,6 @@
  * SplashWindow.java
  *
  * Created on February 15, 2006, 3:20 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.opengear.ui;
@@ -21,10 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-/**
- *
- * @author wayne
- */
+
 public class SplashWindow extends javax.swing.JWindow {
     
     /** Creates a new instance of SplashWindow */

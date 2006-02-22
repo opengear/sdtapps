@@ -1,9 +1,6 @@
 /*
  * VNCViewer.java
  *
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -13,9 +10,6 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
 
-/**
- *
- */
 public class VNCViewer extends Launcher {
     
     /** Creates a new instance of VNCViewer */

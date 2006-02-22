@@ -1,10 +1,5 @@
 /*
  * GatewayConnection.java
- *
- * Created on January 20, 2006, 3:50 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -41,10 +36,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 
-/**
- *
- * @author wayne
- */
+
 public class GatewayConnection {
     
     /** Creates a new instance of GatewayConnection */

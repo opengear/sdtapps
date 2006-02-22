@@ -2,9 +2,6 @@
  * SDTManager.java
  *
  * Created on January 18, 2006, 4:19 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -17,10 +14,6 @@ import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-/**
- *
- * @author wayne
- */
 public class SDTManager {
     static {
         init();

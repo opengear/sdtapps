@@ -14,10 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 
-/**
- *
- * @author  wayne
- */
+
 public class AboutDialog extends javax.swing.JDialog {
     
     /**

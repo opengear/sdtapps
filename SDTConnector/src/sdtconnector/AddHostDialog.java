@@ -16,10 +16,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-/**
- *
- * @author  wayne
- */
+
 public class AddHostDialog extends javax.swing.JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;

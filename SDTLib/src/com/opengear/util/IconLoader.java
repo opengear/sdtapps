@@ -2,9 +2,6 @@
  * IconLoader.java
  *
  * Created on February 7, 2006, 3:41 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.opengear.util;
@@ -17,10 +14,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
-/**
- *
- * @author wayne
- */
 public class IconLoader {
     
     /** Creates a new instance of IconLoader */

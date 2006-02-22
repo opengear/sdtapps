@@ -1,9 +1,6 @@
 /*
  * Settings.java
  *
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package sdtconnector;
@@ -11,9 +8,6 @@ package sdtconnector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-/**
- *
- */
 public class Settings {
     static {
         settings = Preferences.userRoot().node("opengear/sdtconnector/settings");

@@ -1,9 +1,6 @@
 /*
  * SwingExecutorService.java
  *
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.opengear.util;
@@ -15,9 +12,6 @@ import edu.emory.mathcs.backport.java.util.concurrent.AbstractExecutorService;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
-/**
- *
- */
 public class SwingExecutorService extends AbstractExecutorService {
     
     /** Creates a new instance of SwingExecutorService */
