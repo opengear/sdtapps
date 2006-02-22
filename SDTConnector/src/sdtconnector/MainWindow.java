@@ -319,6 +319,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         gatewayList.setRootVisible(false);
+        gatewayList.setRowHeight(20);
         gatewayList.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 gatewayListValueChanged(evt);
