@@ -272,7 +272,6 @@
         <Component class="javax.swing.JTree" name="gatewayList">
           <Properties>
             <Property name="rootVisible" type="boolean" value="false"/>
-            <Property name="rowHeight" type="int" value="22"/>
           </Properties>
           <Events>
             <EventHandler event="valueChanged" listener="javax.swing.event.TreeSelectionListener" parameters="javax.swing.event.TreeSelectionEvent" handler="gatewayListValueChanged"/>

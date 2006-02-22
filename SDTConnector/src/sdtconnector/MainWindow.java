@@ -319,7 +319,6 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         gatewayList.setRootVisible(false);
-        gatewayList.setRowHeight(22);
         gatewayList.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 gatewayListValueChanged(evt);
@@ -503,7 +502,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void run() {
                 System.exit(0);
             }
-        });        
+        });
     }//GEN-LAST:event_fileMenuExitItemActionPerformed
     
     private void gatewayListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gatewayListMouseReleased
@@ -616,8 +615,8 @@ public class MainWindow extends javax.swing.JFrame {
         Gateway gw = new Gateway();
         GatewayDialog dlg = new GatewayDialog(this, true, gw);
         dlg.setLocationRelativeTo(this);
-        dlg.setVisible(true);
         dlg.setTitle("New SDT Gateway");
+        dlg.setVisible(true);        
         if (dlg.getReturnStatus() == dlg.RET_OK) {
             SDTManager.addGateway(gw);
             TreePath path = new TreePath(new Object[] {
