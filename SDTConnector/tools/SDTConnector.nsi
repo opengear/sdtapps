@@ -6,7 +6,7 @@
 ;Include Modern UI
 
 
-  !define AppName "Opengear SDT Connector"
+  !define AppName "Opengear SDTConnector"
   !define ShortName "SDTConnector"
   !define Vendor "Opengear"
   !define MUI_BRANDINGTEXT "${AppName}"
