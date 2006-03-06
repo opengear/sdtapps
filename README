@@ -1,0 +1,71 @@
+README
+
+Version: 1.0
+Date   : March 7, 2006
+
+Index
+-----
+1. Introduction
+2. Dependencies
+3. Compiling
+4. Running
+5. License
+
+==========================================
+1.    Introduction
+==========================================
+This document attempts to provide a brief introduction using the
+Opengear SDT utility suite source-code.
+
+==========================================
+2.    Dependencies
+==========================================
+To build the Opengear SDT utility it is recommended you have already
+installed the following.
+
+- A Java Development Kit 1.4 or newer.
+  (The Sun JDK1.5 is recommended, but anything newer should work)
+
+- The Apache Ant build tool.
+  (The latest Ant can be sourced from http://ant.apache.org/.)
+
+=========================================
+3.    Compiling
+=========================================
+The quickest way to get started is to change into the SDTConnector 
+sub-directory and compile the Jar File as follows.
+
+# cd SDTConnector
+# ant jar
+
+This will produce a dist/ directory which includes the file: 
+sdtcon.jar
+
+=========================================
+4.    Running
+=========================================
+
+The Jar file can be invoked from the command line with:
+
+# java -jar dist/sdtcon.jar
+
+=========================================
+5.    License
+=========================================
+
+All of the files in this archive are licensed under the terms of 
+version 2 of the GNU General Public License as published by the Free 
+Software Foundation.
+
+GPL LICENSE SUMMARY
+
+Copyright(c) 2005 - 2006 Intel Corporation. All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of version 2 of the GNU General Public License as
+published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
