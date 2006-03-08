@@ -519,7 +519,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_rdpButtonActionPerformed
     
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        JDialog dlg = new AboutDialog(this, true);
+        JDialog dlg = new AboutDialog(this, true, SDTConnector.VERSION);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
     }//GEN-LAST:event_aboutMenuItemActionPerformed

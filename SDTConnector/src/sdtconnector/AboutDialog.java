@@ -20,15 +20,17 @@ public class AboutDialog extends javax.swing.JDialog {
     /**
      * Creates new form AboutDialog
      */
-    public AboutDialog(java.awt.Frame parent, boolean modal) {
+    public AboutDialog(java.awt.Frame parent, boolean modal, String version) {
         super(parent, modal);
         initComponents();
         imagePanel.setImage(ImageLoader.getImage("opengear.gif"));
+        versionField.setText(version);
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
-              //  + "<font face=\"Verdana,Helvetica,Arial\">"
+                + "<font face=\"Verdana,Helvetica,Arial\">"
                 + "Copyright (c) 2006 <a href=\"http://www.opengear.com\">Opengear</a>"
-                + "</font></center></body></html>");
+                + "</font></center>" 
+                + "</body></html>");
         closeButton.setIcon(IconLoader.getButtonIcon("ok"));
         pack();
     }
@@ -51,6 +53,8 @@ public class AboutDialog extends javax.swing.JDialog {
         closeButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         textPane = new javax.swing.JTextPane();
+        versionLabel = new javax.swing.JLabel();
+        versionField = new javax.swing.JLabel();
         imagePanel = new org.jdesktop.swingx.JXImagePanel();
 
         jScrollPane1.setBorder(null);
@@ -91,6 +95,10 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jScrollPane2.setViewportView(textPane);
 
+        versionLabel.setText("Version:");
+
+        versionField.setText("0.0");
+
         org.jdesktop.layout.GroupLayout jXPanel5Layout = new org.jdesktop.layout.GroupLayout(jXPanel5);
         jXPanel5.setLayout(jXPanel5Layout);
         jXPanel5Layout.setHorizontalGroup(
@@ -98,10 +106,13 @@ public class AboutDialog extends javax.swing.JDialog {
             .add(jXPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jXPanel5Layout.createSequentialGroup()
-                        .add(241, 241, 241)
-                        .add(closeButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
+                    .add(jXPanel5Layout.createSequentialGroup()
+                        .add(versionLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(versionField)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 171, Short.MAX_VALUE)
+                        .add(closeButton))
+                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jXPanel5Layout.setVerticalGroup(
@@ -110,7 +121,10 @@ public class AboutDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 14, Short.MAX_VALUE)
-                .add(closeButton)
+                .add(jXPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(versionLabel)
+                    .add(versionField)
+                    .add(closeButton))
                 .addContainerGap())
         );
 
@@ -125,7 +139,7 @@ public class AboutDialog extends javax.swing.JDialog {
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
             imagePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 338, Short.MAX_VALUE)
+            .add(0, 343, Short.MAX_VALUE)
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -183,7 +197,7 @@ public class AboutDialog extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AboutDialog(new javax.swing.JFrame(), true).setVisible(true);
+                new AboutDialog(new javax.swing.JFrame(), true, "1.0").setVisible(true);
             }
         });
     }
@@ -194,6 +208,8 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextPane textPane;
+    private javax.swing.JLabel versionField;
+    private javax.swing.JLabel versionLabel;
     // End of variables declaration//GEN-END:variables
     
 }

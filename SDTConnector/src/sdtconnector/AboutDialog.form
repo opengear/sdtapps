@@ -108,11 +108,14 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="241" pref="241" max="241" attributes="0"/>
-                              <Component id="closeButton" pref="69" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="versionLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="versionField" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="171" max="32767" attributes="0"/>
+                              <Component id="closeButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane2" alignment="0" pref="310" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="0" pref="315" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -124,7 +127,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="89" max="-2" attributes="0"/>
                       <EmptySpace pref="14" max="32767" attributes="0"/>
-                      <Component id="closeButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="versionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="versionField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="closeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -167,6 +174,16 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JLabel" name="versionLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Version:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="versionField">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="0.0"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="org.jdesktop.swingx.JXImagePanel" name="imagePanel">
@@ -182,7 +199,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="338" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="343" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
