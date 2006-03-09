@@ -92,6 +92,12 @@
             <include name="images/**/*.gif"/>
             <include name="images/**/*.png"/>
         </jar>
+        <chmod perm="ugo+rx">
+            <fileset dir="${launch4j.dir}/bin">
+                <include name="**/*"/>
+            </fileset>
+        </chmod>
+        <chmod file="./tools/build-jar" perm="ugo+rx"/>
         <exec executable="/bin/sh">
             <arg file="./tools/build-jar"/>
             <arg line="${javac.classpath}"/>
