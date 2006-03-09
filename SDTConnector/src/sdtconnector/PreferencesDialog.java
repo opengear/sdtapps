@@ -9,12 +9,20 @@ package sdtconnector;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import com.opengear.util.IconLoader;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.File;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterPipeline;
+import org.jdesktop.swingx.decorator.RolloverHighlighter;
 import org.jdesktop.swingx.util.OS;
 
 public class PreferencesDialog extends javax.swing.JDialog {
@@ -34,6 +42,12 @@ public class PreferencesDialog extends javax.swing.JDialog {
         addPrivateKeyButton.setIcon(IconLoader.getButtonIcon("add"));
         removePrivateKeyButton.setIcon(IconLoader.getButtonIcon("remove"));
         privateKeyList.addAll(Settings.getPropertyList("PrivateKeyPaths"));
+        privateKeyJList.setModel(new ca.odell.glazedlists.swing.EventListModel(privateKeyList));
+        privateKeyJList.setRolloverEnabled(true);
+                
+        privateKeyJList.setHighlighters(new HighlighterPipeline(new Highlighter[] {
+            Highlighter.notePadBackground
+        }));
         pack();
     }
     
@@ -62,10 +76,10 @@ public class PreferencesDialog extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         vncBrowseButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        privateKeyJList = new JList(new ca.odell.glazedlists.swing.EventListModel(privateKeyList));
         addPrivateKeyButton = new javax.swing.JButton();
         removePrivateKeyButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        privateKeyJList = new org.jdesktop.swingx.JXList();
 
         setTitle("Preferences");
         setModal(true);
@@ -130,7 +144,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
                 .add(rdpField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 7, Short.MAX_VALUE)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(rdpBrowseButton)
                     .add(jLabel2))
@@ -168,7 +182,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
                 .add(vncField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 7, Short.MAX_VALUE)
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(vncBrowseButton)
                     .add(jLabel1))
@@ -192,8 +206,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
         );
         jTabbedPane1.addTab("Remote Desktop Clients", jPanel3);
 
-        jScrollPane1.setViewportView(privateKeyJList);
-
         addPrivateKeyButton.setText("Add");
         addPrivateKeyButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         addPrivateKeyButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -213,6 +225,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 removePrivateKeyActionPerformed(evt);
             }
         });
+
+        jScrollPane1.setViewportView(privateKeyJList);
 
         org.jdesktop.layout.GroupLayout jPanel4Layout = new org.jdesktop.layout.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -375,7 +389,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton okButton;
-    private javax.swing.JList privateKeyJList;
+    private org.jdesktop.swingx.JXList privateKeyJList;
     private javax.swing.JButton rdpBrowseButton;
     private javax.swing.JTextField rdpField;
     private javax.swing.JButton removePrivateKeyButton;

@@ -21,6 +21,8 @@ public class LoginDialog extends javax.swing.JDialog {
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
     
+    public static final int PASSWORD = 1;
+    public static final int PASSPHRASE = 2;
     /** Creates new form LoginDialog */
     public LoginDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -54,6 +56,11 @@ public class LoginDialog extends javax.swing.JDialog {
     public int getReturnStatus() {
         return returnStatus;
     }
+    public void setMode(int mode) {
+        if (mode == PASSPHRASE) {
+            passwordLabel.setText("Pass phrase");
+        }
+    }
     public String getUsername() {
         return usernameField.getText();
     }
@@ -85,7 +92,7 @@ public class LoginDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         usernameField = new javax.swing.JTextField();
         passwordField = new javax.swing.JPasswordField();
-        jLabel3 = new javax.swing.JLabel();
+        passwordLabel = new javax.swing.JLabel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         imagePanel = new org.jdesktop.swingx.JXImagePanel();
@@ -106,8 +113,8 @@ public class LoginDialog extends javax.swing.JDialog {
         usernameField.setEditable(false);
         usernameField.setFocusable(false);
 
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Password");
+        passwordLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        passwordLabel.setText("Password");
 
         org.jdesktop.layout.GroupLayout jXPanel2Layout = new org.jdesktop.layout.GroupLayout(jXPanel2);
         jXPanel2.setLayout(jXPanel2Layout);
@@ -121,7 +128,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(usernameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 131, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(jXPanel2Layout.createSequentialGroup()
-                        .add(jLabel3)
+                        .add(passwordLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(passwordField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 131, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -135,7 +142,7 @@ public class LoginDialog extends javax.swing.JDialog {
                     .add(usernameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(22, 22, 22)
                 .add(jXPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel3)
+                    .add(passwordLabel)
                     .add(passwordField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -263,10 +270,10 @@ public class LoginDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private org.jdesktop.swingx.JXImagePanel imagePanel;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private org.jdesktop.swingx.JXPanel jXPanel2;
     private javax.swing.JButton okButton;
     private javax.swing.JPasswordField passwordField;
+    private javax.swing.JLabel passwordLabel;
     private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
     

@@ -27,7 +27,7 @@ public class Settings {
     public static void setProperty(String id, String value) {
         settings.put(id, value);
     }
-    public static Collection getPropertyList(String id) {
+    public static Collection<String> getPropertyList(String id) {
         Preferences list = settings.node(id);
         try {
             List<String> ret = new LinkedList<String>();

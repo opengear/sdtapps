@@ -702,7 +702,6 @@ public class MainWindow extends javax.swing.JFrame {
             Host host = (Host) path.getPathComponent(2);
             
             String oldAddress = host.getAddress();
-            System.out.println("Editing host " + oldAddress);
             dlg = new AddHostDialog(this, true, host);
             dlg.setTitle("Edit SDT Host");
             dlg.setLocationRelativeTo(this);
@@ -824,16 +823,23 @@ public class MainWindow extends javax.swing.JFrame {
             password = gw.getPassword();
             username = gw.getUsername();
         }
-        public boolean promptAuthentication() {
+        private LoginDialog showDialog(String title, int mode) {
             LoginDialog dlg = new LoginDialog(MainWindow.this, true);
+            dlg.setTitle(title);
             dlg.setUsername(gateway.getUsername());
             dlg.setPassword(password);
+            dlg.setMode(mode);
             dlg.setLocationRelativeTo(MainWindow.this);
             if (LookUtils.IS_JAVA_5_OR_LATER) {
                 dlg.setLocation(WindowUtils.getPointForCentering(dlg));
             }
             dlg.pack();
             dlg.setVisible(true);
+            return dlg;
+        }
+        public boolean promptAuthentication(String prompt) {
+            LoginDialog dlg = showDialog(prompt, LoginDialog.PASSWORD);
+          
             if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
                 return false;
             }
@@ -841,7 +847,15 @@ public class MainWindow extends javax.swing.JFrame {
             username = dlg.getUsername();
             return true;
         }
-        
+        public boolean promptPassphrase(String prompt) {
+            LoginDialog dlg = showDialog(prompt, LoginDialog.PASSPHRASE);
+            if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
+                return false;
+            }
+            passphrase = dlg.getPassword();
+            username = dlg.getUsername();
+            return true;
+        }
         public String getUsername() {
             return username;
         }
@@ -849,10 +863,13 @@ public class MainWindow extends javax.swing.JFrame {
         public String getPassword() {
             return password;
         }
+        public String getPassphrase() {
+            return passphrase;
+        }
         Gateway gateway;
-        String passphrase;
-        String username;
-        String password;
+        String passphrase = "";
+        String username = "";
+        String password = "";
     }
     class SSHListener implements GatewayConnection.Listener {
         public SSHListener(Gateway gw) {
