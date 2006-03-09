@@ -118,6 +118,8 @@ class GtkIcon {
         icons.put("delete", "delete");
         icons.put("fileopen", "open");
         icons.put("exit", "quit");
+        icons.put("add", "add");
+        icons.put("remove", "remove");
         gtkIcons = icons;
     }
     private static Map<String, String> gtkIcons;
