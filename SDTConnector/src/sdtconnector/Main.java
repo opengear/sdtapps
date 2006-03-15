@@ -6,7 +6,16 @@
 package sdtconnector;
 import com.opengear.ui.SplashWindow;
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.InvalidPreferencesFormatException;
+import java.util.prefs.Preferences;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -27,7 +36,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidPreferencesFormatException {
         final SplashWindow splash = new SplashWindow("images/opengear-splash.png");
         if (!OS.isWindows()) {
             splash.setVisible(true);
@@ -70,6 +79,28 @@ public class Main {
         MainWindow window = new MainWindow();
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);
+        }
+        File cwd = new File(System.getProperty("user.dir"));       
+        File preferences = new File(cwd, "preferences.xml");
+        try {
+            Preferences userRoot = Preferences.userRoot();
+            String prefsPath = "opengear/sdtconnector";
+            if (preferences.exists() && !userRoot.nodeExists(prefsPath)) {
+                try {
+                    Preferences.importPreferences(new FileInputStream(preferences));
+                    userRoot.node(prefsPath).sync();
+                } catch (FileNotFoundException ex) {               
+                } catch (IOException ex) {
+                } catch (InvalidPreferencesFormatException ex) {
+                }
+            }
+            // Only save the preferences to a file if it already exists
+            if (preferences.exists()) {
+                userRoot.node(prefsPath).exportSubtree(new FileOutputStream(preferences));
+            }
+        } catch (FileNotFoundException ex) {          
+        } catch (BackingStoreException ex) {
+        } catch (IOException ex) {
         }
         // Close the splash window after everything is up and initialised
         SwingUtilities.invokeLater(new Runnable() {
