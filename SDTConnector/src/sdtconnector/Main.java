@@ -82,26 +82,20 @@ public class Main {
         }
         File cwd = new File(System.getProperty("user.dir"));       
         File preferences = new File(cwd, "preferences.xml");
+        
+        Preferences userRoot = Preferences.userRoot();
+        String prefsPath = "opengear/sdtconnector";
         try {
-            Preferences userRoot = Preferences.userRoot();
-            String prefsPath = "opengear/sdtconnector";
             if (preferences.exists() && !userRoot.nodeExists(prefsPath)) {
-                try {
-                    Preferences.importPreferences(new FileInputStream(preferences));
-                    userRoot.node(prefsPath).sync();
-                } catch (FileNotFoundException ex) {               
-                } catch (IOException ex) {
-                } catch (InvalidPreferencesFormatException ex) {
-                }
+                Preferences.importPreferences(new FileInputStream(preferences));
+                userRoot.node(prefsPath).sync();
             }
-            // Only save the preferences to a file if it already exists
-            if (preferences.exists()) {
-                userRoot.node(prefsPath).exportSubtree(new FileOutputStream(preferences));
-            }
-        } catch (FileNotFoundException ex) {          
         } catch (BackingStoreException ex) {
+        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
+        } catch (InvalidPreferencesFormatException ex) {
         }
+
         // Close the splash window after everything is up and initialised
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

@@ -8,7 +8,14 @@ package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.prefs.InvalidPreferencesFormatException;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import sdtconnector.Gateway;
 import sdtconnector.GatewayConnection;
 import sdtconnector.LoginDialog;
@@ -123,8 +130,8 @@ public class MainWindow extends javax.swing.JFrame {
         deleteButton.setAction(deleteAction);
         
         prefsMenuItem.setIcon(getMenuIcon("preferences"));
-        
-        
+        exportPreferencesMenuItem.setIcon(getMenuIcon("save-as"));
+        importPreferencesMenuItem.setIcon(getMenuIcon("open"));
         aboutMenuItem.setIcon(getMenuIcon("info"));
         fileMenuExitItem.setIcon(getMenuIcon("exit"));
         addGatewayButton.setIcon(getToolbarIcon("gateway"));
@@ -229,6 +236,8 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenu = new javax.swing.JMenu();
         addGatewayMenuItem = new javax.swing.JMenuItem();
         addHostMenu = new javax.swing.JMenuItem();
+        importPreferencesMenuItem = new javax.swing.JMenuItem();
+        exportPreferencesMenuItem = new javax.swing.JMenuItem();
         fileMenuExitItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         editMenuEditItem = new javax.swing.JMenuItem();
@@ -402,7 +411,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 334, Short.MAX_VALUE)
+            .add(0, 272, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
@@ -413,7 +422,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 334, Short.MAX_VALUE)
+            .add(0, 272, Short.MAX_VALUE)
         );
 
         fileMenu.setText("File");
@@ -424,6 +433,24 @@ public class MainWindow extends javax.swing.JFrame {
         addHostMenu.setText("New Host");
         addHostMenu.setRequestFocusEnabled(false);
         fileMenu.add(addHostMenu);
+
+        importPreferencesMenuItem.setText("Import Preferences");
+        importPreferencesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importPreferencesMenuItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(importPreferencesMenuItem);
+
+        exportPreferencesMenuItem.setText("Export Preferences");
+        exportPreferencesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportPreferencesMenuItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(exportPreferencesMenuItem);
 
         fileMenuExitItem.setText("Exit");
         fileMenuExitItem.setRequestFocusEnabled(false);
@@ -501,7 +528,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -513,6 +540,54 @@ public class MainWindow extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    static FileFilter xmlFileFilter = new FileFilter() {
+        public boolean accept(File f) {
+            return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
+        }
+        public String getDescription() {
+            return "XML files";
+        }
+    };
+    private void exportPreferencesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportPreferencesMenuItemActionPerformed
+        JFileChooser jc = new JFileChooser();
+        jc.setDialogTitle("Export SDTConnector preferences");
+        jc.setFileSelectionMode(jc.FILES_ONLY);
+        jc.setFileFilter(xmlFileFilter);
+        jc.setMultiSelectionEnabled(false);        
+        if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
+            
+            Preferences node = Preferences.userRoot().node("opengear/sdtconnector");
+            try {
+                node.exportSubtree(new FileOutputStream(jc.getSelectedFile().getAbsolutePath()));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (BackingStoreException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            
+        }
+    }//GEN-LAST:event_exportPreferencesMenuItemActionPerformed
+    
+    private void importPreferencesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importPreferencesMenuItemActionPerformed
+
+        JFileChooser jc = new JFileChooser();
+        jc.setDialogTitle("Import SDTConnector preferences");
+        jc.setFileSelectionMode(jc.FILES_ONLY);
+        jc.setFileFilter(xmlFileFilter);
+        jc.setMultiSelectionEnabled(false);
+
+        
+        if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
+            try {
+                Preferences.importPreferences(new FileInputStream(jc.getSelectedFile().getAbsolutePath()));
+            } catch (FileNotFoundException ex) {
+            } catch (IOException ex) {
+            } catch (InvalidPreferencesFormatException ex) {
+            }
+        }
+    }//GEN-LAST:event_importPreferencesMenuItemActionPerformed
     
     private void rdpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdpButtonActionPerformed
         sshLaunch(new RDPViewer(), 3389);
@@ -645,7 +720,7 @@ public class MainWindow extends javax.swing.JFrame {
         GatewayDialog dlg = new GatewayDialog(this, true, gw);
         dlg.setLocationRelativeTo(this);
         dlg.setTitle("New SDT Gateway");
-        dlg.setVisible(true);        
+        dlg.setVisible(true);
         if (dlg.getReturnStatus() == dlg.RET_OK) {
             SDTManager.addGateway(gw);
             TreePath path = new TreePath(new Object[] {
@@ -839,7 +914,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         public boolean promptAuthentication(String prompt) {
             LoginDialog dlg = showDialog(prompt, LoginDialog.PASSWORD);
-          
+            
             if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
                 return false;
             }
@@ -930,11 +1005,13 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editMenuDeleteItem;
     private javax.swing.JMenuItem editMenuEditItem;
+    private javax.swing.JMenuItem exportPreferencesMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileMenuExitItem;
     private javax.swing.JTree gatewayList;
     private javax.swing.JPopupMenu gatewayListPopup;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem importPreferencesMenuItem;
     private javax.swing.JMenuItem listEditMenuItem;
     private javax.swing.JMenuItem listMenuAddGatewayItem;
     private javax.swing.JMenuItem listMenuAddHostItem;

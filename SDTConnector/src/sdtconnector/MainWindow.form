@@ -49,6 +49,22 @@
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="importPreferencesMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Import Preferences"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="importPreferencesMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="exportPreferencesMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Export Preferences"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportPreferencesMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="fileMenuExitItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Exit"/>
