@@ -24,6 +24,10 @@ public class IconLoader {
         URL url = IconLoader.class.getResource("/" + path);
         if (url != null) {
             return new ImageIcon(url);
+        }
+        url = IconLoader.class.getResource("/com/opengear/" + path);
+        if (url != null) {
+            return new ImageIcon(url);
         } else {
             return new ImageIcon(Toolkit.getDefaultToolkit().getImage(path));
         }
@@ -117,6 +121,8 @@ class GtkIcon {
         icons.put("edit", "edit");
         icons.put("delete", "delete");
         icons.put("fileopen", "open");
+        icons.put("open", "open");
+        icons.put("save-as", "save-as");
         icons.put("exit", "quit");
         icons.put("add", "add");
         icons.put("remove", "remove");
