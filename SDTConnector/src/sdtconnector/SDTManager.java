@@ -16,11 +16,12 @@ import java.util.prefs.Preferences;
 
 public class SDTManager {
     static {
-        init();
-    }
-    private static void init() {
-        Gateway gw;
         gatewayList = new BasicEventList();
+        load();
+    }
+    public static void load() {
+       
+        gatewayList.clear();
         preferences = Preferences.userRoot().node("opengear/sdtconnector/gateways");
         try {
             for (String id : preferences.childrenNames()) {
@@ -29,7 +30,7 @@ public class SDTManager {
                 String description = gwPrefs.get("description", "");
                 String username = gwPrefs.get("username", "");
                 String password = gwPrefs.get("password", "");
-                gw = new Gateway(address, username, password, description);
+                Gateway gw = new Gateway(address, username, password, description);
                 gw.setPort(gwPrefs.getInt("sshport", 22));
                 
                 gatewayList.add(gw);
@@ -50,20 +51,6 @@ public class SDTManager {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
-        if (false) {
-            gw = new Gateway("cm4008.opengear.com", "test user", "password",
-                    "Some gateway or other");
-            gw.addHost(new Host("www.example.com", "Some description"));
-            addGateway(gw);
-            gw = new Gateway("cm4116.example.com", "root", "default",
-                    "CM4116 at i.lab somewhere or other");
-            addGateway(gw);
-            gw = new Gateway("192.168.99.11", "root", "default",
-                    "CM4148 prototype");
-            addGateway(gw);
-            gw.addHost(new Host("192.168.99.2", "Web server"));
-        }
-        
     }
     /**
      * Creates a new instance of SDTManager
@@ -166,6 +153,7 @@ public class SDTManager {
     public static Host getHost(String gateway, String address) {
         return getGateway(gateway).getHost(address);
     }
+    
     private static EventList gatewayList;
     private static Preferences preferences;
 }

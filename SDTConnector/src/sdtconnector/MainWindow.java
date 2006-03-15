@@ -553,7 +553,7 @@ public class MainWindow extends javax.swing.JFrame {
         jc.setDialogTitle("Export SDTConnector preferences");
         jc.setFileSelectionMode(jc.FILES_ONLY);
         jc.setFileFilter(xmlFileFilter);
-        jc.setMultiSelectionEnabled(false);        
+        jc.setMultiSelectionEnabled(false);
         if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
             
             Preferences node = Preferences.userRoot().node("opengear/sdtconnector");
@@ -571,18 +571,24 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_exportPreferencesMenuItemActionPerformed
     
     private void importPreferencesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importPreferencesMenuItemActionPerformed
-
+        
         JFileChooser jc = new JFileChooser();
         jc.setDialogTitle("Import SDTConnector preferences");
         jc.setFileSelectionMode(jc.FILES_ONLY);
         jc.setFileFilter(xmlFileFilter);
         jc.setMultiSelectionEnabled(false);
-
+        
         
         if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
             try {
+                String path = "opengear/sdtconnector";
+                
+                Preferences.userRoot().node(path).removeNode();
                 Preferences.importPreferences(new FileInputStream(jc.getSelectedFile().getAbsolutePath()));
+                Preferences.userRoot().node(path).sync();
+                SDTManager.load();
             } catch (FileNotFoundException ex) {
+            } catch (java.util.prefs.BackingStoreException ex) {
             } catch (IOException ex) {
             } catch (InvalidPreferencesFormatException ex) {
             }
