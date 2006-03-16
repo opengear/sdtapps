@@ -49,6 +49,8 @@ public class GatewayConnection {
         config.put("StrictHostKeyChecking", "no");
         config.put("cipher.s2c", "aes128-cbc,3des-cbc,blowfish-cbc");
         config.put("cipher.c2s", "aes128-cbc,3des-cbc,blowfish-cbc");
+        config.put("compression.s2c", "zlib,none");
+        config.put("compression.c2s", "zlib,none");
         setupSession(username, password);
     }
     
@@ -97,6 +99,10 @@ public class GatewayConnection {
             
             session.setConfig(config);
             session.setPassword(password);
+            // Add any configured private keys
+            for (String path : Settings.getPropertyList("PrivateKeyPaths")) {
+                jsch.addIdentity(path, "passphrase");
+            }           
         } catch (com.jcraft.jsch.JSchException jsche) {
             System.out.println("Jsch exception " + jsche);
         }
@@ -210,9 +216,11 @@ public class GatewayConnection {
         System.out.println("GatewayConnection");
     }
     public interface Authentication {
-        public boolean promptAuthentication();
+        public boolean promptAuthentication(String prompt);
+        public boolean promptPassphrase(String prompt);
         public String getUsername();
         public String getPassword();
+        public String getPassphrase();
     }
     public interface Listener {
         public void sshLoginStarted();
@@ -230,9 +238,9 @@ public class GatewayConnection {
     private List<Redirector> redirectors = new ArrayList<Redirector>();
     private String username = "";
     private String password = "";
-    Hashtable<String, String> config = new Hashtable<String, String>();        
+    Hashtable<String, String> config = new Hashtable<String, String>();
     private Authentication authentication;
-
+    
     private Listener listener = new Listener() {
         public void sshLoginStarted() {}
         public void sshLoginSucceeded() {}
@@ -243,16 +251,16 @@ public class GatewayConnection {
     };
     UserInfo userinfo = new UserInfo() {
         public String getPassphrase() {
-            return "";
+            return authentication.getPassphrase();
         }
         public String getPassword() {
             return authentication.getPassword();
         }
-        public boolean promptPassphrase(String string) {
-            return false;
+        public boolean promptPassphrase(String prompt) {
+            return authentication.promptPassphrase(prompt);
         }
-        public boolean promptPassword(String string) {
-            return authentication.promptAuthentication();
+        public boolean promptPassword(String prompt) {
+            return authentication.promptAuthentication(prompt);
         }
         public boolean promptYesNo(String string) {
             return false;

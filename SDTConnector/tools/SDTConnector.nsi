@@ -80,7 +80,7 @@ Section "install" SecDummy
   
   ;ADD YOUR OWN FILES HERE...
   File ..\dist\SDTConnector.exe
-
+  File preferences.xml
   ;Store installation folder
   WriteRegStr HKCU "Software\${AppName}" "" $INSTDIR
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" \
