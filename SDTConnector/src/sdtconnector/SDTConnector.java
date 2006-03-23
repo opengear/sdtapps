@@ -11,7 +11,7 @@ package sdtconnector;
  *
  */
 public class SDTConnector {
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
     /** Creates a new instance of SDTConnector */
     private SDTConnector() {
     }
