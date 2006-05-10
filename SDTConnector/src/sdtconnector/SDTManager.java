@@ -99,6 +99,18 @@ public class SDTManager {
         gwPrefs.put("username", gw.getUsername());
         gwPrefs.put("password", gw.getPassword());
         gwPrefs.putInt("sshport", gw.getPort());
+        ListIterator it;
+        for (it = gw.getHostList().listIterator(); it.hasNext(); ) {
+            Host host = (Host) it.next();
+            Preferences hostPrefs = gwPrefs.node("hosts/" + host.getAddress());
+            hostPrefs.put("address", host.getAddress());
+            hostPrefs.put("description", host.getDescription());
+            Preferences protocols = hostPrefs.node("protocols");
+            protocols.putBoolean("telnet", host.telnet);
+            protocols.putBoolean("www", host.www);
+            protocols.putBoolean("vnc", host.vnc);
+            protocols.putBoolean("rdp", host.rdp);
+        }
         try {
             gwPrefs.sync();
         } catch (BackingStoreException ex) {}
