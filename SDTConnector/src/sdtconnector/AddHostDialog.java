@@ -13,6 +13,10 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JCheckBox;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import javax.swing.ListModel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
@@ -29,11 +33,17 @@ public class AddHostDialog extends javax.swing.JDialog {
         initComponents();
         this.host = host;
         hostField.setText(host.getAddress());
+        
+        for (Object o : SDTManager.getServiceList()) {
+            Service s = (Service) o;
+            javax.swing.JCheckBox serviceCheckBox = new javax.swing.JCheckBox();
+            serviceCheckBox.setText(s.getName());
+            serviceCheckBox.setActionCommand(String.valueOf(s.getRecordID()));
+            serviceCheckBox.setSelected(host.hasService(s));
+            servicesPanel.add(serviceCheckBox);
+            pack();
+        }
         descriptionField.setText(host.getDescription());
-        rdpCheckbox.setSelected(host.rdp);
-        telnetCheckbox.setSelected(host.telnet);
-        vncCheckbox.setSelected(host.vnc);
-        webCheckbox.setSelected(host.www);
         KeyListener keyListener = new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
                 switch (evt.getKeyCode()) {
@@ -53,10 +63,6 @@ public class AddHostDialog extends javax.swing.JDialog {
         addKeyListener(keyListener);
         hostField.addKeyListener(keyListener);
         //descriptionField.addKeyListener(keyListener);
-        telnetCheckbox.addKeyListener(keyListener);
-        webCheckbox.addKeyListener(keyListener);
-        rdpCheckbox.addKeyListener(keyListener);
-        vncCheckbox.addKeyListener(keyListener);
         okButton.setIcon(IconLoader.getButtonIcon("ok"));
         cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         //
@@ -88,28 +94,28 @@ public class AddHostDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         hostField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         okButton = new javax.swing.JButton();
         descLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         descriptionField = new javax.swing.JTextArea();
-        telnetCheckbox = new javax.swing.JCheckBox();
-        rdpCheckbox = new javax.swing.JCheckBox();
-        webCheckbox = new javax.swing.JCheckBox();
-        vncCheckbox = new javax.swing.JCheckBox();
         cancelButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        servicesPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        hostField.setNextFocusableComponent(telnetCheckbox);
 
         jLabel1.setText("Host Address");
 
         okButton.setText("OK");
         okButton.setIconTextGap(6);
         okButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
+        okButton.setMaximumSize(new java.awt.Dimension(68, 25));
+        okButton.setMinimumSize(new java.awt.Dimension(68, 25));
         okButton.setNextFocusableComponent(cancelButton);
+        okButton.setPreferredSize(new java.awt.Dimension(68, 25));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -123,26 +129,6 @@ public class AddHostDialog extends javax.swing.JDialog {
         descriptionField.setNextFocusableComponent(okButton);
         jScrollPane1.setViewportView(descriptionField);
 
-        telnetCheckbox.setText("Telnet");
-        telnetCheckbox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        telnetCheckbox.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        telnetCheckbox.setNextFocusableComponent(webCheckbox);
-
-        rdpCheckbox.setText("RDP");
-        rdpCheckbox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        rdpCheckbox.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        rdpCheckbox.setNextFocusableComponent(vncCheckbox);
-
-        webCheckbox.setText("Web");
-        webCheckbox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        webCheckbox.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        webCheckbox.setNextFocusableComponent(rdpCheckbox);
-
-        vncCheckbox.setText("VNC");
-        vncCheckbox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        vncCheckbox.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        vncCheckbox.setNextFocusableComponent(descriptionField);
-
         cancelButton.setText("Cancel");
         cancelButton.setIconTextGap(6);
         cancelButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
@@ -152,7 +138,11 @@ public class AddHostDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel2.setText("Protocols");
+        jLabel2.setText("Services");
+
+        servicesPanel.setLayout(new java.awt.GridLayout(0, 2, 5, 0));
+
+        servicesPanel.setPreferredSize(new java.awt.Dimension(50, 15));
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -162,60 +152,45 @@ public class AddHostDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, descLabel)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel2)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel1))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(jLabel2)
+                            .add(descLabel)
+                            .add(jLabel1))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(servicesPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
                             .add(layout.createSequentialGroup()
-                                .add(telnetCheckbox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(rdpCheckbox))
-                            .add(hostField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(layout.createSequentialGroup()
-                                .add(webCheckbox)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(vncCheckbox))
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-                        .addContainerGap())
+                                .add(hostField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 119, Short.MAX_VALUE))))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(okButton)
+                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cancelButton)
-                        .add(12, 12, 12))))
+                        .add(cancelButton)))
+                .addContainerGap())
         );
-
-        layout.linkSize(new java.awt.Component[] {telnetCheckbox, webCheckbox}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
-        layout.linkSize(new java.awt.Component[] {rdpCheckbox, vncCheckbox}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.linkSize(new java.awt.Component[] {cancelButton, okButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
                     .add(hostField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel2)
-                    .add(telnetCheckbox)
-                    .add(rdpCheckbox))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(webCheckbox)
-                    .add(vncCheckbox))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                    .add(servicesPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 116, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(okButton)
-                            .add(cancelButton)))
+                            .add(cancelButton)
+                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                     .add(descLabel))
                 .addContainerGap())
         );
@@ -235,7 +210,6 @@ public class AddHostDialog extends javax.swing.JDialog {
         doClose(RET_OK);
     }//GEN-LAST:event_okButtonActionPerformed
     
-    
     /** Closes the dialog */
     private void closeDialog(java.awt.event.WindowEvent evt) {
         doClose(RET_CANCEL);
@@ -248,15 +222,19 @@ public class AddHostDialog extends javax.swing.JDialog {
         if (retStatus == RET_OK) {
             host.setAddress(hostField.getText());
             host.setDescription(descriptionField.getText());
-            host.telnet = telnetCheckbox.isSelected();
-            host.www = webCheckbox.isSelected();
-            host.rdp = rdpCheckbox.isSelected();
-            host.vnc = vncCheckbox.isSelected();
+            host.clearServiceList();
+            for (Object o : servicesPanel.getComponents()) {
+                javax.swing.JCheckBox checkBox = (JCheckBox) o;
+                if (checkBox.isSelected()) {
+                    host.addService(Integer.valueOf(checkBox.getActionCommand()));
+                }
+            }
         }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel descLabel;
     private javax.swing.JTextArea descriptionField;
@@ -265,11 +243,11 @@ public class AddHostDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton okButton;
-    private javax.swing.JCheckBox rdpCheckbox;
-    private javax.swing.JCheckBox telnetCheckbox;
-    private javax.swing.JCheckBox vncCheckbox;
-    private javax.swing.JCheckBox webCheckbox;
+    private javax.swing.JPanel servicesPanel;
     // End of variables declaration//GEN-END:variables
+    
+    private javax.swing.JCheckBox aCheckBox;
+    private javax.swing.JLabel aLabel;
     
     private int returnStatus = RET_CANCEL;
     private Host host;

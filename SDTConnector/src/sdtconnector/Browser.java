@@ -9,22 +9,24 @@
 package sdtconnector;
 
 import com.jgoodies.looks.LookUtils;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class Browser extends Launcher {
-    
-    /** Creates a new instance of Browser */
-    public Browser() {}
-    public Browser(String host, int port) {
-        super(host, port);
+public class Browser extends Client {
+    protected String protocol;
+
+    public Browser() {
+        super(2, "Default HTTP browser");
+        this.protocol = "http";
     }
-    public String getCommand() {
+    public Browser(int recordID, String name) {
+        super(recordID, name);
+        this.protocol = "http";        
+    }
+    public String getCommand(String host, int port) {
         try {
-            
-            URL url = new URL("http", host, port, "/");
+            URL url = new URL(protocol, host, port, "/");
             String browser = "firefox";
             if (LookUtils.IS_OS_WINDOWS) {
                 browser = "rundll32 url.dll,FileProtocolHandler";
@@ -33,5 +35,10 @@ public class Browser extends Launcher {
         } catch (MalformedURLException ex) {
             return "";
         }
-    }   
+    }
+    // Built in clients can be uniquely identified by name
+    public boolean equals(Object obj) {
+        return (obj != null && getRecordID() == ((Client) obj).getRecordID());
+    }
 }
+

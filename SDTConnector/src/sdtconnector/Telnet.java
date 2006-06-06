@@ -6,21 +6,17 @@
 package sdtconnector;
 
 import com.jgoodies.looks.LookUtils;
-import java.io.IOException;
-import org.omg.SendingContext.RunTime;
 
 
-public class Telnet extends Launcher {
+public class Telnet extends Client {
     
     /** Creates a new instance of Telnet */
-    public Telnet() {        
+    public Telnet() {
+        super(1, "Default Telnet client");
     }
-    public Telnet(String host, int port) {
-        super(host, port);
-    }
-    public String getCommand() {
+    public String getCommand(String host, int port) {
         if (LookUtils.IS_OS_WINDOWS) {
-            return "cmd /c start telnet " + host + " " + port;            
+            return "cmd /c start telnet " + host + " " + port;
         } else {
             return "xterm -e telnet " + host + " " + port;
         }

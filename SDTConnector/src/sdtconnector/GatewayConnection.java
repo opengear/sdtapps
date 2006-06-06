@@ -57,15 +57,21 @@ public class GatewayConnection {
     public void setListener(Listener l) {
         listener = l;
     }
-    public Redirector getRedirector(String host, int port) {
+    public Redirector getRedirector(String host, int port, String lhost, int lport) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port) {
                 return r;
             }
+            // shutdown redirector which has local port that required
+            if (r.getLocalPort() == lport) {
+                r.shutdown();
+                redirectors.remove(r);
+            }
         }
+
         // Create a new redirector
         try {
-            Redirector r = new Redirector(this, host, port);
+            Redirector r = new Redirector(this, host, port, lhost, lport);
             redirectors.add(r);
             r.start();
             return r;
@@ -73,7 +79,7 @@ public class GatewayConnection {
             return null;
         }
     }
-    
+   
     //
     // Wait for the login to complete - runs on the GatewayConnection thread.
     //
@@ -154,8 +160,9 @@ public class GatewayConnection {
         return true;
     }
     public class Redirector implements Runnable {
-        public Redirector(GatewayConnection conn, String host, int port) throws IOException {
-            listenSocket = new ServerSocket(0, 50, InetAddress.getByName("localhost"));
+        public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport) throws IOException {
+            // FIXME: set local address
+            listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
             this.connection = conn;
             this.host = host;
             this.port = port;

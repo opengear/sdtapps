@@ -5,25 +5,22 @@
 
 package sdtconnector;
 
-import java.io.IOException;
 import org.jdesktop.swingx.util.OS;
 
-/**
- *
- */
-public class RDPViewer extends Launcher {
+
+public class RDPViewer extends Client {
     
     /**
      * Creates a new instance of RDPViewer
      */
     public RDPViewer() {
+        super(501, "RDP viewer");
     }
-    public String getCommand() {
-        String rdppath = Settings.getProperty("rdp.path");
+    public String getCommand(String host, int port) {
         if (OS.isWindows()) {
-            return rdppath + " /console /v:" + host + ":" + port;
+            return getPath() + " /console /v:" + host + ":" + port;
         } else {
-            return rdppath + " " + host + ":" + port;
+            return getPath() + " " + host + ":" + port;
         }
     }
 }

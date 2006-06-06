@@ -26,16 +26,23 @@ public class Gateway {
      * Creates a new instance of Gateway
      */
     public Gateway() {
+        this.recordID = SDTManager.nextRecordID();
     }
-    public Gateway(String address, String username, String password,
-            String description) {
+    public Gateway(int recordID, String address, String username,
+            String password, String description) {
+        this.recordID = recordID;
         this.address = address;
         this.username = username;
         this.password = password;
         this.description = description;
     }
-    
-    
+        
+    public int getRecordID() {
+        return recordID;
+    }
+    public void setRecordID(int recordID) {
+        this.recordID = recordID;
+    }
     public String getAddress() {
         return address;
     }
@@ -72,26 +79,21 @@ public class Gateway {
     public void addHost(Host host) {
         hostList.add(host);
     }
-    public int hashCode() {
-        if (_hashCode == 0) {
-            _hashCode = address.hashCode();
-        }
-        return _hashCode;
-    }
-    public void removeHost(String address) {
-        ListIterator it;
-        for (it = hostList.listIterator(); it.hasNext(); ) {
-            Host host = (Host) it.next();
-            if (host.getAddress().equals(address)) {
+    public void removeHost(Host host) {
+        hostList.remove(host);
+        /*
+        for (ListIterator it = hostList.listIterator(); it.hasNext(); ) {
+            if (((Host) it.next()).equals(host)) {
                 it.remove();
                 break;
             }
-        }       
+        } 
+         */      
     }
-    public Host getHost(String address) {
-        for (Iterator i = hostList.iterator(); i.hasNext(); ) {
-            Host host = (Host) i.next();
-            if (host.getAddress().equals(address)) {
+    public Host getHost(int recordID) {
+        for (Object o : hostList) {
+            Host host = (Host) o;
+            if (host.getRecordID() == recordID) {
                 return host;
             }
         }
@@ -100,12 +102,12 @@ public class Gateway {
     public String toString() {
         return address;
     }
-    
     public boolean equals(Object obj) {
-        return getAddress().equals(((Gateway) obj).getAddress());
+        return (obj != null && recordID == ((Gateway) obj).getRecordID());
     }
     
     // Variables
+    private int recordID;
     private String address = "";
     private int port = 22;
     private String username = "";

@@ -175,15 +175,19 @@ public class AboutDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
-        new Browser("www.opengear.com", 80).launch();
+        Browser browser = new Browser(0, "");
+        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, browser);
+        launcher.launch();
     }//GEN-LAST:event_imagePanelMouseClicked
     
     private void hyperlinkEvent(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_hyperlinkEvent
         if (evt.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
             return;
         }
-        URL url = evt.getURL();       
-        new Browser(url.getHost(), url.getPort()).launch();
+        URL url = evt.getURL();  
+        Browser browser = new Browser(0, "");
+        Launcher launcher = new Launcher(0, url.getHost(),  url.getPort(), 0, browser);
+        launcher.launch();
     }//GEN-LAST:event_hyperlinkEvent
     
     private void closeButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonAction
@@ -197,7 +201,7 @@ public class AboutDialog extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AboutDialog(new javax.swing.JFrame(), true, "1.0").setVisible(true);
+                new AboutDialog(new javax.swing.JFrame(), true, SDTConnector.VERSION).setVisible(true);
             }
         });
     }
