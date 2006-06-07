@@ -24,9 +24,12 @@ public class AddClientDialog extends javax.swing.JDialog {
         initComponents();
         this.client = client;
         nameField.setText(client.getName());
-        // FIXME
-        // commandField.setText(client.getCommand("<host>", -1));
-        commandField.setText(client.getPath());
+        if (client instanceof UserDefinedClient) {
+            commandField.setText(client.getCommand("<host>", -1));
+        } else {
+            commandField.setText(client.getPath());
+            nameField.setEditable(false);
+        }
         okButton.setIcon(IconLoader.getButtonIcon("ok"));
         cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         pack();
@@ -77,11 +80,6 @@ public class AddClientDialog extends javax.swing.JDialog {
         jLabel2.setText("Enter the location of the client executable");
 
         commandField.setMinimumSize(new java.awt.Dimension(4, 30));
-        commandField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                commandFieldActionPerformed(evt);
-            }
-        });
 
         browseButton.setIcon(IconLoader.getButtonIcon("fileopen"));
         browseButton.setText("Browse ...");
@@ -93,12 +91,6 @@ public class AddClientDialog extends javax.swing.JDialog {
         });
 
         jLabel1.setText("Enter a name for the client (e.g. Mozilla, RealVNC)");
-
-        nameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameFieldActionPerformed(evt);
-            }
-        });
 
         cancelButton.setText("Cancel");
         cancelButton.setIconTextGap(6);
@@ -185,17 +177,9 @@ public class AddClientDialog extends javax.swing.JDialog {
         }        
     }
     
-    private void nameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameFieldActionPerformed
-// TODO add your handling code here:
-    }//GEN-LAST:event_nameFieldActionPerformed
-
     private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
         showChooser();
     }//GEN-LAST:event_browseButtonActionPerformed
-
-    private void commandFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commandFieldActionPerformed
-// TODO add your handling code here:
-    }//GEN-LAST:event_commandFieldActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseButton;

@@ -12,13 +12,19 @@ public class SSH extends Client {
     
     /** Creates a new instance of SSH */
     public SSH() {
-        super(502, "SSH client");
+        super(500, LookUtils.IS_OS_WINDOWS ? "Putty SSH client" : "SSH client");
+        if (LookUtils.IS_OS_WINDOWS == false) {
+            setPath("ssh");
+        }
     }
     public String getCommand(String host, int port) {
         if (LookUtils.IS_OS_WINDOWS) {
-            return "FIXME " + host + " " + port;
+            return getPath() + " -ssh -P " + port + " " + host;
         } else {
-            return "FIXME " + host + " " + port;
+            return "xterm -e " + getPath() + " -p " + port + " " + host;
         }
     }
+    public String getIconName() {
+        return "telnet";
+    }    
 }

@@ -13,9 +13,7 @@ public class Service {
     
     /** Creates a new instance of Service */
     public Service() {
-        this.recordID = SDTManager.nextRecordID();
-        // FIXME: don't create dummy launcher
-        this.launcher = new Launcher();
+        recordID = SDTManager.nextRecordID();
     }
     public Service(int recordID, String name) {
         this.recordID = recordID;
@@ -50,7 +48,7 @@ public class Service {
     }
     
     private int recordID;
-    private String name;
+    private String name = "";
     // TODO: many launchers per service
     // private List<Launcher> launcherList = new ArrayList<Launcher>(2);
     private Launcher launcher;

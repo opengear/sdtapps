@@ -71,9 +71,9 @@ public class SDTManager {
         
         serviceList.clear();
         // Predefined services with predefined clients
-        serviceList.add(new Service(telnetClient.getRecordID(), "Telnet", new Launcher(telnetClient.getRecordID(), "localhost", 0, 23, telnetClient)));
         serviceList.add(new Service(httpBrowser.getRecordID(), "HTTP", new Launcher(httpBrowser.getRecordID(), "localhost", 0, 80, httpBrowser)));
         serviceList.add(new Service(httpsBrowser.getRecordID(), "HTTPS", new Launcher(httpsBrowser.getRecordID(), "localhost", 0, 443, httpsBrowser)));
+        serviceList.add(new Service(telnetClient.getRecordID(), "Telnet", new Launcher(telnetClient.getRecordID(), "localhost", 0, 23, telnetClient)));
         serviceList.add(new Service(sshClient.getRecordID(), "SSH", new Launcher(sshClient.getRecordID(), "localhost", 0, 22, sshClient)));
         serviceList.add(new Service(vncClient.getRecordID(), "VNC", new Launcher(vncClient.getRecordID(), "localhost", 0, 3389, vncClient)));
         serviceList.add(new Service(rdpClient.getRecordID(), "RDP", new Launcher(rdpClient.getRecordID(), "localhost", 0, 5000, rdpClient)));
@@ -312,7 +312,7 @@ public class SDTManager {
     public static int getInitialRecordID() {
         return 1000;
     }
-    public static int getEditableRecordID() {
+    public static int getInitialEditableRecordID() {
         return 500;
     }
     public static EventList getHostList(int recordID) {

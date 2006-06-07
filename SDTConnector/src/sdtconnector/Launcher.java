@@ -14,9 +14,7 @@ public class Launcher implements Runnable {
     
     /** Creates a new instance of Launcher */
     public Launcher() {
-        this.recordID = SDTManager.nextRecordID();
-        this.localHost = "localhost";
-        this.localPort = 0;
+        recordID = SDTManager.nextRecordID();
     }
     public Launcher(int recordID, String localHost, int localPort, int remotePort, int clientID) {
         this.recordID = recordID;
@@ -91,9 +89,9 @@ public class Launcher implements Runnable {
     }
     
     private Client client;
-    private String localHost;
-    private String remoteHost;
-    private int localPort;
-    private int remotePort;
+    private String localHost = "localhost";
+    private String remoteHost = "";
+    private int localPort = 0;
+    private int remotePort = 0;
     private int recordID;
 }

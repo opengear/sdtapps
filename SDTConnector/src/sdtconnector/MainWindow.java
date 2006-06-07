@@ -148,12 +148,6 @@ public class MainWindow extends javax.swing.JFrame {
         deleteButton.setIcon(getToolbarIcon("delete"));
         deleteButton.setText("");
         
-        /* FIXME
-        telnetButton.setIcon(getLargeIcon("telnet"));
-        webButton.setIcon(getLargeIcon("www"));
-        rdpButton.setIcon(getLargeIcon("tsclient"));
-        vncButton.setIcon(getLargeIcon("vnc"));
-         */
         // Disable all but new gateway action on empty list
         if (gatewayList.getSelectionPath() == null) {
             newHostAction.setEnabled(false);
@@ -745,35 +739,22 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 serviceButton.setPreferredSize(new Dimension((connectButtonPanel.getWidth()-23)/2,32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
-                int recordID = s.getRecordID();
-                /*
-                if (recordID == SDTManager.getDefaultTelnetID()) {
-                    serviceButton.setToolTipText("Telnet to " + host);
-                } else if (recordID == SDTManager.getDefaultSSHID()) {
-                    serviceButton.setToolTipText("SSH to " + host);
-                } else if (recordID == SDTManager.getDefaultWebID() ||
-                        recordID == SDTManager.getDefaultHTTPSID())
+                if (s.getLauncher().getClient().getRecordID() >= SDTManager.getInitialEditableRecordID() &&
+                        s.getLauncher().getClient().getPath().equals(""))
                 {
-                    serviceButton.setToolTipText("Browse to " + host);
-                } else if (recordID == SDTManager.getDefaultRDPID()) {
-                    serviceButton.setToolTipText("RDP to " + host);
-                } else if (recordID == SDTManager.getDefaultVNCID()) {
-                    serviceButton.setToolTipText("VNC to " + host);
-                } else if (recordID == SDTManager.getDefaultILOID() ||
-                        recordID == SDTManager.getDefaultRSAID() ||
-                        recordID == SDTManager.getDefaultDRACID())
-                {
-                    serviceButton.setToolTipText("Connect to " + host + " Web/KVM console");
-                } else
-                 */
-                {
-                    serviceButton.setToolTipText("Connect to " + host + " port " + String.valueOf(s.getLauncher().getRemotePort()));
+                    serviceButton.setToolTipText("Set client executable for " + s.getLauncher().getClient()
+                            + "\r\n in Edit -> Preferences -> Clients");
+                    serviceButton.setEnabled(false);
+                } else {
+                    serviceButton.setToolTipText("Connect to " + host + " using " + s);
                 }
+                // FIXME: use 24x24 or so icons
+                serviceButton.setIcon(getMenuIcon(s.getLauncher().getClient().getIconName()));
                 serviceButton.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         serviceButtonActionPerformed(evt);
                     }
-                });
+                });                
                 connectButtonPanel.add(serviceButton);
             }
             pack();
@@ -781,29 +762,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }  else {
             connectButtonPanel.removeAll();
             this.repaint();
-        }
-        /* FIXME
-        boolean rdpIsSet = Settings.getProperty("rdp.path").length() > 0;
-        boolean vncIsSet = Settings.getProperty("vnc.path").length() > 0;
-        rdpButton.setEnabled(isHost && rdpIsSet && host.rdp);
-        if (!rdpIsSet) {
-            rdpButton.setToolTipText("Set the RDP client in Edit -> Preferences");
-        } else {
-            rdpButton.setToolTipText(isHost ?
-                "Connect to " + last + " using a RDP client" : "");
-        }
-        vncButton.setEnabled(isHost && vncIsSet && host.vnc);
-        if (!vncIsSet) {
-            vncButton.setToolTipText("Set the VNC client in Edit -> Preferences");
-        } else {
-            vncButton.setToolTipText(isHost ?
-                "Connect to " + last + " using a VNC client" : "");
-        }
-        telnetButton.setEnabled(isHost && host.telnet);
-        telnetButton.setToolTipText(isHost ? "Telnet to " + last : "");
-        webButton.setEnabled(isHost && host.www);
-        webButton.setToolTipText(isHost ? "Browse to " + last : "");
-         */
+            }
     }
     GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport) {
         TreePath path = gatewayList.getSelectionPath();

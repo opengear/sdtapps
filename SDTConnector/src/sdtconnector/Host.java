@@ -15,7 +15,7 @@ public class Host {
     
     /** Creates a new instance of Host */
     public Host() {
-        this.recordID = SDTManager.nextRecordID();
+        recordID = SDTManager.nextRecordID();
     }
     public Host(int recordID, String address, String description) {
         this.recordID = recordID;
@@ -86,8 +86,8 @@ public class Host {
     }
 
     private EventList serviceList = new BasicEventList();
-    private int recordID;
     private String address = "";
     private String description = "";
     private int _hashCode = 0;
+    private int recordID;
 }

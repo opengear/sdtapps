@@ -161,7 +161,6 @@ public class GatewayConnection {
     }
     public class Redirector implements Runnable {
         public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport) throws IOException {
-            // FIXME: set local address
             listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
             this.connection = conn;
             this.host = host;

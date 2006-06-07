@@ -14,7 +14,7 @@ public class RDPViewer extends Client {
      * Creates a new instance of RDPViewer
      */
     public RDPViewer() {
-        super(501, "RDP viewer");
+        super(502, "RDP viewer");
     }
     public String getCommand(String host, int port) {
         if (OS.isWindows()) {
@@ -22,5 +22,8 @@ public class RDPViewer extends Client {
         } else {
             return getPath() + " " + host + ":" + port;
         }
+    }
+    public String getIconName() {
+        return "tsclient";
     }
 }

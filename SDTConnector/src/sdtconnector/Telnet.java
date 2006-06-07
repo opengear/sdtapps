@@ -12,7 +12,7 @@ public class Telnet extends Client {
     
     /** Creates a new instance of Telnet */
     public Telnet() {
-        super(1, "Default Telnet client");
+        super(3, "Default Telnet client");
     }
     public String getCommand(String host, int port) {
         if (LookUtils.IS_OS_WINDOWS) {
@@ -21,4 +21,7 @@ public class Telnet extends Client {
             return "xterm -e telnet " + host + " " + port;
         }
     }
+    public String getIconName() {
+        return "telnet";
+    }    
 }

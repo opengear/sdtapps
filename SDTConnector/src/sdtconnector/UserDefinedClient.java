@@ -24,6 +24,9 @@ public class UserDefinedClient extends Client {
         // FIXME: put host and port into command
         return command;
     }
+    public String getIconName() {
+        return "service";
+    }    
 
-    private String command;
+    private String command = "";
 }

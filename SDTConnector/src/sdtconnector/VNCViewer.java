@@ -12,7 +12,7 @@ public class VNCViewer extends Client {
     
     /** Creates a new instance of VNCViewer */
     public VNCViewer() {
-        super(500, "VNC viewer");
+        super(501, "VNC viewer");
     }
     public String getCommand(String host, int port) {
         if (OS.isWindows()) {
@@ -21,4 +21,7 @@ public class VNCViewer extends Client {
             return getPath() + " " + host + ":" + port;
         }
     }
+    public String getIconName() {
+        return "vnc";
+    }    
 }

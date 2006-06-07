@@ -32,18 +32,20 @@ public class AddServiceDialog extends javax.swing.JDialog {
         this.service = service;
         nameField.setText(service.getName());
         clientCombobox.setModel(new ca.odell.glazedlists.swing.EventComboBoxModel(SDTManager.getClientList()));
-        if (service.getLauncher().getClient() == null) {
-            clientCombobox.setSelectedIndex(0);
-        } else {
+        
+        if (service.getLauncher() != null) {
             clientCombobox.setSelectedItem(service.getLauncher().getClient());
+            if ((port = service.getLauncher().getRemotePort()) != 0) {
+                remotePortField.setText(String.valueOf(port));
+            }
+            if ((port = service.getLauncher().getLocalPort()) != 0) {
+                localPortField.setText(String.valueOf(port));
+            }
+            localHostField.setText(String.valueOf(service.getLauncher().getLocalHost()));
+        } else {
+            clientCombobox.setSelectedIndex(0);
+            localHostField.setText("localhost");
         }
-        if ((port = service.getLauncher().getRemotePort()) != 0) {
-            remotePortField.setText(String.valueOf(port));
-        }
-        if ((port = service.getLauncher().getLocalPort()) != 0) {
-            localPortField.setText(String.valueOf(port));
-        }
-        localAddressField.setText(String.valueOf(service.getLauncher().getLocalHost()));
         KeyListener keyListener = new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
                 switch (evt.getKeyCode()) {
@@ -64,7 +66,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
         nameField.addKeyListener(keyListener);
         remotePortField.addKeyListener(keyListener);
         localPortField.addKeyListener(keyListener);
-        localAddressField.addKeyListener(keyListener);
+        localHostField.addKeyListener(keyListener);
         okButton.setIcon(IconLoader.getButtonIcon("ok"));
         cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         //
@@ -82,7 +84,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
         nameField.addFocusListener(focus);
         remotePortField.addFocusListener(focus);
         localPortField.addFocusListener(focus);
-        localAddressField.addFocusListener(focus);
+        localHostField.addFocusListener(focus);
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -107,7 +109,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
         clientCombobox = new javax.swing.JComboBox();
         localPortField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        localAddressField = new javax.swing.JTextField();
+        localHostField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -156,7 +158,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
                             .add(layout.createSequentialGroup()
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                                     .add(org.jdesktop.layout.GroupLayout.LEADING, localPortField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, localAddressField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, localHostField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
                                     .add(org.jdesktop.layout.GroupLayout.LEADING, remotePortField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE))
                                 .add(59, 59, 59))
                             .add(clientCombobox, 0, 148, Short.MAX_VALUE))
@@ -188,7 +190,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel5)
-                    .add(localAddressField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(localHostField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel4)
@@ -201,7 +203,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         doClose(RET_CANCEL);
     }//GEN-LAST:event_cancelButtonActionPerformed
@@ -220,12 +222,12 @@ public class AddServiceDialog extends javax.swing.JDialog {
         setVisible(false);
         dispose();
         if (retStatus == RET_OK) {
-            // FIXME: validate input
             service.setName(nameField.getText());
-            service.getLauncher().setLocalHost(localAddressField.getText());
+            service.getLauncher().setLocalHost(localHostField.getText());
             if (localPortField.getText().equals("") == false) {
                 service.getLauncher().setLocalPort(Integer.parseInt(localPortField.getText()));
             }
+            // FIXME: validate input
             service.getLauncher().setRemotePort(Integer.parseInt(remotePortField.getText()));
             service.getLauncher().setClient((Client) clientCombobox.getSelectedItem());
         }
@@ -239,7 +241,7 @@ public class AddServiceDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField localAddressField;
+    private javax.swing.JTextField localHostField;
     private javax.swing.JTextField localPortField;
     private javax.swing.JTextField nameField;
     private javax.swing.JButton okButton;

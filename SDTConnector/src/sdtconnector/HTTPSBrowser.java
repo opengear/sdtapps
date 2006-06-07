@@ -12,7 +12,7 @@ package sdtconnector;
 public class HTTPSBrowser extends Browser {
     
     public HTTPSBrowser() {
-        super(3, "Default HTTPS browser");
+        super(2, "Default HTTPS browser");
         this.protocol = "https";
     }
 }

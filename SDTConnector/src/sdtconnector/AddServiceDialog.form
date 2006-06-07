@@ -35,7 +35,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="localPortField" alignment="0" pref="89" max="32767" attributes="1"/>
-                                  <Component id="localAddressField" alignment="0" pref="89" max="32767" attributes="1"/>
+                                  <Component id="localHostField" alignment="0" pref="89" max="32767" attributes="1"/>
                                   <Component id="remotePortField" alignment="0" pref="89" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
@@ -75,7 +75,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="localAddressField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="localHostField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -142,7 +142,7 @@
         <Property name="text" type="java.lang.String" value="Local TCP Port"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="localAddressField">
+    <Component class="javax.swing.JTextField" name="localHostField">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>

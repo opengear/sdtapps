@@ -118,6 +118,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         removeClientButton.setText("Remove");
+        removeClientButton.setEnabled(false);
         removeClientButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         removeClientButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         removeClientButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -128,6 +129,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         editClientButton.setText("Edit");
+        editClientButton.setEnabled(false);
         editClientButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         editClientButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         editClientButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -187,6 +189,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         removeServiceButton.setText("Remove");
+        removeServiceButton.setEnabled(false);
         removeServiceButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         removeServiceButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         removeServiceButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -197,6 +200,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         editServiceButton.setText("Edit");
+        editServiceButton.setEnabled(false);
         editServiceButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         editServiceButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         editServiceButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -247,12 +251,19 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         removePrivateKeyButton.setText("Remove");
+        removePrivateKeyButton.setEnabled(false);
         removePrivateKeyButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         removePrivateKeyButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         removePrivateKeyButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
         removePrivateKeyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removePrivateKeyActionPerformed(evt);
+            }
+        });
+
+        privateKeyJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                privateKeyJListValueChanged(evt);
             }
         });
 
@@ -320,22 +331,34 @@ public class PreferencesDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void privateKeyJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_privateKeyJListValueChanged
+        removePrivateKeyButton.setEnabled(privateKeyJList.isSelectionEmpty() == false);
+    }//GEN-LAST:event_privateKeyJListValueChanged
+
     private void serviceJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_serviceJListValueChanged
         Service service = (Service) serviceJList.getSelectedValue();
+        boolean editable = false;  
+        boolean removable = false;
 
-        editServiceButton.setEnabled(service != null
-                && service.getRecordID() >= SDTManager.getEditableRecordID());   
-        removeServiceButton.setEnabled(service != null
-                && service.getRecordID() >= SDTManager.getInitialRecordID());     
+        if (service != null) {
+            editable = service.getRecordID() >= SDTManager.getInitialEditableRecordID();
+            removable = service.getRecordID() >= SDTManager.getInitialRecordID();
+        }
+        editServiceButton.setEnabled(editable);
+        removeServiceButton.setEnabled(removable);
     }//GEN-LAST:event_serviceJListValueChanged
 
     private void clientJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_clientJListValueChanged
         Client client = (Client) clientJList.getSelectedValue();
-        
-        editClientButton.setEnabled(client != null
-                && client.getRecordID() >= SDTManager.getEditableRecordID());   
-        removeClientButton.setEnabled(client != null
-                && client.getRecordID() >= SDTManager.getInitialRecordID());          
+        boolean editable = false;  
+        boolean removable = false;
+
+        if (client != null) {
+            editable = client.getRecordID() >= SDTManager.getInitialEditableRecordID();
+            removable = client.getRecordID() >= SDTManager.getInitialRecordID();
+        }
+        editClientButton.setEnabled(editable);
+        removeClientButton.setEnabled(removable);        
     }//GEN-LAST:event_clientJListValueChanged
 
     private void editServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editServiceActionPerformed

@@ -9,6 +9,7 @@
 package sdtconnector;
 
 import com.jgoodies.looks.LookUtils;
+import javax.swing.Icon;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -17,7 +18,7 @@ public class Browser extends Client {
     protected String protocol;
 
     public Browser() {
-        super(2, "Default HTTP browser");
+        super(1, "Default HTTP browser");
         this.protocol = "http";
     }
     public Browser(int recordID, String name) {
@@ -36,9 +37,10 @@ public class Browser extends Client {
             return "";
         }
     }
-    // Built in clients can be uniquely identified by name
+    public String getIconName() {
+        return "www";
+    }
     public boolean equals(Object obj) {
         return (obj != null && getRecordID() == ((Client) obj).getRecordID());
     }
 }
-
