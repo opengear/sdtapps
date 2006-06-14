@@ -12,16 +12,16 @@ public class SSH extends Client {
     
     /** Creates a new instance of SSH */
     public SSH() {
-        super(500, LookUtils.IS_OS_WINDOWS ? "Putty SSH client" : "SSH client");
+        super(SDTManager.nextSystemRecordID(), LookUtils.IS_OS_WINDOWS ? "Putty SSH client" : "Default SSH client");
         if (LookUtils.IS_OS_WINDOWS == false) {
-            setPath("ssh");
+            setEditable(false);
         }
     }
     public String getCommand(String host, int port) {
         if (LookUtils.IS_OS_WINDOWS) {
             return getPath() + " -ssh -P " + port + " " + host;
         } else {
-            return "xterm -e " + getPath() + " -p " + port + " " + host;
+            return "xterm -e ssh -p " + port + " " + host;
         }
     }
     public String getIconName() {

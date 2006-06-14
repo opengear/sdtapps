@@ -12,7 +12,7 @@ public class VNCViewer extends Client {
     
     /** Creates a new instance of VNCViewer */
     public VNCViewer() {
-        super(501, "VNC viewer");
+        super(SDTManager.nextSystemRecordID(), "VNC viewer");
     }
     public String getCommand(String host, int port) {
         if (OS.isWindows()) {

@@ -58,7 +58,7 @@ public class GatewayConnection {
         listener = l;
     }
     public Redirector getRedirector(String host, int port, String lhost, int lport) {
-        for (Redirector r : redirectors) {
+            for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port) {
                 return r;
             }

@@ -341,8 +341,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         boolean removable = false;
 
         if (service != null) {
-            editable = service.getRecordID() >= SDTManager.getInitialEditableRecordID();
-            removable = service.getRecordID() >= SDTManager.getInitialRecordID();
+            editable = service.isEditable();
+            removable = service.getRecordID() >= SDTManager.initialRecordID();
         }
         editServiceButton.setEnabled(editable);
         removeServiceButton.setEnabled(removable);
@@ -354,8 +354,8 @@ public class PreferencesDialog extends javax.swing.JDialog {
         boolean removable = false;
 
         if (client != null) {
-            editable = client.getRecordID() >= SDTManager.getInitialEditableRecordID();
-            removable = client.getRecordID() >= SDTManager.getInitialRecordID();
+            editable = client.isEditable();
+            removable = client.getRecordID() >= SDTManager.initialRecordID();
         }
         editClientButton.setEnabled(editable);
         removeClientButton.setEnabled(removable);        

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import com.jgoodies.looks.LookUtils;
 
 
 public class SDTManager {
@@ -21,6 +22,7 @@ public class SDTManager {
         gatewayList = new BasicEventList();
         clientList = new BasicEventList();
         serviceList = new BasicEventList();
+        userRecordID = getUserRecordID();
         systemRecordID = getSystemRecordID();
         load();
     }
@@ -30,12 +32,17 @@ public class SDTManager {
         HTTPSBrowser httpsBrowser = new HTTPSBrowser();
         Telnet telnetClient = new Telnet();
         // Predefined clients without predefined commands
-        Client sshClient = null, vncClient = null, rdpClient = null;
+        SSH sshClient = new SSH();
+        VNCViewer vncClient = new VNCViewer();
+        RDPViewer rdpClient = new RDPViewer();
         
         clientList.clear();
         clientList.add(httpBrowser);
         clientList.add(httpsBrowser);
         clientList.add(telnetClient);
+        clientList.add(sshClient);
+        clientList.add(vncClient);
+        clientList.add(rdpClient);
         // User defined clients
         clientPreferences = Preferences.userRoot().node("opengear/sdtconnector/clients");
         try {
@@ -43,47 +50,51 @@ public class SDTManager {
                 Preferences clientNode = clientPreferences.node(clientChildName);
                 String name = clientNode.get("name", "");
                 String path = clientNode.get("path", "");
-                UserDefinedClient client = new UserDefinedClient(Integer.parseInt(clientChildName), name, path);
-                clientList.add(client);
-                if (client.getRecordID() == new SSH().getRecordID()) {
-                    sshClient = client;
-                } else if (client.getRecordID() == new VNCViewer().getRecordID()) {
-                    vncClient = client;
-                } else if (client.getRecordID() == new RDPViewer().getRecordID()) {
-                    rdpClient = client;
+                int recordID = Integer.parseInt(clientChildName);
+                
+                if (recordID <= initialRecordID()) {
+                    if (recordID == sshClient.getRecordID()) {
+                        sshClient.setName(name);
+                        sshClient.setPath(path);
+                    } else if (recordID == vncClient.getRecordID()) {
+                        vncClient.setName(name);
+                        vncClient.setPath(path);
+                    } else if (recordID == rdpClient.getRecordID()) {
+                        rdpClient.setName(name);
+                        rdpClient.setPath(path);
+                    }
+                } else {
+                    clientList.add(new UserDefinedClient(recordID, name, path));
                 }
             }
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
-        if (sshClient == null) {
-            sshClient = new SSH();
-            clientList.add(sshClient);
-        }
-        if (vncClient == null) {
-            vncClient = new VNCViewer();
-            clientList.add(vncClient);
-        }
-        if (rdpClient == null) {
-            rdpClient = new RDPViewer();
-            clientList.add(rdpClient);
-        }
         
         serviceList.clear();
         // Predefined services with predefined clients
-        serviceList.add(new Service(httpBrowser.getRecordID(), "HTTP", new Launcher(httpBrowser.getRecordID(), "localhost", 0, 80, httpBrowser)));
-        serviceList.add(new Service(httpsBrowser.getRecordID(), "HTTPS", new Launcher(httpsBrowser.getRecordID(), "localhost", 0, 443, httpsBrowser)));
-        serviceList.add(new Service(telnetClient.getRecordID(), "Telnet", new Launcher(telnetClient.getRecordID(), "localhost", 0, 23, telnetClient)));
+        Launcher httpLauncher = new Launcher(httpBrowser.getRecordID(), "localhost", 0, 80, httpBrowser);
+        Launcher httpsLauncher = new Launcher(httpsBrowser.getRecordID(), "localhost", 0, 443, httpsBrowser);
+        Launcher telnetLauncher = new Launcher(telnetClient.getRecordID(), "localhost", 0, 23, telnetClient);
+        serviceList.add(new Service(httpBrowser.getRecordID(), "HTTP", httpLauncher, false));
+        serviceList.add(new Service(httpsBrowser.getRecordID(), "HTTPS", httpsLauncher, false));
+        serviceList.add(new Service(telnetClient.getRecordID(), "Telnet", telnetLauncher, false));
         serviceList.add(new Service(sshClient.getRecordID(), "SSH", new Launcher(sshClient.getRecordID(), "localhost", 0, 22, sshClient)));
         serviceList.add(new Service(vncClient.getRecordID(), "VNC", new Launcher(vncClient.getRecordID(), "localhost", 0, 3389, vncClient)));
-        serviceList.add(new Service(rdpClient.getRecordID(), "RDP", new Launcher(rdpClient.getRecordID(), "localhost", 0, 5000, rdpClient)));
-
-        // FIXME
-        // serviceList.add(new Service(getDefaultILOID(), "HP iLO", new Launcher(getDefaultILOID(), "localhost", 0, 443, webBrowser)));
-        // serviceList.add(new Service(getDefaultALOMID(), "Sun ALOM", new Launcher(getDefaultILOID(), "localhost", 0, 443, webBrowser)));
-        // serviceList.add(new Service(getDefaultDRACID(), "Dell DRAC", new Launcher(getDefaultDRACID(), "localhost", 0, 443, webBrowser)));
-        // serviceList.add(new Service(getDefaultRSAID(), "IBM RSA-II", new Launcher(getDefaultRSAID(), "localhost", 0, 443, webBrowser)));
-        // User defined clients
+        serviceList.add(new Service(rdpClient.getRecordID(), "RDP", new Launcher(rdpClient.getRecordID(), "localhost", 0, 5900, rdpClient)));
+        
+        Service ilo = new Service(nextSystemRecordID(), "HP iLO", httpsLauncher);
+        ilo.addLauncher(new Launcher(ilo.getRecordID(), "localhost", 0, 23, null));
+        serviceList.add(ilo);
+        
+        Service rsa = new Service(nextSystemRecordID(), "IBM RSA-II", httpsLauncher);
+        rsa.addLauncher(new Launcher(rsa.getRecordID(), "localhost", 2000, 2000, null));
+        serviceList.add(rsa);
+        
+        serviceList.add(new Service(nextSystemRecordID(), "Sun ALOM", telnetLauncher));
+        serviceList.add(new Service(nextSystemRecordID(), "Dell DRAC", new Launcher(2005, "localhost", 0, 1311, httpsBrowser)));
+        serviceList.add(new Service(nextSystemRecordID(), "ZENworks", new Launcher(2006, "localhost", 0, 8080, httpBrowser)));
+        
         servicePreferences = Preferences.userRoot().node("opengear/sdtconnector/services");
         try {
             for (String serviceChildName : servicePreferences.childrenNames()) {
@@ -91,7 +102,7 @@ public class SDTManager {
                 String name = serviceNode.get("name", "");
                 Service service = new Service(Integer.parseInt(serviceChildName), name);
                 Preferences launcherPrefs = serviceNode.node("launchers");
-                // TODO: many launchers per service, for e.g. Web/KVM
+                // TODO: many configurable launchers per service
                 for (String launcherChildName : launcherPrefs.childrenNames()) {
                     Preferences launcherNode = launcherPrefs.node(launcherChildName);
                     String localAddress = launcherNode.get("localAddress", "");
@@ -262,7 +273,6 @@ public class SDTManager {
     private static void saveClient(Client client) {
         Preferences clientNode = clientPreferences.node(String.valueOf(client.getRecordID()));
         clientNode.put("name", client.getName());
-        // FIXME
         clientNode.put("path", client.getPath());
         
         try {
@@ -292,28 +302,30 @@ public class SDTManager {
     public static EventList getClientList() {
         return (EventList) clientList;
     }
-
-    public static int getSystemRecordID() {
+    public static int getUserRecordID() {
         String idSetting;
-        if ((idSetting = Settings.getProperty("SystemRecordID")).equals("")) {
-            systemRecordID = getInitialRecordID();
+        if ((idSetting = Settings.getProperty("UserRecordID")).equals("")) {
+            userRecordID = initialRecordID();
         } else {
-            systemRecordID = Integer.parseInt(idSetting);
+            userRecordID = Integer.parseInt(idSetting);
         }
-        return systemRecordID;
+        return userRecordID;
     }
-    public static void setSystemRecordID(int recordID) {
-        Settings.setProperty("SystemRecordID", String.valueOf(recordID));
+    public static int getSystemRecordID() {
+        return initialRecordID() - 1;
     }
-    public static int nextRecordID() {
-        setSystemRecordID(++systemRecordID);
-        return systemRecordID;
+    public static void setUserRecordID(int recordID) {
+        Settings.setProperty("UserRecordID", String.valueOf(recordID));
     }
-    public static int getInitialRecordID() {
-        return 1000;
+    public static int nextUserRecordID() {
+        setUserRecordID(++userRecordID);
+        return userRecordID;
     }
-    public static int getInitialEditableRecordID() {
-        return 500;
+    public static int nextSystemRecordID() {
+        return --systemRecordID;
+    }
+    public static int initialRecordID() {
+        return 0;
     }
     public static EventList getHostList(int recordID) {
         return getGateway(recordID).getHostList();
@@ -328,6 +340,6 @@ public class SDTManager {
     private static Preferences clientPreferences;
     private static EventList serviceList;
     private static Preferences servicePreferences;
-    // FIXME: confusing variable names
+    private static int userRecordID;
     private static int systemRecordID;
 }

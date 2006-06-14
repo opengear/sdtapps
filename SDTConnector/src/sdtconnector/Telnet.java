@@ -12,7 +12,8 @@ public class Telnet extends Client {
     
     /** Creates a new instance of Telnet */
     public Telnet() {
-        super(3, "Default Telnet client");
+        super(SDTManager.nextSystemRecordID(), "Default Telnet client");
+        setEditable(false);
     }
     public String getCommand(String host, int port) {
         if (LookUtils.IS_OS_WINDOWS) {

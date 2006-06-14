@@ -26,7 +26,7 @@ public class Gateway {
      * Creates a new instance of Gateway
      */
     public Gateway() {
-        recordID = SDTManager.nextRecordID();
+        recordID = SDTManager.nextUserRecordID();
     }
     public Gateway(int recordID, String address, String username,
             String password, String description) {

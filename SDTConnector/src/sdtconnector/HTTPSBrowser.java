@@ -12,8 +12,9 @@ package sdtconnector;
 public class HTTPSBrowser extends Browser {
     
     public HTTPSBrowser() {
-        super(2, "Default HTTPS browser");
+        super(SDTManager.nextSystemRecordID(), "Default HTTPS browser");
         this.protocol = "https";
+        setEditable(false);
     }
 }
 

@@ -13,20 +13,14 @@ public class UserDefinedClient extends Client {
      */
     public UserDefinedClient () {
     }
-    public UserDefinedClient(int recordID, String name, String command) {
-        super(recordID, name);
-        this.command = command;
-    }
-    public void setCommand(String command) {
-        this.command = command;
+    public UserDefinedClient (int recordID, String name, String path) {
+        super(recordID, name, path);
     }
     public String getCommand(String host, int port) {
-        // FIXME: put host and port into command
-        return command;
+        String command = getPath().replaceAll("%host%", host);
+        return command.replaceAll("%port%", String.valueOf(port));
     }
     public String getIconName() {
         return "service";
     }    
-
-    private String command = "";
 }

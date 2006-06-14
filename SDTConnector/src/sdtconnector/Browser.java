@@ -18,12 +18,14 @@ public class Browser extends Client {
     protected String protocol;
 
     public Browser() {
-        super(1, "Default HTTP browser");
-        this.protocol = "http";
+        super(SDTManager.nextSystemRecordID(), "Default HTTP browser");
+        protocol = "http";
+        setEditable(false);        
     }
     public Browser(int recordID, String name) {
         super(recordID, name);
-        this.protocol = "http";        
+        protocol = "http";
+        setEditable(false);
     }
     public String getCommand(String host, int port) {
         try {

@@ -14,7 +14,7 @@ public class RDPViewer extends Client {
      * Creates a new instance of RDPViewer
      */
     public RDPViewer() {
-        super(502, "RDP viewer");
+        super(SDTManager.nextSystemRecordID(), "RDP viewer");
     }
     public String getCommand(String host, int port) {
         if (OS.isWindows()) {

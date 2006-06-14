@@ -14,7 +14,7 @@ public class Launcher implements Runnable {
     
     /** Creates a new instance of Launcher */
     public Launcher() {
-        recordID = SDTManager.nextRecordID();
+        recordID = SDTManager.nextUserRecordID();
     }
     public Launcher(int recordID, String localHost, int localPort, int remotePort, int clientID) {
         this.recordID = recordID;

@@ -15,7 +15,7 @@ public class Host {
     
     /** Creates a new instance of Host */
     public Host() {
-        recordID = SDTManager.nextRecordID();
+        recordID = SDTManager.nextUserRecordID();
     }
     public Host(int recordID, String address, String description) {
         this.recordID = recordID;

@@ -12,7 +12,7 @@ public abstract class Client {
      * Creates a new instance of Client
      */
     public Client() {
-        recordID = SDTManager.nextRecordID();
+        recordID = SDTManager.nextUserRecordID();
     }
     public Client(int recordID, String name) {
         this.recordID = recordID;
@@ -41,6 +41,12 @@ public abstract class Client {
     public String getPath() {
         return path;
     }
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+    public boolean isEditable() {
+        return editable;
+    }
     public String toString() {
         return name;
     }
@@ -49,8 +55,9 @@ public abstract class Client {
     }
     public abstract String getCommand(String host, int port);
     public abstract String getIconName();
-
+    
     private int recordID;
     private String name = "";
     private String path = "";
+    private boolean editable = true;
 }

@@ -222,6 +222,9 @@ public class AddServiceDialog extends javax.swing.JDialog {
         setVisible(false);
         dispose();
         if (retStatus == RET_OK) {
+            if (service.getLauncher() == null) {
+                service.addLauncher(new Launcher());
+            }
             service.setName(nameField.getText());
             service.getLauncher().setLocalHost(localHostField.getText());
             if (localPortField.getText().equals("") == false) {

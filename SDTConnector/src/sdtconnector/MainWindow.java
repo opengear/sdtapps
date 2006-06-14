@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ListIterator;
 import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
@@ -76,7 +77,7 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         setIconImage(getIcon("16x16", "gateway").getImage());
-  
+        
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         gatewayList.setShowsRootHandles(true);
@@ -314,7 +315,7 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -327,7 +328,7 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea.setColumns(20);
         descriptionArea.setEditable(false);
         descriptionArea.setLineWrap(true);
-        descriptionArea.setRows(5);
+        descriptionArea.setRows(3);
         descriptionArea.setWrapStyleWord(true);
         descriptionArea.setAutoscrolls(false);
         descriptionArea.setBorder(null);
@@ -345,7 +346,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 271, Short.MAX_VALUE)
+            .add(0, 318, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
@@ -356,7 +357,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 271, Short.MAX_VALUE)
+            .add(0, 318, Short.MAX_VALUE)
         );
 
         fileMenu.setText("File");
@@ -439,16 +440,16 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
-                    .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                    .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -459,13 +460,13 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
+                        .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
@@ -594,6 +595,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         boolean isGateway = false;
         boolean isHost = false;
         String desc = "";
+        String hint = "";
         if (path != null) {
             Object last = path.getLastPathComponent();
             if (last instanceof Gateway) {
@@ -639,6 +641,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (retVal == JOptionPane.OK_OPTION) {
             removeSelectedNode(gatewayList.getSelectionPath());
+            connectButtonPanel.removeAll();
+            descriptionArea.setText("");
+            this.repaint();
         }
     }
     
@@ -718,7 +723,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
             TreePath path = gatewayList.getSelectionPath();
             Object last = path.getLastPathComponent();
             Host host = (Host) last;
-            sshLaunch(service.getLauncher());
+            for (ListIterator it = service.getLaunchers().listIterator(); it.hasNext(); ) {
+                sshLaunch((Launcher) it.next());
+            }
         }
     }        
     private void updateButtonState() {
@@ -739,17 +746,20 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 serviceButton.setPreferredSize(new Dimension((connectButtonPanel.getWidth()-23)/2,32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
-                if (s.getLauncher().getClient().getRecordID() >= SDTManager.getInitialEditableRecordID() &&
+                if (s.getLauncher().getClient() != null &&
+                        s.getLauncher().getClient().getRecordID() >= SDTManager.getUserRecordID() &&
                         s.getLauncher().getClient().getPath().equals(""))
                 {
                     serviceButton.setToolTipText("Set client executable for " + s.getLauncher().getClient()
                             + "\r\n in Edit -> Preferences -> Clients");
                     serviceButton.setEnabled(false);
                 } else {
-                    serviceButton.setToolTipText("Connect to " + host + " using " + s);
+                    serviceButton.setToolTipText("Launch " + s + " connection to " + host);
                 }
                 // FIXME: use 24x24 or so icons
-                serviceButton.setIcon(getMenuIcon(s.getLauncher().getClient().getIconName()));
+                if (s.getLauncher().getClient() != null) {
+                    serviceButton.setIcon(getMenuIcon(s.getLauncher().getClient().getIconName()));
+                }
                 serviceButton.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         serviceButtonActionPerformed(evt);
@@ -762,7 +772,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }  else {
             connectButtonPanel.removeAll();
             this.repaint();
-            }
+        }
     }
     GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport) {
         TreePath path = gatewayList.getSelectionPath();
@@ -784,17 +794,19 @@ static FileFilter xmlFileFilter = new FileFilter() {
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
         
-        bgExec.execute(new Runnable() {
-            public void run() {
-                if (conn.login()) {
-                    String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getLocalPort());
-                    statusBar.setText("Launching " + cmd);
-                    if (!launcher.launch()) {
-                        statusBar.setText(cmd + " failed");
+        if (launcher.getClient() != null) {
+            bgExec.execute(new Runnable() {
+                public void run() {
+                    if (conn.login()) {
+                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getLocalPort());
+                        statusBar.setText("Launching " + cmd);
+                        if (!launcher.launch()) {
+                            statusBar.setText(cmd + " failed");
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         
     }
     
