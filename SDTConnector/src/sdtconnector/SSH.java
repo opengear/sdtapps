@@ -21,7 +21,7 @@ public class SSH extends Client {
         if (LookUtils.IS_OS_WINDOWS) {
             return getPath() + " -ssh -P " + port + " " + host;
         } else {
-            return "xterm -e ssh -p " + port + " " + host;
+            return "xterm -e ssh -o UserKnownHostsFile=/dev/null -p " + port + " " + host;
         }
     }
     public String getIconName() {
