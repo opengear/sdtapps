@@ -23,10 +23,10 @@ public class SDTManager {
         clientList = new BasicEventList();
         serviceList = new BasicEventList();
         loadDefaults();
+        loadRecordID();
         load();
     }
     public static void load() {
-        recordID = getRecordID();
         clientPreferences = Preferences.userRoot().node("opengear/sdtconnector/clients");
         try {
             for (String clientChildName : clientPreferences.childrenNames()) {
@@ -326,16 +326,23 @@ public class SDTManager {
     public static EventList getClientList() {
         return (EventList) clientList;
     }
-    public static int getRecordID() {
-        recordID = Integer.parseInt(Settings.getProperty("RecordID"));
-        if (recordID < initialRecordID()) {
+    public static int loadRecordID() {
+        String idSetting = Settings.getProperty("RecordID");
+        
+        if (idSetting.equals("") == false) {
+            recordID = Integer.parseInt(idSetting);
+        } else {
             recordID = initialRecordID();
         }
         return recordID;
     }
+    public static void setRecordID(int recordID) {
+        if (recordID >= initialRecordID()) {
+            Settings.setProperty("RecordID", String.valueOf(recordID));
+        }
+    }
     public static int nextRecordID() {
-        recordID++;
-        Settings.setProperty("RecordID", String.valueOf(recordID));
+        setRecordID(++recordID);
         return recordID;
     }
     public static int initialRecordID() {
