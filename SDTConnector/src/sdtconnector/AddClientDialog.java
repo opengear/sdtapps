@@ -25,11 +25,8 @@ public class AddClientDialog extends javax.swing.JDialog {
         this.client = client;
         nameField.setText(client.getName());
         pathField.setText(client.getPath());
-        if (!(client instanceof UserDefinedClient)) {
-            nameField.setEditable(false);
-        } else {
-            pathField.setToolTipText("Use %host% and %port% for the local host and port of the Secure Desktop Tunnel");
-        }
+        commandFormatField.setText(client.getCommandFormat());
+        commandFormatField.setToolTipText("Use %path%, %host% and %port% to substitute client exe path, local host and local port");
         okButton.setIcon(IconLoader.getButtonIcon("ok"));
         cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
         pack();
@@ -75,9 +72,11 @@ public class AddClientDialog extends javax.swing.JDialog {
         nameField = new javax.swing.JTextField();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        commandFormatField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        jLabel2.setText("Location of the client executable");
+        jLabel2.setText("Path to client executable file");
 
         pathField.setMinimumSize(new java.awt.Dimension(4, 30));
 
@@ -106,6 +105,8 @@ public class AddClientDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setText("Command line format for client executable");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -114,18 +115,20 @@ public class AddClientDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel1)
+                    .add(jLabel2)
+                    .add(jLabel3)
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, nameField)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, pathField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(okButton)
+                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, commandFormatField)
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, nameField)
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, pathField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseButton))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(okButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cancelButton))
-                    .add(jLabel2))
-                .addContainerGap())
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(browseButton)
+                            .add(cancelButton))))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -140,8 +143,12 @@ public class AddClientDialog extends javax.swing.JDialog {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(pathField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(browseButton))
-                .add(12, 12, 12)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel3)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(commandFormatField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cancelButton)
                     .add(okButton))
                 .addContainerGap())
@@ -165,6 +172,7 @@ public class AddClientDialog extends javax.swing.JDialog {
             // FIXME: validate input
             client.setName(nameField.getText());
             client.setPath(pathField.getText());
+            client.setCommandFormat(commandFormatField.getText());
         }        
     }
     
@@ -175,8 +183,10 @@ public class AddClientDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseButton;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JTextField commandFormatField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField nameField;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField pathField;

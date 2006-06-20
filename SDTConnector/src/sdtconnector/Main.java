@@ -88,6 +88,7 @@ public class Main {
         try {
             if (preferences.exists() && !userRoot.nodeExists(prefsPath)) {
                 Preferences.importPreferences(new FileInputStream(preferences));
+                // FIXME: load defaults
                 userRoot.node(prefsPath).sync();
             }
         } catch (BackingStoreException ex) {

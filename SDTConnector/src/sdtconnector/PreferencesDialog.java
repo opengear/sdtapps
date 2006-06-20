@@ -129,7 +129,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         editClientButton.setText("Edit");
-        editClientButton.setEnabled(false);
         editClientButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         editClientButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         editClientButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -200,7 +199,6 @@ public class PreferencesDialog extends javax.swing.JDialog {
         });
 
         editServiceButton.setText("Edit");
-        editServiceButton.setEnabled(false);
         editServiceButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         editServiceButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         editServiceButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
@@ -331,35 +329,21 @@ public class PreferencesDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void privateKeyJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_privateKeyJListValueChanged
-        removePrivateKeyButton.setEnabled(privateKeyJList.isSelectionEmpty() == false);
-    }//GEN-LAST:event_privateKeyJListValueChanged
-
     private void serviceJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_serviceJListValueChanged
-        Service service = (Service) serviceJList.getSelectedValue();
-        boolean editable = false;  
-        boolean removable = false;
-
-        if (service != null) {
-            editable = service.isEditable();
-            removable = service.getRecordID() >= SDTManager.initialRecordID();
-        }
-        editServiceButton.setEnabled(editable);
-        removeServiceButton.setEnabled(removable);
+        editServiceButton.setEnabled(serviceJList.isSelectionEmpty() == false);
+        removeServiceButton.setEnabled(serviceJList.isSelectionEmpty() == false &&
+                ((Service) serviceJList.getSelectedValue()).getRecordID() > SDTManager.initialRecordID());
     }//GEN-LAST:event_serviceJListValueChanged
 
     private void clientJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_clientJListValueChanged
-        Client client = (Client) clientJList.getSelectedValue();
-        boolean editable = false;  
-        boolean removable = false;
-
-        if (client != null) {
-            editable = client.isEditable();
-            removable = client.getRecordID() >= SDTManager.initialRecordID();
-        }
-        editClientButton.setEnabled(editable);
-        removeClientButton.setEnabled(removable);        
+        editClientButton.setEnabled(clientJList.isSelectionEmpty() == false);
+        removeClientButton.setEnabled(clientJList.isSelectionEmpty() == false &&
+                ((Client) clientJList.getSelectedValue()).getRecordID() > SDTManager.initialRecordID());
     }//GEN-LAST:event_clientJListValueChanged
+
+    private void privateKeyJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_privateKeyJListValueChanged
+        removePrivateKeyButton.setEnabled(privateKeyJList.isSelectionEmpty() == false);
+    }//GEN-LAST:event_privateKeyJListValueChanged
 
     private void editServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editServiceActionPerformed
         if (serviceJList.isSelectionEmpty()) {
@@ -423,7 +407,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_removeClientActionPerformed
 
     private void addClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addClientActionPerformed
-        UserDefinedClient client = new UserDefinedClient();
+        Client client = new Client();
         AddClientDialog dlg = new AddClientDialog((java.awt.Frame) this.getParent(), true, client);
         
         dlg.setTitle("Add Client");

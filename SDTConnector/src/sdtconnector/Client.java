@@ -6,22 +6,23 @@
 package sdtconnector;
 
 
-public abstract class Client {
+public class Client {
     
     /**
      * Creates a new instance of Client
      */
     public Client() {
-        recordID = SDTManager.nextUserRecordID();
+        recordID = SDTManager.nextRecordID();
     }
     public Client(int recordID, String name) {
         this.recordID = recordID;
         this.name = name;
     }
-    public Client(int recordID, String name, String path) {
+    public Client(int recordID, String name, String path, String commandFormat) {
         this.recordID = recordID;
         this.name = name;
         this.path = path;
+        this.commandFormat = commandFormat;
     }    
     public void setRecordID(int recordID) {
         this.recordID = recordID;
@@ -41,11 +42,11 @@ public abstract class Client {
     public String getPath() {
         return path;
     }
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    public void setCommandFormat(String commandFormat) {
+        this.commandFormat = commandFormat;
     }
-    public boolean isEditable() {
-        return editable;
+    public String getCommandFormat() {
+        return commandFormat;
     }
     public String toString() {
         return name;
@@ -53,11 +54,14 @@ public abstract class Client {
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Client) obj).getRecordID());
     }
-    public abstract String getCommand(String host, int port);
-    public abstract String getIconName();
+    public String getCommand(String host, int port) {
+        String cmd = commandFormat.replaceAll("%path%", path);
+        cmd = cmd.replaceAll("%host%", host);
+        return cmd.replaceAll("%port%", String.valueOf(port));
+    }
     
     private int recordID;
     private String name = "";
     private String path = "";
-    private boolean editable = true;
+    private String commandFormat = "";
 }

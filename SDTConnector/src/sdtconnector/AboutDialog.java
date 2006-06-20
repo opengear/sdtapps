@@ -175,9 +175,10 @@ public class AboutDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
-        Browser browser = new Browser(0, "");
-        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, browser);
-        launcher.launch();
+// FIXME
+//        Browser browser = new Browser(0, "");
+//        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, browser);
+//        launcher.launch();
     }//GEN-LAST:event_imagePanelMouseClicked
     
     private void hyperlinkEvent(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_hyperlinkEvent
@@ -185,9 +186,10 @@ public class AboutDialog extends javax.swing.JDialog {
             return;
         }
         URL url = evt.getURL();  
-        Browser browser = new Browser(0, "");
-        Launcher launcher = new Launcher(0, url.getHost(),  url.getPort(), 0, browser);
-        launcher.launch();
+// FIXME
+//        Browser browser = new Browser(0, "");
+//        Launcher launcher = new Launcher(0, url.getHost(),  url.getPort(), 0, browser);
+//        launcher.launch();
     }//GEN-LAST:event_hyperlinkEvent
     
     private void closeButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonAction

@@ -13,7 +13,7 @@ public class Service {
     
     /** Creates a new instance of Service */
     public Service() {
-        recordID = SDTManager.nextUserRecordID();
+        recordID = SDTManager.nextRecordID();
     }
     public Service(int recordID, String name) {
         this.recordID = recordID;
@@ -24,11 +24,11 @@ public class Service {
         this.name = name;
         launcherList.add(launcher);
     }
-    public Service(int recordID, String name, Launcher launcher, boolean editable) {
+    public Service(int recordID, String name, Launcher launcher, String iconName) {
         this.recordID = recordID;
         this.name = name;
         launcherList.add(launcher);
-        this.editable = editable;
+        this.iconName = iconName;
     }
     public void addLauncher(Launcher launcher) {
         launcherList.add(launcher);
@@ -42,6 +42,9 @@ public class Service {
     public List<Launcher> getLaunchers() {
         return launcherList;
     }
+    public void setLaunchers(List<Launcher> launcherList) {
+        this.launcherList = launcherList;
+    }
     public int getRecordID() {
         return recordID;
     }
@@ -54,11 +57,14 @@ public class Service {
     public void setName(String name) {
         this.name = name;
     }
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    public String getIconName() {
+        return iconName;
     }
-    public boolean isEditable() {
-        return editable;
+    public void setIconName(String iconName) {
+        this.iconName = iconName;
+    }
+    public boolean equals(Object obj) {
+        return (obj != null && recordID == ((Service) obj).getRecordID());
     }
     public String toString() {
         return name;
@@ -67,6 +73,6 @@ public class Service {
     private int recordID;
     private String name = "";
     private List<Launcher> launcherList = new ArrayList<Launcher>(2);
-    private boolean editable = true;
+    private String iconName = "service";
 }
     
