@@ -17,7 +17,8 @@ public class Host {
     public Host() {
         recordID = SDTManager.nextRecordID();
     }
-    public Host(int recordID, String address, String description) {
+    public Host(int recordID, String name, String address, String description) {
+        this.name = name;
         this.recordID = recordID;
         this.address = address;
         this.description = description;
@@ -72,6 +73,12 @@ public class Host {
     public String getDescription() {
         return description;
     }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
     public String getAddress() {
         return address;
     }
@@ -79,13 +86,17 @@ public class Host {
         this.address = address;
     }
     public String toString() {
-        return address;
+        if (name.equals("")) {
+            return address;
+        }
+        return name;
     }
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Host) obj).recordID);
     }
 
     private EventList serviceList = new BasicEventList();
+    private String name = "";
     private String address = "";
     private String description = "";
     private int _hashCode = 0;

@@ -28,9 +28,10 @@ public class Gateway {
     public Gateway() {
         recordID = SDTManager.nextRecordID();
     }
-    public Gateway(int recordID, String address, String username,
+    public Gateway(int recordID, String name, String address, String username,
             String password, String description) {
         this.recordID = recordID;
+        this.name = name;
         this.address = address;
         this.username = username;
         this.password = password;
@@ -51,6 +52,12 @@ public class Gateway {
     }
     public void setPort(int port) {
         this.port = port;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
     public void setAddress(String address) {
         this.address = address;
@@ -100,7 +107,10 @@ public class Gateway {
         return null;
     }
     public String toString() {
-        return address;
+        if (name.equals("")) {
+            return address;
+        }
+        return name;
     }
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Gateway) obj).getRecordID());
@@ -108,6 +118,7 @@ public class Gateway {
     
     // Variables
     private int recordID;
+    private String name = "";
     private String address = "";
     private int port = 22;
     private String username = "";

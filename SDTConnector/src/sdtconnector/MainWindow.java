@@ -775,9 +775,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
-        System.out.println("Adding redirection to " + host + ":" + port + " via "
+        System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
                 + gw);
-        return conn.getRedirector(host.toString(), port, lhost, lport);
+        return conn.getRedirector(host.getAddress(), port, lhost, lport);
     }
     private void sshLaunch(final Launcher launcher) {
         TreePath path = gatewayList.getSelectionPath();

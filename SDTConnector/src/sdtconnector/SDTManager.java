@@ -84,19 +84,21 @@ public class SDTManager {
         try {
             for (String gwChildName : gatewayPreferences.childrenNames()) {
                 Preferences gwNode = gatewayPreferences.node(gwChildName);
+                String name = gwNode.get("name", "");
                 String address = gwNode.get("address", "");
                 String description = gwNode.get("description", "");
                 String username = gwNode.get("username", "");
                 String password = gwNode.get("password", "");
-                Gateway gw = new Gateway(Integer.valueOf(gwChildName), address, username, password, description);
+                Gateway gw = new Gateway(Integer.valueOf(gwChildName), name, address, username, password, description);
                 gw.setPort(gwNode.getInt("sshport", 22));
                 gatewayList.add(gw);
                 Preferences hostPrefs = gwNode.node("hosts");
                 for (String hostChildName : hostPrefs.childrenNames()) {
                     Preferences hostNode = hostPrefs.node(hostChildName);
+                    String hostName = hostNode.get("name", "");
                     String hostAddress = hostNode.get("address", "");
                     String hostDescription = hostNode.get("description", "");
-                    Host host = new Host(Integer.valueOf(hostChildName), hostAddress, hostDescription);
+                    Host host = new Host(Integer.valueOf(hostChildName), hostName, hostAddress, hostDescription);
                     gw.addHost(host);
                     // FIXME: load list
                     Preferences servicePrefs = hostNode.node("services");
@@ -161,7 +163,7 @@ public class SDTManager {
         Service rsa = new Service(nextRecordID(), "IBM RSA-II", httpsLauncher);
         rsa.addLauncher(new Launcher(nextRecordID(), "localhost", 2000, 2000, null));
         serviceList.add(rsa);
-        Service drac = new Service(nextRecordID(), "DRAC", new Launcher());
+        Service drac = new Service(nextRecordID(), "DRAC", httpsLauncher);
         drac.addLauncher(new Launcher(nextRecordID(), "localhost", 5900, 5900, null));
         serviceList.add(drac);
         serviceList.add(new Service(nextRecordID(), "Sun ALOM", telnetLauncher));
@@ -207,6 +209,7 @@ public class SDTManager {
     }
     private static void saveGateway(Gateway gw) {
         Preferences gwPrefs = gatewayPreferences.node(String.valueOf(gw.getRecordID()));
+        gwPrefs.put("name", gw.getName());
         gwPrefs.put("address", gw.getAddress());
         gwPrefs.put("description", gw.getDescription());
         gwPrefs.put("username", gw.getUsername());
@@ -221,6 +224,7 @@ public class SDTManager {
     }
     private static void saveHost(Preferences gwPrefs, Host host) {
         Preferences hostPrefs = gwPrefs.node("hosts/" + host.getRecordID());
+        hostPrefs.put("name", host.getName());
         hostPrefs.put("address", host.getAddress());
         System.out.println("Saving description " + host.getDescription());
         hostPrefs.put("description", host.getDescription());
