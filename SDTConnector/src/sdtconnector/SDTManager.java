@@ -62,7 +62,7 @@ public class SDTManager {
                     String localAddress = launcherNode.get("localAddress", "");
                     int localPort = Integer.valueOf(launcherNode.get("localPort", ""));
                     int remotePort = Integer.valueOf(launcherNode.get("remotePort", ""));
-                    int clientID = Integer.valueOf(launcherNode.get("clientID", ""));
+                    int clientID = Integer.valueOf(launcherNode.get("clientID", "0"));
                     Launcher launcher = new Launcher(Integer.valueOf(launcherChildName), localAddress, localPort, remotePort, clientID);
                     service.addLauncher(launcher);
                 }
@@ -70,7 +70,7 @@ public class SDTManager {
                     // Update a default setting
                     Service defaultService = (Service) serviceList.get(serviceList.indexOf(service));
                     defaultService.setName(name);
-                    defaultService.setLaunchers(service.getLaunchers());
+                    defaultService.setLaunchers(service.getLauncherList());
                 } else {
                     serviceList.add(service);
                 }
@@ -115,10 +115,10 @@ public class SDTManager {
     }
 
     private static void loadDefaults() {
-        Client httpClient = new Client(nextRecordID(),
+        httpClient = new Client(nextRecordID(),
                 "HTTP browser",
                 LookUtils.IS_OS_WINDOWS ? "rundll32 url.dll,FileProtocolHandler" : "firefox",
-                "%path% http://%host%:%port%/");
+                "%path% http://%host%:%port%/"); // This client is also used by AboutDialog
         Client httpsClient = new Client(nextRecordID(),
                 "HTTPS browser",
                 LookUtils.IS_OS_WINDOWS ? "rundll32 url.dll,FileProtocolHandler" : "firefox",
@@ -258,15 +258,19 @@ public class SDTManager {
     private static void saveService(Service service) {
         Preferences serviceNode = servicePreferences.node(String.valueOf(service.getRecordID()));
         serviceNode.put("name", service.getName());
-        // TODO: many launchers per service
-        Preferences launcherPrefs = serviceNode.node("launchers/" + service.getLauncher().getRecordID());
-        launcherPrefs.put("localAddress", service.getLauncher().getLocalHost());
-        launcherPrefs.put("localPort", String.valueOf(service.getLauncher().getLocalPort()));
-        launcherPrefs.put("remotePort", String.valueOf(service.getLauncher().getRemotePort()));
-        launcherPrefs.put("clientID", String.valueOf(service.getLauncher().getClient().getRecordID()));
+        for (Object o : service.getLauncherList()) {
+            Launcher l = (Launcher) o;
+            Preferences launcherNode = serviceNode.node("launchers/" + String.valueOf(l.getRecordID()));
+           
+            launcherNode.put("localAddress", l.getLocalHost());
+            launcherNode.put("localPort", String.valueOf(l.getLocalPort()));
+            launcherNode.put("remotePort", String.valueOf(l.getRemotePort()));
+            if (l.getClient() != null) {
+                launcherNode.put("clientID", String.valueOf(l.getClient().getRecordID()));
+            }
+        }
         try {
             serviceNode.sync();
-            // FIXME: sync launcher?
         } catch (BackingStoreException ex) {}
     }
     public static void updateService(Service service) {
@@ -278,11 +282,13 @@ public class SDTManager {
         saveService(service);    
     }
     public static void removeService(Service service) {
+        /*
         for (ListIterator it = serviceList.listIterator(); it.hasNext(); ) {
             if (((Service) it.next()).equals(service)) {
                 it.remove();
             }
-        }
+        }*/
+        serviceList.remove(service);
         try {
             servicePreferences.node(String.valueOf(service.getRecordID())).removeNode();
         } catch (BackingStoreException ex) {
@@ -312,11 +318,13 @@ public class SDTManager {
         saveClient(client);    
     }
     public static void removeClient(Client client) {
+        /*
         for (ListIterator it = clientList.listIterator(); it.hasNext(); ) {
             if (((Client) it.next()).equals(client)) {
                 it.remove();
             }
-        }
+        }*/
+        clientList.remove(client);
         try {
             clientPreferences.node(String.valueOf(client.getRecordID())).removeNode();
         } catch (BackingStoreException ex) {
@@ -354,6 +362,12 @@ public class SDTManager {
     public static Host getHost(int gwRecordID, int hostRecordID) {
         return getGateway(gwRecordID).getHost(hostRecordID);
     }
+    public static Client getHttpClient() {
+        return httpClient;
+    }
+    public static void setHttpClient(Client client) {
+        httpClient = client;
+    }
     
     private static EventList gatewayList;  
     private static Preferences gatewayPreferences;
@@ -362,4 +376,5 @@ public class SDTManager {
     private static EventList serviceList;
     private static Preferences servicePreferences;
     private static int recordID;
+    private static Client httpClient;
 }

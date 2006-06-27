@@ -1,95 +1,35 @@
 /*
  * AddServiceDialog.java
  *
- * Created on May 23, 2006, 4:00 PM
+ * Created on June 27, 2006, 2:30 PM
  */
 
 package sdtconnector;
-
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import com.opengear.util.IconLoader;
-import java.awt.Component;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterPipeline;
+
 
 public class AddServiceDialog extends javax.swing.JDialog {
-    /** A return status code - returned if Cancel button has been pressed */
-    public static final int RET_CANCEL = 0;
-    /** A return status code - returned if OK button has been pressed */
-    public static final int RET_OK = 1;
-    
-    /** Creates new form AddHostDialog */
+
+    /** Creates new form AddServiceDialog */
     public AddServiceDialog(java.awt.Frame parent, boolean modal, Service service) {
         super(parent, modal);
         initComponents();
-        int port;
         this.service = service;
+
+        closeButton.setIcon(IconLoader.getButtonIcon("ok"));
+        addLauncherButton.setIcon(IconLoader.getButtonIcon("add"));
+        editLauncherButton.setIcon(IconLoader.getButtonIcon("edit"));
+        removeLauncherButton.setIcon(IconLoader.getButtonIcon("remove"));
         nameField.setText(service.getName());
-        clientComboBox.setModel(new ca.odell.glazedlists.swing.EventComboBoxModel(SDTManager.getClientList()));
-        
-        if (service.getLauncher() != null) {
-            clientComboBox.setSelectedItem(service.getLauncher().getClient());
-            if ((port = service.getLauncher().getRemotePort()) != 0) {
-                remotePortField.setText(String.valueOf(port));
-            }
-            if ((port = service.getLauncher().getLocalPort()) != 0) {
-                localPortField.setText(String.valueOf(port));
-            }
-            localHostField.setText(String.valueOf(service.getLauncher().getLocalHost()));
-        } else {
-            clientComboBox.setSelectedIndex(0);
-            localHostField.setText("localhost");
-        }
-        KeyListener keyListener = new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                switch (evt.getKeyCode()) {
-                    // case KeyEvent.VK_CANCEL:
-                    case KeyEvent.VK_ESCAPE:
-                        evt.consume();
-                        doClose(RET_CANCEL);
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        evt.consume();
-                        doClose(RET_OK);
-                        break;
-                }
-            }
-        };
-       
-        addKeyListener(keyListener);
-        nameField.addKeyListener(keyListener);
-        remotePortField.addKeyListener(keyListener);
-        localPortField.addKeyListener(keyListener);
-        localHostField.addKeyListener(keyListener);
-        okButton.setIcon(IconLoader.getButtonIcon("ok"));
-        cancelButton.setIcon(IconLoader.getButtonIcon("cancel"));
-        //
-        // Make it so the contents of text fields are selected when they are clicked
-        //
-        FocusListener focus = new FocusListener() {
-            public void focusGained(FocusEvent evt) {
-                ((JTextComponent) evt.getSource()).selectAll();
-            }
-            public void focusLost(FocusEvent evt) {
-                ((JTextComponent) evt.getSource()).select(0, 0);
-            }
-        };
-        
-        nameField.addFocusListener(focus);
-        remotePortField.addFocusListener(focus);
-        localPortField.addFocusListener(focus);
-        localHostField.addFocusListener(focus);
-    }
-    
-    /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
-    public int getReturnStatus() {
-        return returnStatus;
+        launcherJList.setModel(new ca.odell.glazedlists.swing.EventListModel(service.getLauncherList()));
+        launcherJList.setRolloverEnabled(true);
+        launcherJList.setHighlighters(new HighlighterPipeline(new Highlighter[] {
+            Highlighter.notePadBackground
+        }));
     }
     
     /** This method is called from within the constructor to
@@ -99,28 +39,63 @@ public class AddServiceDialog extends javax.swing.JDialog {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        closeButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        launcherJList = new org.jdesktop.swingx.JXList();
+        addLauncherButton = new javax.swing.JButton();
+        editLauncherButton = new javax.swing.JButton();
+        removeLauncherButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        clientComboBox = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        remotePortField = new javax.swing.JTextField();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        localHostField = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        localPortField = new javax.swing.JTextField();
-        cancelButton = new javax.swing.JButton();
-        okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        jLabel1.setText("Name");
+        closeButton.setText("Close");
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeButtonAction(evt);
+            }
+        });
 
-        jLabel2.setText("Client");
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Local -> Remote Port Redirections"));
+        launcherJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                launcherJListValueChanged(evt);
+            }
+        });
 
-        jLabel3.setText("TCP Port");
+        jScrollPane1.setViewportView(launcherJList);
+
+        addLauncherButton.setText("Add");
+        addLauncherButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        addLauncherButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        addLauncherButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        addLauncherButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addLauncherButtonaddClientActionPerformed(evt);
+            }
+        });
+
+        editLauncherButton.setText("Edit");
+        editLauncherButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        editLauncherButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        editLauncherButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        editLauncherButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editLauncherButtoneditClientActionPerformed(evt);
+            }
+        });
+
+        removeLauncherButton.setText("Remove");
+        removeLauncherButton.setEnabled(false);
+        removeLauncherButton.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        removeLauncherButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        removeLauncherButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        removeLauncherButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeLauncherButtonremoveClientActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -128,162 +103,120 @@ public class AddServiceDialog extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jLabel2)
-                    .add(jLabel3)
-                    .add(jLabel1))
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 207, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(clientComboBox, 0, 238, Short.MAX_VALUE)
-                    .add(nameField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                    .add(remotePortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(addLauncherButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                    .add(editLauncherButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, removeLauncherButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel1))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(clientComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel2))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(remotePortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel3))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, 0, 0, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1Layout.createSequentialGroup()
+                        .add(addLauncherButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(editLauncherButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(removeLauncherButton)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
-        jTabbedPane1.addTab("General", jPanel1);
 
-        jLabel4.setText("Local Address");
-
-        jLabel5.setText("Local TCP Port");
-
-        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jLabel5)
-                    .add(jLabel4))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(localHostField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-                    .add(localPortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel4)
-                    .add(localHostField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel5)
-                    .add(localPortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(66, 66, 66))
-        );
-        jTabbedPane1.addTab("Advanced", jPanel2);
-
-        cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        });
-
-        okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
+        jLabel1.setText("Service Name");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(okButton)
+                        .add(jLabel1)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cancelButton)))
+                        .add(nameField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, closeButton))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jTabbedPane1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cancelButton)
-                    .add(okButton))
-                .addContainerGap())
+                    .add(jLabel1)
+                    .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(closeButton)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        doClose(RET_CANCEL);
-    }//GEN-LAST:event_cancelButtonActionPerformed
+    private void launcherJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_launcherJListValueChanged
+        editLauncherButton.setEnabled(launcherJList.isSelectionEmpty() == false);
+        removeLauncherButton.setEnabled(launcherJList.isSelectionEmpty() == false &&
+                ((Launcher) launcherJList.getSelectedValue()).getRecordID() > SDTManager.initialRecordID());
+    }//GEN-LAST:event_launcherJListValueChanged
 
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        doClose(RET_OK);
-    }//GEN-LAST:event_okButtonActionPerformed
-        
-    /** Closes the dialog */
-    private void closeDialog(java.awt.event.WindowEvent evt) {
-        doClose(RET_CANCEL);
-    }
-    
-    private void doClose(int retStatus) {
-        returnStatus = retStatus;
+    private void closeButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonAction
         setVisible(false);
         dispose();
-        if (retStatus == RET_OK) {
-            if (service.getLauncher() == null) {
-                service.addLauncher(new Launcher());
-            }
-            service.setName(nameField.getText());
-            service.getLauncher().setLocalHost(localHostField.getText());
-            if (localPortField.getText().equals("") == false) {
-                service.getLauncher().setLocalPort(Integer.parseInt(localPortField.getText()));
-            }
-            // FIXME: validate input
-            service.getLauncher().setRemotePort(Integer.parseInt(remotePortField.getText()));
-            service.getLauncher().setClient((Client) clientComboBox.getSelectedItem());
+        service.setName(nameField.getText());
+    }//GEN-LAST:event_closeButtonAction
+
+    private void removeLauncherButtonremoveClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeLauncherButtonremoveClientActionPerformed
+        if (launcherJList.isSelectionEmpty()) {
+            return;
         }
-    }
+        service.removeLauncher((Launcher) launcherJList.getSelectedValue());
+        SDTManager.updateService(service);
+    }//GEN-LAST:event_removeLauncherButtonremoveClientActionPerformed
+
+    private void editLauncherButtoneditClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLauncherButtoneditClientActionPerformed
+        if (launcherJList.isSelectionEmpty()) {
+            return;
+        }
+        Launcher launcher = (Launcher) launcherJList.getSelectedValue();
+        AddLauncherDialog dlg = new AddLauncherDialog((java.awt.Frame) this.getParent(), true, launcher);
+        
+        dlg.setTitle("Edit Port Redirection");
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if (dlg.getReturnStatus() == dlg.RET_OK) {
+            SDTManager.updateService(service);
+        }
+    }//GEN-LAST:event_editLauncherButtoneditClientActionPerformed
+
+    private void addLauncherButtonaddClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLauncherButtonaddClientActionPerformed
+        Launcher launcher = new Launcher();
+        AddLauncherDialog dlg = new AddLauncherDialog((java.awt.Frame) this.getParent(), true, launcher);
+        
+        dlg.setTitle("Add Port Redirection");
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if (dlg.getReturnStatus() == dlg.RET_OK) {
+            service.addLauncher(launcher);
+            SDTManager.updateService(service);
+        }
+    }//GEN-LAST:event_addLauncherButtonaddClientActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JComboBox clientComboBox;
+    private javax.swing.JButton addLauncherButton;
+    private javax.swing.JButton closeButton;
+    private javax.swing.JButton editLauncherButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField localHostField;
-    private javax.swing.JTextField localPortField;
+    private javax.swing.JScrollPane jScrollPane1;
+    private org.jdesktop.swingx.JXList launcherJList;
     private javax.swing.JTextField nameField;
-    private javax.swing.JButton okButton;
-    private javax.swing.JTextField remotePortField;
+    private javax.swing.JButton removeLauncherButton;
     // End of variables declaration//GEN-END:variables
- 
-    private int returnStatus = RET_CANCEL;
+
     private Service service;
 }

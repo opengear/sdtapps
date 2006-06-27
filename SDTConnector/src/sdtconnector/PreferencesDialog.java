@@ -355,9 +355,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         dlg.setTitle("Edit Service");
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
-        if (dlg.getReturnStatus() == dlg.RET_OK) {
-            SDTManager.updateService(service);
-        }
+        SDTManager.updateService(service);
     }//GEN-LAST:event_editServiceActionPerformed
 
     private void removeServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeServiceActionPerformed
@@ -374,9 +372,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         dlg.setTitle("Add Service");
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
-        if (dlg.getReturnStatus() == dlg.RET_OK) {
-            SDTManager.addService(service);
-        }
+        SDTManager.addService(service);
     }//GEN-LAST:event_addServiceActionPerformed
 
     private void closeButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonAction

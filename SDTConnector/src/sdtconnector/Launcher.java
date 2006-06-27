@@ -21,7 +21,11 @@ public class Launcher implements Runnable {
         this.localHost = localHost;
         this.localPort = localPort;
         this.remotePort = remotePort;
-        this.setClient(clientID);
+        if (clientID != 0) {
+            this.setClient(clientID);
+        } else {
+            this.client = null;
+        }
     }
     public Launcher(int recordID, String localHost, int localPort, int remotePort, Client client) {
         this.recordID = recordID;
@@ -75,7 +79,14 @@ public class Launcher implements Runnable {
     void setRemoteHost(String remoteHost) {
         this.remoteHost = remoteHost;
     }
-    
+    public boolean equals(Object obj) {
+        return (obj != null && recordID == ((Service) obj).getRecordID());
+    }
+    public String toString() {
+        return (localPort == 0 ? "Any" : String.valueOf(localPort)) +
+                " -> " + String.valueOf(remotePort);
+    }
+        
     public void run() {
         launch();
     }

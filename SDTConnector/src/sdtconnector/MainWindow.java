@@ -723,7 +723,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
             TreePath path = gatewayList.getSelectionPath();
             Object last = path.getLastPathComponent();
             Host host = (Host) last;
-            for (ListIterator it = service.getLaunchers().listIterator(); it.hasNext(); ) {
+            for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
                 sshLaunch((Launcher) it.next());
             }
         }
@@ -746,9 +746,12 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 serviceButton.setPreferredSize(new Dimension((connectButtonPanel.getWidth()-23)/2,32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
-                if (s.getLauncher().getClient() != null && s.getLauncher().getClient().getPath().equals(""))
+                // For some pre-canned clients we can't guess the executable path, make the user set it
+                if (s.getFirstLauncher().getClient() != null
+                        && s.getFirstLauncher().getRecordID() < SDTManager.initialRecordID()
+                        && s.getFirstLauncher().getClient().getPath().equals(""))
                 {
-                    serviceButton.setToolTipText("Set client executable for " + s.getLauncher().getClient()
+                    serviceButton.setToolTipText("Set client executable for " + s.getFirstLauncher().getClient()
                             + "\r\n in Edit -> Preferences -> Clients");
                     serviceButton.setEnabled(false);
                 } else {
@@ -776,7 +779,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
         System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
-                + gw);
+                + gw.getAddress());
         return conn.getRedirector(host.getAddress(), port, lhost, lport);
     }
     private void sshLaunch(final Launcher launcher) {
