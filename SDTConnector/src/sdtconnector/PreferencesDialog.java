@@ -45,7 +45,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         removeServiceButton.setIcon(IconLoader.getButtonIcon("remove"));
         addServiceButton.setIcon(IconLoader.getButtonIcon("add"));
         editServiceButton.setIcon(IconLoader.getButtonIcon("edit"));
-        privateKeyList.addAll(Settings.getPropertyList("PrivateKeyPaths"));
+        privateKeyList.addAll(Settings.getPropertyList(Settings.root().node("PrivateKeyPaths")));
         privateKeyJList.setModel(new ca.odell.glazedlists.swing.EventListModel(privateKeyList));
         privateKeyJList.setRolloverEnabled(true);
         clientJList.setModel(new ca.odell.glazedlists.swing.EventListModel(SDTManager.getClientList()));
@@ -424,7 +424,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         for (int i = selected.length - 1; i >= 0; --i) {
             privateKeyList.remove(selected[i]);
         }
-        Settings.setPropertyList("PrivateKeyPaths", privateKeyList);
+        Settings.setPropertyList(Settings.root().node("PrivateKeyPaths"), privateKeyList);
     }//GEN-LAST:event_removePrivateKeyActionPerformed
 
     private void addPrivateKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPrivateKeyActionPerformed
@@ -435,7 +435,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
         if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
             privateKeyList.add(jc.getSelectedFile().getAbsolutePath());
         }
-        Settings.setPropertyList("PrivateKeyPaths", privateKeyList);
+        Settings.setPropertyList(Settings.root().node("PrivateKeyPaths"), privateKeyList);
     }//GEN-LAST:event_addPrivateKeyActionPerformed
     
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed

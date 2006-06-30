@@ -100,6 +100,10 @@ public class SDTManager {
                     String hostDescription = hostNode.get("description", "");
                     Host host = new Host(Integer.valueOf(hostChildName), hostName, hostAddress, hostDescription);
                     gw.addHost(host);
+                    for (String s : Settings.getPropertyList(hostNode.node("services"))) {
+                        host.addService(Integer.valueOf(s));
+                    }
+                    /*
                     // FIXME: load list
                     Preferences servicePrefs = hostNode.node("services");
                     for (String serviceChildName : servicePrefs.childrenNames()) {
@@ -107,6 +111,7 @@ public class SDTManager {
                         int serviceID = Integer.valueOf(serviceChildName);
                         host.addService(serviceID);
                     }
+                     */
                 }
             }
         } catch (BackingStoreException ex) {
@@ -189,12 +194,6 @@ public class SDTManager {
         saveGateway(gw);    
     }
     public static void removeGateway(Gateway gw) {
-        /*
-        for (ListIterator it = gatewayList.listIterator(); it.hasNext(); ) {
-            if (((Gateway) it.next()).equals(gw)) {
-                it.remove();
-            }
-        }*/
         gatewayList.remove(gw);
         try {
             gatewayPreferences.node(String.valueOf(gw.getRecordID())).removeNode();
@@ -227,11 +226,13 @@ public class SDTManager {
         hostPrefs.put("address", host.getAddress());
         System.out.println("Saving description " + host.getDescription());
         hostPrefs.put("description", host.getDescription());
+        Settings.setPropertyList(hostPrefs.node("services"), host.getServiceList());
+        /*
         // FIXME: save list
         for (Object o : host.getServiceList()) {
             Service s = (Service) o;
             Preferences servicePrefs = hostPrefs.node("services/" + s.getRecordID());
-        }        
+        } */       
         try {
             gwPrefs.sync();
         } catch (BackingStoreException ex) {}
@@ -281,12 +282,6 @@ public class SDTManager {
         saveService(service);    
     }
     public static void removeService(Service service) {
-        /*
-        for (ListIterator it = serviceList.listIterator(); it.hasNext(); ) {
-            if (((Service) it.next()).equals(service)) {
-                it.remove();
-            }
-        }*/
         serviceList.remove(service);
         try {
             servicePreferences.node(String.valueOf(service.getRecordID())).removeNode();
@@ -317,12 +312,6 @@ public class SDTManager {
         saveClient(client);    
     }
     public static void removeClient(Client client) {
-        /*
-        for (ListIterator it = clientList.listIterator(); it.hasNext(); ) {
-            if (((Client) it.next()).equals(client)) {
-                it.remove();
-            }
-        }*/
         clientList.remove(client);
         try {
             clientPreferences.node(String.valueOf(client.getRecordID())).removeNode();

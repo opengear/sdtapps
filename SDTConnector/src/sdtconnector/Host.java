@@ -43,14 +43,6 @@ public class Host {
     }
     public void removeService(Service service) {
         serviceList.remove(service);
-        /*
-        for (ListIterator it = serviceList.listIterator(); it.hasNext(); ) {
-            if (((Service) it.next()).equals(service)) {
-                it.remove();
-                break;
-            }
-        } 
-         */      
     }
     public boolean hasService(Service service) {
         for (Object o : serviceList) {

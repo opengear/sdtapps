@@ -107,7 +107,7 @@ public class GatewayConnection {
             session.setConfig(config);
             session.setPassword(password);
             // Add any configured private keys
-            for (String path : Settings.getPropertyList("PrivateKeyPaths")) {
+            for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
                 jsch.addIdentity(path, "passphrase");
             }           
         } catch (com.jcraft.jsch.JSchException jsche) {

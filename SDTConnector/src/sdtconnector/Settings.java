@@ -19,7 +19,7 @@ public class Settings {
     /** Creates a new instance of Settings */
     public Settings() {
     }
-    private static Preferences root() { 
+    public static Preferences root() { 
         return Preferences.userRoot().node(path); 
     }
     public static String getProperty(String id) {
@@ -28,8 +28,7 @@ public class Settings {
     public static void setProperty(String id, String value) {
         root().put(id, value);
     }
-    public static Collection<String> getPropertyList(String id) {
-        Preferences list = root().node(id);
+    public static Collection<String> getPropertyList(Preferences list) {
         try {
             List<String> ret = new LinkedList<String>();
             for (String elemID : list.keys()) {
@@ -41,14 +40,17 @@ public class Settings {
             return Collections.emptyList();
         }
     }
-    public static void setPropertyList(String id, Collection l) {
+    public static void setPropertyList(Preferences list, Collection l) {
         int count = 0;
-        Preferences list = root().node(id);
         try {
             list.clear();
             for (Iterator i = l.iterator(); i.hasNext(); ++count) {
                 Object o = i.next();
-                list.put(String.valueOf(count), o.toString());
+                if (o instanceof Service) {
+                    list.put(String.valueOf(count), String.valueOf(((Service) o).getRecordID()));
+                } else {
+                    list.put(String.valueOf(count), o.toString());
+                }
             }
             list.flush();
         } catch (BackingStoreException ex) {

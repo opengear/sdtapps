@@ -175,7 +175,7 @@ public class AboutDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
-        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, SDTManager.httpClient);
+        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, SDTManager.getHttpClient());
         launcher.launch();
     }//GEN-LAST:event_imagePanelMouseClicked
     
@@ -184,7 +184,7 @@ public class AboutDialog extends javax.swing.JDialog {
             return;
         }
         URL url = evt.getURL();  
-        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, SDTManager.httpClient);
+        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, SDTManager.getHttpClient());
         launcher.launch();
     }//GEN-LAST:event_hyperlinkEvent
     

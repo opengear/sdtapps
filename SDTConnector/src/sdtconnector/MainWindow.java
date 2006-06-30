@@ -757,7 +757,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 } else {
                     serviceButton.setToolTipText("Launch " + s + " connection to " + host);
                 }
-                // FIXME: use 24x24 or so icons
                 serviceButton.setIcon(getButtonIcon(s.getIconName()));
                 serviceButton.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
