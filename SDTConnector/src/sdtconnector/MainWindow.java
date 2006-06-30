@@ -68,8 +68,8 @@ import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
 import static com.opengear.util.IconLoader.getIcon;
 import static com.opengear.util.IconLoader.getMenuIcon;
+import static com.opengear.util.IconLoader.getButtonIcon;
 import static com.opengear.util.IconLoader.getToolbarIcon;
-import static com.opengear.util.IconLoader.getLargeIcon;
 
 public class MainWindow extends javax.swing.JFrame {
     
@@ -758,7 +758,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     serviceButton.setToolTipText("Launch " + s + " connection to " + host);
                 }
                 // FIXME: use 24x24 or so icons
-                serviceButton.setIcon(getMenuIcon(s.getIconName()));
+                serviceButton.setIcon(getButtonIcon(s.getIconName()));
                 serviceButton.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         serviceButtonActionPerformed(evt);

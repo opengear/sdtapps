@@ -152,23 +152,22 @@ public class SDTManager {
         clientList.add(vncClient);
         clientList.add(rdpClient);
         serviceList.add(new Service(nextRecordID(), "HTTP", httpLauncher, "www"));
-        serviceList.add(new Service(nextRecordID(), "HTTPS", httpsLauncher, "www"));
+        serviceList.add(new Service(nextRecordID(), "HTTPS", httpsLauncher, "https"));
         serviceList.add(new Service(nextRecordID(), "Telnet", telnetLauncher, "telnet"));
-        serviceList.add(new Service(nextRecordID(), "SSH", new Launcher(nextRecordID(), "localhost", 0, 22, sshClient), "telnet"));
+        serviceList.add(new Service(nextRecordID(), "SSH", new Launcher(nextRecordID(), "localhost", 0, 22, sshClient), "ssh"));
         serviceList.add(new Service(nextRecordID(), "VNC", new Launcher(nextRecordID(), "localhost", 0, 5900, vncClient), "vnc"));
         serviceList.add(new Service(nextRecordID(), "RDP", new Launcher(nextRecordID(), "localhost", 0, 3389, rdpClient), "tsclient"));
+        Service drac = new Service(nextRecordID(), "DRAC", httpsLauncher, "lightsout");
+        drac.addLauncher(new Launcher(nextRecordID(), "localhost", 5900, 5900, null));
+        serviceList.add(drac);
+        /*
         Service ilo = new Service(nextRecordID(), "HP iLO", httpsLauncher);
         ilo.addLauncher(new Launcher(nextRecordID(), "localhost", 0, 23, null));
         serviceList.add(ilo);
         Service rsa = new Service(nextRecordID(), "IBM RSA-II", httpsLauncher);
         rsa.addLauncher(new Launcher(nextRecordID(), "localhost", 2000, 2000, null));
         serviceList.add(rsa);
-        Service drac = new Service(nextRecordID(), "DRAC", httpsLauncher);
-        drac.addLauncher(new Launcher(nextRecordID(), "localhost", 5900, 5900, null));
-        serviceList.add(drac);
-        serviceList.add(new Service(nextRecordID(), "Sun ALOM", telnetLauncher));
-        //serviceList.add(new Service(nextRecordID(), "DRAC", new Launcher(2005, "localhost", 0, 1311, httpsClient)));
-        serviceList.add(new Service(nextRecordID(), "ZENworks", new Launcher(nextRecordID(), "localhost", 0, 8080, httpClient)));
+         */
     }
 
     /**
