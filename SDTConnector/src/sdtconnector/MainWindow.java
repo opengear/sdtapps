@@ -715,7 +715,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Service service = null;
         for (Object o : SDTManager.getServiceList()) {
             service = (Service) o;
-            if (service.getRecordID() == Integer.valueOf(evt.getActionCommand())) {
+            if (service.getRecordID() == Integer.parseInt(evt.getActionCommand())) {
                 break;
             }
         }
@@ -757,7 +757,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 } else {
                     serviceButton.setToolTipText("Launch " + s + " connection to " + host);
                 }
-                serviceButton.setIcon(getButtonIcon(s.getIconName()));
+                serviceButton.setIcon(getButtonIcon(s.getIcon()));
                 serviceButton.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         serviceButtonActionPerformed(evt);

@@ -80,6 +80,7 @@ public class Main {
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);
         }
+        /*
         File cwd = new File(System.getProperty("user.dir"));       
         File preferences = new File(cwd, "preferences.xml");
         
@@ -95,6 +96,7 @@ public class Main {
         } catch (IOException ex) {
         } catch (InvalidPreferencesFormatException ex) {
         }
+         */
 
         // Close the splash window after everything is up and initialised
         SwingUtilities.invokeLater(new Runnable() {

@@ -238,7 +238,7 @@ public class AddHostDialog extends javax.swing.JDialog {
             for (Object o : servicesPanel.getComponents()) {
                 javax.swing.JCheckBox checkBox = (JCheckBox) o;
                 if (checkBox.isSelected()) {
-                    host.addService(Integer.valueOf(checkBox.getActionCommand()));
+                    host.addService(Integer.parseInt(checkBox.getActionCommand()));
                 }
             }
         }

@@ -41,6 +41,15 @@ public class Host {
             }
         }        
     }
+    public void addService(String name) {
+        for (Object o : SDTManager.getServiceList()) {
+            Service service = (Service) o;
+            if (service.getName().equals(name)) {
+                serviceList.add(service);
+                break;
+            }
+        }        
+    }
     public void removeService(Service service) {
         serviceList.remove(service);
     }

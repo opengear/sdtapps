@@ -19,11 +19,12 @@ public class Service {
         launcherList.clear();  
         recordID = SDTManager.nextRecordID();
     }
-    public Service(int recordID, String name) {
+    public Service(int recordID, String name, String icon) {
         this.recordID = recordID;
         this.name = name;
         launcherList = new BasicEventList();
-        launcherList.clear();  
+        launcherList.clear();
+        this.icon = icon;
     }
     public Service(int recordID, String name, Launcher launcher) {
         this.recordID = recordID;
@@ -32,13 +33,13 @@ public class Service {
         launcherList.clear();        
         launcherList.add(launcher);
     }
-    public Service(int recordID, String name, Launcher launcher, String iconName) {
+    public Service(int recordID, String name, Launcher launcher, String icon) {
         this.recordID = recordID;
         this.name = name;
         launcherList = new BasicEventList();
         launcherList.clear();
         launcherList.add(launcher);
-        this.iconName = iconName;
+        this.icon = icon;
     }
     public void addLauncher(Launcher launcher) {
         launcherList.add(launcher);
@@ -70,11 +71,11 @@ public class Service {
     public void setName(String name) {
         this.name = name;
     }
-    public String getIconName() {
-        return iconName;
+    public String getIcon() {
+        return icon;
     }
-    public void setIconName(String iconName) {
-        this.iconName = iconName;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Service) obj).getRecordID());
@@ -86,6 +87,6 @@ public class Service {
     private int recordID;
     private String name = "";
     private EventList launcherList;
-    private String iconName = "service";
+    private String icon = "service";
 }
     

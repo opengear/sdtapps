@@ -28,6 +28,9 @@ public class Settings {
     public static void setProperty(String id, String value) {
         root().put(id, value);
     }
+    public static void removeProperty(String id) {
+        root().remove(id);
+    }
     public static Collection<String> getPropertyList(Preferences list) {
         try {
             List<String> ret = new LinkedList<String>();
