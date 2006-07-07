@@ -81,6 +81,8 @@ Section "install" SecDummy
   ;ADD YOUR OWN FILES HERE...
   File ..\dist\SDTConnector.exe
   File preferences.xml
+  File defaults-win.xml
+  Rename defaults-win.xml defaults.xml
   ;Store installation folder
   WriteRegStr HKCU "Software\${AppName}" "" $INSTDIR
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" \
@@ -119,7 +121,10 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\SDTConnector.exe"
+  Delete "$INSTDIR\preferences.xml"
+  Delete "$INSTDIR\defaults.xml"
   Delete "$INSTDIR\Uninstall.exe"
+  Delete "$INSTDIR\doc\one-jar-license.txt"
   RMDir "$INSTDIR\doc"
   RMDir "$INSTDIR"
   Delete "$DESKTOP\${ShortName}.lnk"

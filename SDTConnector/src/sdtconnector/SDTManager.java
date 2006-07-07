@@ -38,7 +38,7 @@ public class SDTManager {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector")) {
                 if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
                     try {
-                        recordID = Integer.parseInt(Settings.getProperty("RecordID"));
+                        recordID = Integer.parseInt(Settings.getProperty("recordID"));
                     } catch (NumberFormatException nfex) {
                         recordID = initialRecordID();
                         loadDefaults = true;
@@ -54,8 +54,8 @@ public class SDTManager {
         
         if (loadDefaults) {
             try {
-                File cwd = new File(System.getProperty("user.dir"));       
-                File defaults = new File(cwd, LookUtils.IS_OS_WINDOWS ? "sdtconfig-win.xml" : "sdtconfig.xml");
+                File cwd = new File(System.getProperty("user.dir"));
+                File defaults = new File(cwd, "defaults.xml");
                 Preferences.importPreferences(new FileInputStream(defaults));
             } catch (FileNotFoundException ex) {
             } catch (InvalidPreferencesFormatException ex) {
@@ -169,6 +169,13 @@ public class SDTManager {
                     saveGateway(gw);
                 }
             }
+        } catch (BackingStoreException ex) {
+            ex.printStackTrace();
+        }
+  
+        Settings.setProperty("version", SDTConnector.VERSION);
+        try {
+            Preferences.userRoot().node("opengear/sdtconnector").sync();
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
@@ -317,7 +324,7 @@ public class SDTManager {
     }
     public static void setRecordID(int recordID) {
         if (recordID >= initialRecordID()) {
-            Settings.setProperty("RecordID", String.valueOf(recordID));
+            Settings.setProperty("recordID", String.valueOf(recordID));
         }
     }
     public static int nextRecordID() {
