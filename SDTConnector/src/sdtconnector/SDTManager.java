@@ -334,7 +334,7 @@ public class SDTManager {
         return getGateway(gwRecordID).getHost(hostRecordID);
     }
     public static Client getHttpClient() {
-        return (Client) clientList.get(1); // By default the HTTP client is first
+        return (Client) clientList.get(0); // By default the HTTP client is first
     }
     
     private static EventList gatewayList;  
