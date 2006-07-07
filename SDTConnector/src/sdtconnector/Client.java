@@ -5,6 +5,8 @@
 
 package sdtconnector;
 
+import org.apache.commons.lang.StringUtils;
+
 
 public class Client {
     
@@ -55,9 +57,11 @@ public class Client {
         return (obj != null && recordID == ((Client) obj).getRecordID());
     }
     public String getCommand(String host, int port) {
-        String cmd = commandFormat.replaceAll("%path%", path);
-        cmd = cmd.replaceAll("%host%", host);
-        return cmd.replaceAll("%port%", String.valueOf(port));
+        String cmd = commandFormat;
+        cmd = StringUtils.replace(cmd, "%path%", path);
+        cmd = StringUtils.replace(cmd, "%host%", host);
+        cmd = StringUtils.replace(cmd, "%port%", String.valueOf(port));
+        return cmd;
     }
     
     private int recordID;
