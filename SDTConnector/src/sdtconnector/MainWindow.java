@@ -140,14 +140,16 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenuExitItem.setIcon(getMenuIcon("exit"));
         addGatewayButton.setIcon(getToolbarIcon("gateway"));
         addGatewayButton.setText("");
-        addGatewayButton.setToolTipText("Create a new Secure Desktop Tunnel");
+        addGatewayButton.setToolTipText("Create a secure tunnel to a gateway");
         addHostButton.setIcon(getToolbarIcon("host"));
         addHostButton.setText("");
-        addHostButton.setToolTipText("Add a Host via the Secure Desktop Tunnel");
+        addHostButton.setToolTipText("Add a host to access via the secure tunnel");
         editButton.setIcon(getToolbarIcon("edit"));
         editButton.setText("");
+        editButton.setToolTipText("Edit");
         deleteButton.setIcon(getToolbarIcon("delete"));
         deleteButton.setText("");
+        deleteButton.setToolTipText("Delete");
         
         // Disable all but new gateway action on empty list
         if (gatewayList.getSelectionPath() == null) {
@@ -786,7 +788,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         if (path == null) {
             return;
         }
-        launcher.setLocalPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getLocalPort()).getLocalPort());        
+    launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort()).getLocalPort());
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
         final GatewayConnection conn = getGatewayConnection(gw);
@@ -796,7 +798,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
             bgExec.execute(new Runnable() {
                 public void run() {
                     if (conn.login()) {
-                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getLocalPort());
+                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
                         statusBar.setText("Launching " + cmd);
                         if (!launcher.launch()) {
                             statusBar.setText(cmd + " failed");
@@ -805,7 +807,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 }
             });
         }
-        
     }
     
     /**
