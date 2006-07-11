@@ -19,7 +19,7 @@ public class Launcher implements Runnable {
     public Launcher(int recordID, String localHost, int localPort, int remotePort, int clientID) {
         this.recordID = recordID;
         this.localHost = localHost;
-        this.localPort = localPort;
+        this.boundPort = this.localPort = localPort;
         this.remotePort = remotePort;
         if (clientID != 0) {
             this.setClient(clientID);
@@ -30,7 +30,7 @@ public class Launcher implements Runnable {
     public Launcher(int recordID, String localHost, int localPort, int remotePort, Client client) {
         this.recordID = recordID;
         this.localHost = localHost;
-        this.localPort = localPort;
+        this.boundPort = this.localPort = localPort;
         this.remotePort = remotePort;
         this.client = client;
     }
@@ -41,11 +41,17 @@ public class Launcher implements Runnable {
         return localHost;
     }
     public void setLocalPort(int localPort) {
-        this.localPort = localPort;
+        this.boundPort = this.localPort = localPort;
     }
     public int getLocalPort() {
         return localPort;
     }
+    public void setBoundPort(int boundPort) {
+        this.boundPort = boundPort;
+    }
+    public int getBoundPort() {
+        return boundPort;
+    }    
     public void setRemotePort(int remotePort) {
         this.remotePort = remotePort;
     }
@@ -92,7 +98,7 @@ public class Launcher implements Runnable {
     }
     public boolean launch() {
         try {
-            Runtime.getRuntime().exec(client.getCommand(localHost, localPort));            
+            Runtime.getRuntime().exec(client.getCommand(localHost, boundPort));            
             return true;
         } catch (IOException ex) {
             return false;
@@ -103,6 +109,7 @@ public class Launcher implements Runnable {
     private String localHost = "localhost";
     private String remoteHost = "";
     private int localPort = 0;
+    private int boundPort = 0;
     private int remotePort = 0;
     private int recordID;
 }
