@@ -237,13 +237,16 @@ public class AddLauncherDialog extends javax.swing.JDialog {
         setVisible(false);
         dispose();
         if (retStatus == RET_OK) {
-            launcher.setLocalHost(localHostField.getText());
-            if (localPortField.getText().equals("") == false) {
-                launcher.setLocalPort(Integer.parseInt(localPortField.getText()));
+            if (remotePortField.getText().equals("")) {
+                returnStatus = RET_CANCEL;
+            } else {
+                launcher.setLocalHost(localHostField.getText());
+                if (localPortField.getText().equals("") == false) {
+                    launcher.setLocalPort(Integer.parseInt(localPortField.getText()));
+                }
+                launcher.setRemotePort(Integer.parseInt(remotePortField.getText()));
+                launcher.setClient((Client) clientComboBox.getSelectedItem());
             }
-            // FIXME: validate input
-            launcher.setRemotePort(Integer.parseInt(remotePortField.getText()));
-            launcher.setClient((Client) clientComboBox.getSelectedItem());
         }
     }
     

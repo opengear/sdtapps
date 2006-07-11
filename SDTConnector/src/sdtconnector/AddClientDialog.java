@@ -169,10 +169,13 @@ public class AddClientDialog extends javax.swing.JDialog {
         setVisible(false);
         dispose();
         if (retStatus == RET_OK) {
-            // FIXME: validate input
-            client.setName(nameField.getText());
-            client.setPath(pathField.getText());
-            client.setCommandFormat(commandFormatField.getText());
+            if (nameField.getText().equals("") || pathField.getText().equals("")) {
+                returnStatus = RET_CANCEL;
+            } else {
+                client.setName(nameField.getText());
+                client.setPath(pathField.getText());
+                client.setCommandFormat(commandFormatField.getText());
+            }
         }        
     }
     

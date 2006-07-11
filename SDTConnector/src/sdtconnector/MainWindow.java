@@ -742,7 +742,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
             for (Object o : host.getServiceList()) {
                 Service s = (Service) o;
                 javax.swing.JButton serviceButton = new javax.swing.JButton();
-                // FIXME: there has got to be a better way
+                // TODO: there has got to be a better way
                 serviceButton.setPreferredSize(new Dimension((connectButtonPanel.getWidth()-23)/2,32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
