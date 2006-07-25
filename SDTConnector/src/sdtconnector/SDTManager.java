@@ -57,6 +57,7 @@ public class SDTManager {
                 File cwd = new File(System.getProperty("user.dir"));
                 File defaults = new File(cwd, "defaults.xml");
                 Preferences.importPreferences(new FileInputStream(defaults));
+                recordID = Integer.parseInt(Settings.getProperty("recordID"));
             } catch (FileNotFoundException ex) {
             } catch (InvalidPreferencesFormatException ex) {
             } catch (IOException ex) {
