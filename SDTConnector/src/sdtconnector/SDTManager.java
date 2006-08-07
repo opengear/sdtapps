@@ -101,10 +101,11 @@ public class SDTManager {
                 for (String launcherChildName : launcherPrefs.childrenNames()) {
                     Preferences launcherNode = launcherPrefs.node(launcherChildName);
                     String localAddress = launcherNode.get("localAddress", "");
-                    int localPort = Integer.parseInt(launcherNode.get("localPort", ""));
-                    int remotePort = Integer.parseInt(launcherNode.get("remotePort", ""));
+                    int localPort = Integer.parseInt(launcherNode.get("localPort", "0"));
+                    int remotePort = Integer.parseInt(launcherNode.get("remotePort", "0"));
+                    int udpPort = Integer.parseInt(launcherNode.get("udpPort", "0"));
                     int clientID = Integer.parseInt(launcherNode.get("clientID", "0"));
-                    Launcher launcher = new Launcher(Integer.parseInt(launcherChildName), localAddress, localPort, remotePort, clientID);
+                    Launcher launcher = new Launcher(Integer.parseInt(launcherChildName), localAddress, localPort, remotePort, udpPort, clientID);
                     service.addLauncher(launcher);
                 }
                 serviceList.add(service);
@@ -266,6 +267,7 @@ public class SDTManager {
             launcherNode.put("localAddress", l.getLocalHost());
             launcherNode.put("localPort", String.valueOf(l.getLocalPort()));
             launcherNode.put("remotePort", String.valueOf(l.getRemotePort()));
+            launcherNode.put("udpPort", String.valueOf(l.getUdpPort()));
             if (l.getClient() != null) {
                 launcherNode.put("clientID", String.valueOf(l.getClient().getRecordID()));
             }

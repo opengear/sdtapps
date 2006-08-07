@@ -16,22 +16,24 @@ public class Launcher implements Runnable {
     public Launcher() {
         recordID = SDTManager.nextRecordID();
     }
-    public Launcher(int recordID, String localHost, int localPort, int remotePort, int clientID) {
+    public Launcher(int recordID, String localHost, int localPort, int remotePort, int udpPort, int clientID) {
         this.recordID = recordID;
         this.localHost = localHost;
         this.boundPort = this.localPort = localPort;
         this.remotePort = remotePort;
+        this.udpPort = udpPort;
         if (clientID != 0) {
             this.setClient(clientID);
         } else {
             this.client = null;
         }
     }
-    public Launcher(int recordID, String localHost, int localPort, int remotePort, Client client) {
+    public Launcher(int recordID, String localHost, int localPort, int remotePort, int udpPort, Client client) {
         this.recordID = recordID;
         this.localHost = localHost;
         this.boundPort = this.localPort = localPort;
         this.remotePort = remotePort;
+        this.udpPort = udpPort;
         this.client = client;
     }
     public void setLocalHost(String localAddress) {
@@ -57,6 +59,12 @@ public class Launcher implements Runnable {
     }
     public int getRemotePort() {
         return remotePort;
+    }
+    public int getUdpPort() {
+        return udpPort;
+    }
+    public void setUdpPort(int udpPort) {
+        this.udpPort = udpPort;
     }
     public void setRecordID(int recordID) {
         this.recordID = recordID;
@@ -98,7 +106,7 @@ public class Launcher implements Runnable {
     }
     public boolean launch() {
         try {
-            Runtime.getRuntime().exec(client.getCommand(localHost, boundPort));            
+            Runtime.getRuntime().exec(client.getCommand(localHost, /*udpPort != 0 ? udpPort :*/ boundPort));
             return true;
         } catch (IOException ex) {
             return false;
@@ -108,8 +116,10 @@ public class Launcher implements Runnable {
     private Client client;
     private String localHost = "localhost";
     private String remoteHost = "";
+    private int udpPort = 0;
     private int localPort = 0;
     private int boundPort = 0;
     private int remotePort = 0;
     private int recordID;
 }
+

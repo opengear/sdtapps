@@ -102,6 +102,8 @@ public class AddLauncherDialog extends javax.swing.JDialog {
         localHostField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         localPortField = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        udpPortField = new javax.swing.JTextField();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
 
@@ -139,13 +141,15 @@ public class AddLauncherDialog extends javax.swing.JDialog {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(remotePortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel3))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
         jTabbedPane1.addTab("General", jPanel1);
 
         jLabel4.setText("Local Address");
 
         jLabel5.setText("Local TCP Port");
+
+        jLabel1.setText("UDP Port");
 
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -154,12 +158,15 @@ public class AddLauncherDialog extends javax.swing.JDialog {
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(jLabel1)
                     .add(jLabel5)
                     .add(jLabel4))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(localHostField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-                    .add(localPortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                        .add(org.jdesktop.layout.GroupLayout.LEADING, udpPortField)
+                        .add(org.jdesktop.layout.GroupLayout.LEADING, localPortField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -173,7 +180,11 @@ public class AddLauncherDialog extends javax.swing.JDialog {
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel5)
                     .add(localPortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(66, 66, 66))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(udpPortField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(45, 45, 45))
         );
         jTabbedPane1.addTab("Advanced", jPanel2);
 
@@ -245,6 +256,7 @@ public class AddLauncherDialog extends javax.swing.JDialog {
                     launcher.setLocalPort(Integer.parseInt(localPortField.getText()));
                 }
                 launcher.setRemotePort(Integer.parseInt(remotePortField.getText()));
+                launcher.setUdpPort(Integer.parseInt(udpPortField.getText()));
                 launcher.setClient((Client) clientComboBox.getSelectedItem());
             }
         }
@@ -253,6 +265,7 @@ public class AddLauncherDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JComboBox clientComboBox;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -264,6 +277,7 @@ public class AddLauncherDialog extends javax.swing.JDialog {
     private javax.swing.JTextField localPortField;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField remotePortField;
+    private javax.swing.JTextField udpPortField;
     // End of variables declaration//GEN-END:variables
  
     private int returnStatus = RET_CANCEL;
