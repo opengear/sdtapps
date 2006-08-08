@@ -48,9 +48,6 @@ public class UDPGateway implements Runnable {
             udpChannel.configureBlocking(false);
             udpKey = udpChannel.register(selector, SelectionKey.OP_READ);
             tcpChannel = SocketChannel.open();
-            tcpChannel.socket().connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));
-            tcpChannel.configureBlocking(false);
-            tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ);    
         } catch (ClosedChannelException ex) {
             ex.printStackTrace();
         } catch (UnknownHostException ex) {
@@ -103,6 +100,8 @@ public class UDPGateway implements Runnable {
                             }
                             if (!tcpChannel.isConnected()) {
                                 tcpChannel.socket().connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));                             
+                                tcpChannel.configureBlocking(false);
+                                tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ); 
                             }
                             buffer.flip();
                             tcpChannel.write(buffer);
@@ -115,7 +114,7 @@ public class UDPGateway implements Runnable {
                                     buffer.flip();
                                     udpChannel.write(buffer);
                                 } else if (len == -1) {
-                                    reinit();
+                                    //reinit();
                                 }
                             }
                         }
@@ -123,7 +122,7 @@ public class UDPGateway implements Runnable {
                 }
             } catch (UnknownHostException ex) {
             } catch (IOException ex) {
-                reinit();
+                //reinit();
             }
         }
     }

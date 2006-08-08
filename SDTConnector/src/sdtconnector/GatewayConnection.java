@@ -98,6 +98,21 @@ public class GatewayConnection {
         }
     }
     
+    public boolean redirectRemoteUDPSocket(final String udpServer, final int port, final int uport) {
+        try {
+            ChannelExec execChannel = (ChannelExec) session.openChannel("exec");
+            String fifo = "/tmp/fifo-" + port + "-" + uport;
+            execChannel.setCommand("killall nc;sleep 1;mkfifo " + fifo + ";nc -l -p " + port +
+                    " <  " + fifo + " | nc -u " + udpServer + " " + uport + " > " + fifo + "&");
+            execChannel.connect();
+            execChannel.disconnect();
+        } catch (com.jcraft.jsch.JSchException jsche) {
+            System.out.println("Jsch exception " + jsche);
+            return false;
+        }
+        return true;
+    }
+    
     private void setupSession(String username, String password) {
         try {
             jsch = new JSch();
@@ -143,38 +158,12 @@ public class GatewayConnection {
                     throw new JSchException("Failed to connect");
                 }
                 try {
-                    if (uport != 0) {
-                        try {
-                            // FIXME -- shouldn't need a second session open
-
-                            Session sesh = jsch.getSession(username, gateway.getAddress(), gateway.getPort());
-                            sesh.setUserInfo(userinfo);
-                            sesh.setConfig(config);
-                            sesh.setPassword(password);
-                            // Add any configured private keys
-                            for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
-                                jsch.addIdentity(path, "passphrase");
-                            }
-                            sesh.connect();
-                            ChannelExec execChannel = (ChannelExec) session.openChannel("exec");
-                            execChannel.setCommand("killall nc;mkfifo /tmp/fifo;nc -l -p " + port +
-                                    " < /tmp/fifo | nc -u " + host + " " + uport + " > /tmp/fifo");
-                            execChannel.setInputStream(null);
-                            execChannel.setErrStream(System.err);
-                            execChannel.setOutputStream(System.out);
-                            execChannel.connect();
-                            execChannel.disconnect();
-                            sesh.disconnect();
-                        } catch (com.jcraft.jsch.JSchException jsche) {
-                            System.out.println("Jsch exception " + jsche);
-                        }    
-                    }
                     channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
                     channel.setHost(uport != 0 ? lhost : host);
                     channel.setPort(port);
                     channel.setInputStream(s.getInputStream());
                     channel.setOutputStream(s.getOutputStream());
-                    listener.sshTcpChannelStarted(uport != 0 ? lhost: host, port);
+                    listener.sshTcpChannelStarted(uport != 0 ? lhost : host, port);
                     channel.connect();
                     listener.sshTcpChannelEstablished(uport != 0 ? lhost : host, port);
                     return channel;

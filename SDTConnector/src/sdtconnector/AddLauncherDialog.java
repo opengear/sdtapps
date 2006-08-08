@@ -39,6 +39,9 @@ public class AddLauncherDialog extends javax.swing.JDialog {
         if ((port = launcher.getLocalPort()) != 0) {
             localPortField.setText(String.valueOf(port));
         }
+        if ((port = launcher.getUdpPort()) != 0) {
+            udpPortField.setText(String.valueOf(port));
+        }
         localHostField.setText(String.valueOf(launcher.getLocalHost()));
         KeyListener keyListener = new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {

@@ -788,7 +788,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 + gw.getAddress());
         return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
-    private void sshLaunch(Gateway gw, Host host, final Launcher launcher) {
+    private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
         launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
@@ -796,6 +796,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
             bgExec.execute(new Runnable() {
                 public void run() {
                     if (conn.login()) {
+                        if (launcher.getUdpPort() != 0) {
+                            conn.redirectRemoteUDPSocket(host.getAddress(), launcher.getRemotePort(), launcher.getUdpPort());
+                        }
                         String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
                         statusBar.setText("Launching " + cmd);
                         if (!launcher.launch()) {
