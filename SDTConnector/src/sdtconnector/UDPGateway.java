@@ -61,20 +61,20 @@ public class UDPGateway implements Runnable {
     
     private void uninit() {
         try {
+            for (Object o : selector.keys()) {
+                SelectionKey key = (SelectionKey) o;
+                key.cancel();
+            }
             selector.close();
+            udpChannel.disconnect();
             udpChannel.close();
             tcpChannel.close();
         } catch (IOException ex) {
         }
     }
     
-    private void reinit() {
+    public void reinit() {
         uninit();
-        try {
-            thread.sleep(2000);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
         init();
     }
 
@@ -84,8 +84,11 @@ public class UDPGateway implements Runnable {
         init();
         while (true) {
             try {
-                buffer.clear();
                 selector.select();
+                if (thread.interrupted()) {
+                    break;
+                }
+                buffer.clear();
                 keys = selector.selectedKeys();
                 for (Iterator it = keys.iterator(); it.hasNext();) {
                     SelectionKey key = (SelectionKey) it.next();
@@ -99,9 +102,11 @@ public class UDPGateway implements Runnable {
                                 len = udpChannel.read(buffer);
                             }
                             if (!tcpChannel.isConnected()) {
-                                tcpChannel.socket().connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));                             
+                                tcpChannel.configureBlocking(true);
+                                tcpChannel.connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));
+                                //tcpChannel.socket().connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));                             
                                 tcpChannel.configureBlocking(false);
-                                tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ); 
+                                tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ);
                             }
                             buffer.flip();
                             tcpChannel.write(buffer);

@@ -61,6 +61,10 @@ public class GatewayConnection {
     public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && r.getLocalPort() == lport) {
+                if (uport != 0) {
+                    // FIXME
+                    r.kickUDPGateway();
+                }
                 return r;
             }
             // shutdown redirector which has local port that required
@@ -219,6 +223,19 @@ public class GatewayConnection {
         }
         public int getRemotePort() {
             return port;
+        }
+        public void kickUDPGateway() {
+            // FIXME -- reinitialise the existing thread
+            ugw.stop();
+            ugw.shutdown();
+            if (uport != 0) {
+                ugw = new UDPGateway(lhost, uport, lport);
+                try {
+                    ugw.start();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         private int getUDPPort() {
             return uport;
