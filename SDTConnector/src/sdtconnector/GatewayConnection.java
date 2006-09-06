@@ -68,7 +68,7 @@ public class GatewayConnection {
                 return r;
             }
             // shutdown redirector which has local port that required
-            if (r.getLocalPort() == lport || r.getUDPPort() == uport) {
+            if (r.getLocalPort() == lport || (uport != 0 && r.getUDPPort() == uport)) {
                 r.shutdown();
                 redirectors.remove(r);
                 break;
