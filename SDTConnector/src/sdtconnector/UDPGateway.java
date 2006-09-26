@@ -80,7 +80,6 @@ public class UDPGateway implements Runnable {
 
     public void run() {
         ByteBuffer buffer = ByteBuffer.allocate(BUF_LEN);
-        int len;
         init();
         while (true) {
             try {
@@ -95,16 +94,10 @@ public class UDPGateway implements Runnable {
                     it.remove();
                     if (key == udpKey) {
                         if (key.isReadable()) {
-                            if (!udpChannel.isConnected()) {
-                                udpClient = udpChannel.receive(buffer);
-                                udpChannel.connect(udpClient);
-                            } else {
-                                len = udpChannel.read(buffer);
-                            }
+                            udpClient = udpChannel.receive(buffer);
                             if (!tcpChannel.isConnected()) {
                                 tcpChannel.configureBlocking(true);
                                 tcpChannel.connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));
-                                //tcpChannel.socket().connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));                             
                                 tcpChannel.configureBlocking(false);
                                 tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ);
                             }
@@ -114,11 +107,12 @@ public class UDPGateway implements Runnable {
                     } else if (key == tcpKey) {
                         if (key.isReadable()) {
                             if (tcpChannel.isConnected()) {
-                                len = tcpChannel.read(buffer);
-                                if (len > 0 && udpChannel.isConnected()) {
+                                int len = tcpChannel.read(buffer);
+                                if (len > 0) {
                                     buffer.flip();
-                                    udpChannel.write(buffer);
-                                } else if (len == -1) {
+                                    udpChannel.send(buffer, udpClient);
+                                } else {
+                                    System.out.printf("UDPGateway: TCP read %d bytes, ignoring\n", len);
                                     //reinit();
                                 }
                             }
@@ -127,6 +121,7 @@ public class UDPGateway implements Runnable {
                 }
             } catch (UnknownHostException ex) {
             } catch (IOException ex) {
+                System.out.println("UDPGateway: IO error, terminating");
                 //reinit();
             }
         }
