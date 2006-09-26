@@ -792,22 +792,21 @@ static FileFilter xmlFileFilter = new FileFilter() {
         launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
-        if (launcher.getClient() != null) {
-            bgExec.execute(new Runnable() {
-                public void run() {
-                    if (conn.login()) {
-                        if (launcher.getUdpPort() != 0) {
-                            conn.redirectRemoteUDPSocket(host.getAddress(), launcher.getRemotePort(), launcher.getUdpPort());
-                        }
+        bgExec.execute(new Runnable() {
+            public void run() {
+                if (conn.login()) {
+                    if (launcher.getClient() != null) {
                         String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
                         statusBar.setText("Launching " + cmd);
                         if (!launcher.launch()) {
                             statusBar.setText(cmd + " failed");
                         }
+                    } else {
+                        statusBar.setText("No client to launch");
                     }
                 }
-            });
-        }
+            }
+        });
     }
     
     /**
