@@ -255,22 +255,6 @@ public class GatewayConnection {
         public int getRemotePort() {
             return port;
         }
-        public void kickUDPGateway() {
-            if (shell != null) {
-                shell.disconnect();
-            }
-            // FIXME -- reinitialise the existing thread
-            ugw.stop();
-            ugw.shutdown();
-            if (uport != 0) {
-                ugw = new UDPGateway(lhost, uport, lport);
-                try {
-                    ugw.start();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
         private int getUDPPort() {
             return uport;
         }
