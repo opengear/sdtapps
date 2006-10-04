@@ -111,9 +111,6 @@ public class UDPGateway implements Runnable {
                                 if (len > 0) {
                                     buffer.flip();
                                     udpChannel.send(buffer, udpClient);
-                                } else {
-                                    System.out.printf("UDPGateway: TCP read %d bytes, ignoring\n", len);
-                                    //reinit();
                                 }
                             }
                         }
