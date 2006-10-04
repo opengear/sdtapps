@@ -119,7 +119,7 @@ public class UDPGateway implements Runnable {
             } catch (UnknownHostException ex) {
             } catch (IOException ex) {
                 System.out.println("UDPGateway: IO error, terminating");
-                //reinit();
+                break;
             }
         }
     }
