@@ -25,7 +25,7 @@ public class UDPGateway implements Runnable {
         this.tcpPort = tcpPort;
     }
     
-    public void start() throws IOException {
+    public void start() {
         thread = new Thread(this);
         thread.setDaemon(true);
         thread.start();
@@ -80,7 +80,9 @@ public class UDPGateway implements Runnable {
 
     public void run() {
         ByteBuffer buffer = ByteBuffer.allocate(BUF_LEN);
+        System.out.println("UDP-TCP: " + localHost + ":" + udpPort + " <-> " + localHost + ":" + tcpPort);
         init();
+        System.out.println("UDP-TCP: Waiting");
         while (true) {
             try {
                 selector.select();
@@ -96,10 +98,12 @@ public class UDPGateway implements Runnable {
                         if (key.isReadable()) {
                             udpClient = udpChannel.receive(buffer);
                             if (!tcpChannel.isConnected()) {
+                                System.out.println("UDP-TCP: Received first UDP packet");
                                 tcpChannel.configureBlocking(true);
                                 tcpChannel.connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));
                                 tcpChannel.configureBlocking(false);
                                 tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ);
+                                System.out.println("UDP-TCP: Connected TCP channel");
                             }
                             buffer.flip();
                             tcpChannel.write(buffer);
