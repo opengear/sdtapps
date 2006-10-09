@@ -58,6 +58,14 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="path" value="" />
             </map>
           </node>
+          <node name="23">
+            <map>
+              <entry key="commandFormat"
+              value="xterm -e %path% %host% 623" />
+              <entry key="name" value="Telnet client (SOL Proxy)" />
+              <entry key="path" value="/usr/bin/telnet" />
+            </map>
+          </node>
         </node>
         <node name="gateways">
           <map />
@@ -220,6 +228,23 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
                   <entry key="localAddress" value="localhost" />
                   <entry key="localPort" value="0" />
                   <entry key="remotePort" value="2607" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="24">
+            <map>
+              <entry key="name" value="Dell SOL Proxy" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="25">
+                <map>
+                  <entry key="clientID" value="23" />
+                  <entry key="localAddress" value="127.0.0.1" />
+                  <entry key="localPort" value="8623" />
+                  <entry key="remotePort" value="8623" />
+                  <entry key="udpPort" value="623" />
                 </map>
               </node>
             </node>
