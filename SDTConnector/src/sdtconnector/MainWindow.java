@@ -723,10 +723,14 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }
         if (service != null) {
             TreePath path = gatewayList.getSelectionPath();
-            Object last = path.getLastPathComponent();
-            Host host = (Host) last;
+            if (path == null) {
+                return;
+            }
+            Gateway gw = (Gateway) path.getPathComponent(1);
+            Host host = (Host) path.getLastPathComponent();
             for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
-                sshLaunch((Launcher) it.next());
+                Launcher l = (Launcher) it.next();
+                sshLaunch(gw, host, l);
             }
         }
     }        
@@ -749,7 +753,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
                 // For some pre-canned clients we can't guess the executable path, make the user set it
-                if (s.getFirstLauncher().getClient() != null
+                if (s.getFirstLauncher() != null
+                        && s.getFirstLauncher().getClient() != null
                         && s.getFirstLauncher().getRecordID() < SDTManager.initialRecordID()
                         && s.getFirstLauncher().getClient().getPath().equals(""))
                 {
@@ -774,39 +779,34 @@ static FileFilter xmlFileFilter = new FileFilter() {
             this.repaint();
         }
     }
-    GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport) {
+    GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport, int uport) {
         TreePath path = gatewayList.getSelectionPath();
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
         System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
                 + gw.getAddress());
-        return conn.getRedirector(host.getAddress(), port, lhost, lport);
+        return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
-    private void sshLaunch(final Launcher launcher) {
-        TreePath path = gatewayList.getSelectionPath();
-        if (path == null) {
-            return;
-        }
-    launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort()).getLocalPort());
-        Gateway gw = (Gateway) path.getPathComponent(1);
-        Host host = (Host) path.getLastPathComponent();
+    private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
+        launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
-        
-        if (launcher.getClient() != null) {
-            bgExec.execute(new Runnable() {
-                public void run() {
-                    if (conn.login()) {
+        bgExec.execute(new Runnable() {
+            public void run() {
+                if (conn.login()) {
+                    if (launcher.getClient() != null) {
                         String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
                         statusBar.setText("Launching " + cmd);
                         if (!launcher.launch()) {
                             statusBar.setText(cmd + " failed");
                         }
+                    } else {
+                        statusBar.setText("No client to launch");
                     }
                 }
-            });
-        }
+            }
+        });
     }
     
     /**

@@ -5,6 +5,7 @@
 package sdtconnector;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelDirectTCPIP;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -57,13 +58,13 @@ public class GatewayConnection {
     public void setListener(Listener l) {
         listener = l;
     }
-    public Redirector getRedirector(String host, int port, String lhost, int lport) {
+    public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && r.getLocalPort() == lport) {
                 return r;
             }
             // shutdown redirector which has local port that required
-            if (r.getLocalPort() == lport) {
+            if (r.getLocalPort() == lport || (uport != 0 && r.getUDPPort() == uport)) {
                 r.shutdown();
                 redirectors.remove(r);
                 break;
@@ -72,7 +73,7 @@ public class GatewayConnection {
 
         // Create a new redirector
         try {
-            Redirector r = new Redirector(this, host, port, lhost, lport);
+            Redirector r = new Redirector(this, host, port, lhost, lport, uport);
             redirectors.add(r);
             r.start();
             return r;
@@ -95,6 +96,50 @@ public class GatewayConnection {
         } catch (Exception ex) {
             return false;
         }
+    }
+    
+    public boolean redirectRemoteUDPSocket(final String udpServer, final int port, final int uport) {
+        try {
+            String str;
+            int i = 0;
+            shell = (ChannelShell) session.openChannel("shell");
+            PrintStream shOut = new PrintStream(shell.getOutputStream());
+            BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+            
+            shell.connect();
+            for (;;) {
+                if (shIn.ready()) {
+                    str = shIn.readLine();
+                    if (str.indexOf("SDT SSH connection established") != -1) {
+                        for (;;) {
+                            shOut.println("udpgw " + port + " " + udpServer + " " + uport);
+                            shOut.flush();
+                            if (shIn.ready()) {
+                                str = shIn.readLine();
+                                if (str.indexOf("Redirecting 127.0.0.1") != -1) {
+                                    return true;                                   
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        Thread.sleep(1);
+                        if (++i == 120) {
+                            return false;
+                        }
+                    } catch (InterruptedException ex) {
+                        return false;
+                    }                    
+                }
+            }
+//          sdtShell.disconnect();
+        } catch (IOException ex) {
+        } catch (com.jcraft.jsch.JSchException jsche) {
+            System.out.println("Jsch exception " + jsche);
+            return false;
+        }
+        return false;
     }
     
     private void setupSession(String username, String password) {
@@ -132,28 +177,30 @@ public class GatewayConnection {
         }
         return true;
     }
-    public boolean redirectSocket(final String host, final int port, final Socket s) {
+    
+    public boolean redirectSocket(final String host, final String lhost, final int port, final int uport, final Socket s) {
         Future f = exec.submit(new Callable() {
             public Channel call() throws Exception {
                 ChannelDirectTCPIP channel;
+                
                 if (!doConnect()) {
                     throw new JSchException("Failed to connect");
                 }
                 try {
-                    
-                    channel  = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
-                    channel.setHost(host);
+                    if (uport != 0) {
+                        redirectRemoteUDPSocket(host, port, uport);
+                    }
+                    channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+                    channel.setHost(uport != 0 ? lhost : host);
                     channel.setPort(port);
                     channel.setInputStream(s.getInputStream());
                     channel.setOutputStream(s.getOutputStream());
-                    
-                    listener.sshTcpChannelStarted(host, port);
+                    listener.sshTcpChannelStarted(uport != 0 ? lhost : host, port);
                     channel.connect();
-                    listener.sshTcpChannelEstablished(host, port);
-                    
+                    listener.sshTcpChannelEstablished(uport != 0 ? lhost : host, port);
                     return channel;
                 } catch (JSchException ex) {
-                    listener.sshTcpChannelFailed(host, port);
+                    listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
                     return null;
                 }
             }
@@ -161,22 +208,39 @@ public class GatewayConnection {
         return true;
     }
     public class Redirector implements Runnable {
-        public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport) throws IOException {
+        public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport, int uport) throws IOException {
             listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
             this.connection = conn;
             this.host = host;
+            this.lhost = lhost;
             this.port = port;
+            this.lport = port;
+            this.uport = uport;
             this.connection = connection;
         }
         public void start() {
             listenThread = new Thread(this);
             listenThread.setDaemon(true);
             listenThread.start();
+            if (uport != 0) {
+                ugw = new UDPGateway(lhost, uport, lport);
+                try {
+                    ugw.start();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         public void stop() {
             listenThread.interrupt();
         }
         public void shutdown() {
+            if (uport != 0) {
+                if (shell != null) {
+                    shell.disconnect();
+                }
+                ugw.shutdown();
+            }
             stop();
             try {
                 listenSocket.close();
@@ -191,24 +255,31 @@ public class GatewayConnection {
         public int getRemotePort() {
             return port;
         }
+        private int getUDPPort() {
+            return uport;
+        }
         public void run() {
             while (true) {
                 try {
-                    connection.redirectSocket(host, port, listenSocket.accept());
+                    connection.redirectSocket(host, lhost, port, uport, listenSocket.accept());
                 } catch (IOException ex) {
                     break;
                 }
             }
         }
+
         private ServerSocket listenSocket;
         private Thread listenThread;
         private GatewayConnection connection;
         private String host;
+        private String lhost;
         private int port;
+        private int lport;
+        private int uport;
+        private UDPGateway ugw;
     }
     
-    
-    public void shutdown() {
+    public void shutdown() {    
         for (Redirector r : redirectors) {
             r.shutdown();
         }
@@ -222,6 +293,7 @@ public class GatewayConnection {
     public static void main(String[] arg) {
         System.out.println("GatewayConnection");
     }
+
     public interface Authentication {
         public boolean promptAuthentication(String prompt);
         public boolean promptPassphrase(String prompt);
@@ -247,6 +319,7 @@ public class GatewayConnection {
     private String password = "";
     Hashtable<String, String> config = new Hashtable<String, String>();
     private Authentication authentication;
+    private ChannelShell shell;
     
     private Listener listener = new Listener() {
         public void sshLoginStarted() {}
@@ -276,6 +349,5 @@ public class GatewayConnection {
             
         }
     };
-    
 }
 
