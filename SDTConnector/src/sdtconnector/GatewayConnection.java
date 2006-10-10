@@ -5,6 +5,7 @@
 package sdtconnector;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelDirectTCPIP;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -57,15 +58,22 @@ public class GatewayConnection {
     public void setListener(Listener l) {
         listener = l;
     }
-    public Redirector getRedirector(String host, int port) {
+    public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
-            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port) {
+            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && r.getLocalPort() == lport) {
                 return r;
             }
+            // shutdown redirector which has local port that required
+            if (r.getLocalPort() == lport || (uport != 0 && r.getUDPPort() == uport)) {
+                r.shutdown();
+                redirectors.remove(r);
+                break;
+            }
         }
+
         // Create a new redirector
         try {
-            Redirector r = new Redirector(this, host, port);
+            Redirector r = new Redirector(this, host, port, lhost, lport, uport);
             redirectors.add(r);
             r.start();
             return r;
@@ -73,7 +81,7 @@ public class GatewayConnection {
             return null;
         }
     }
-    
+   
     //
     // Wait for the login to complete - runs on the GatewayConnection thread.
     //
@@ -89,18 +97,16 @@ public class GatewayConnection {
             return false;
         }
     }
-    
+        
     private void setupSession(String username, String password) {
         try {
             jsch = new JSch();
             session = jsch.getSession(username, gateway.getAddress(), gateway.getPort());
             session.setUserInfo(userinfo);
-            
-            
             session.setConfig(config);
             session.setPassword(password);
             // Add any configured private keys
-            for (String path : Settings.getPropertyList("PrivateKeyPaths")) {
+            for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
                 jsch.addIdentity(path, "passphrase");
             }           
         } catch (com.jcraft.jsch.JSchException jsche) {
@@ -125,46 +131,98 @@ public class GatewayConnection {
         }
         return true;
     }
-    public boolean redirectSocket(final String host, final int port, final Socket s) {
-        Future f = exec.submit(new Callable() {
-            public Channel call() throws Exception {
-                ChannelDirectTCPIP channel;
-                if (!doConnect()) {
-                    throw new JSchException("Failed to connect");
-                }
-                try {
-                    
-                    channel  = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
-                    channel.setHost(host);
-                    channel.setPort(port);
-                    channel.setInputStream(s.getInputStream());
-                    channel.setOutputStream(s.getOutputStream());
-                    
-                    listener.sshTcpChannelStarted(host, port);
-                    channel.connect();
-                    listener.sshTcpChannelEstablished(host, port);
-                    
-                    return channel;
-                } catch (JSchException ex) {
-                    listener.sshTcpChannelFailed(host, port);
-                    return null;
-                }
-            }
-        });
-        return true;
-    }
+    
     public class Redirector implements Runnable {
-        public Redirector(GatewayConnection conn, String host, int port) throws IOException {
-            listenSocket = new ServerSocket(0, 50, InetAddress.getByName("localhost"));
+        private boolean redirectSocket(final Socket s) {
+            Future f = exec.submit(new Callable() {
+
+                private void redirectRemoteUDPSocket() throws Exception {
+                    String command = "udpgw " + port + " " + host + " " + uport;
+                    String result = "TCP-UDP: Timeout";
+                    System.out.println("TCP-UDP: 127.0.0.1:" + port + " <-> " + host + ":" + uport);
+                    shell  = (ChannelShell) session.openChannel("shell");
+                    PrintStream shOut = new PrintStream(shell.getOutputStream());
+                    BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+
+                    shell.connect();
+                    System.out.println("TCP-UDP: Shell connected");
+                    // TODO: configurable timeouts
+                    for (int i = 3000; i > 0; i--) {
+                        Thread.sleep(10);
+                        if (shIn.ready()) {
+                            String line = shIn.readLine();
+                            System.out.println("TCP-UDP: Remote: " + line);
+                            // TODO: configurable expected banner
+                            if (line.indexOf("SDT SSH connection established") != -1
+                                    || line.indexOf("#") != -1)
+                            {
+                                for (int j = 30; j > 0; j--) {
+                                    System.out.println("TCP-UDP: Trying " + command);
+                                    shOut.println(command);
+                                    shOut.flush();
+                                    Thread.sleep(1000);
+                                    if (shIn.ready()) {
+                                        result = "TCP-UDP: OK";
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    System.out.println(result);
+                }
+
+                private void redirectTCPSocket(final String host) throws Exception {
+                    tcpip = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
+                    tcpip.setHost(host);
+                    tcpip.setPort(port);
+                    tcpip.setInputStream(s.getInputStream());
+                    tcpip.setOutputStream(s.getOutputStream());
+                    listener.sshTcpChannelStarted(host, port);
+                    tcpip.connect();
+                    listener.sshTcpChannelEstablished(host, port);
+                }
+
+                public Channel call() throws Exception {
+                    if (!doConnect()) {
+                        throw new JSchException("Failed to connect");
+                    }
+                    try {
+                        if (uport != 0) {
+                            redirectRemoteUDPSocket();
+                            redirectTCPSocket(lhost);
+                        } else {
+                            redirectTCPSocket(host);
+                        }
+                        return tcpip;
+                    } catch (JSchException ex) {
+                        listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
+                        return null;
+                    }
+                }
+            });
+            return true;
+        }
+
+        public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport, int uport) throws IOException {
+            listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
             this.connection = conn;
             this.host = host;
+            this.lhost = lhost;
             this.port = port;
+            this.lport = port;
+            this.uport = uport;
             this.connection = connection;
         }
         public void start() {
             listenThread = new Thread(this);
             listenThread.setDaemon(true);
             listenThread.start();
+            if (uport != 0) {
+                ugw = new UDPGateway(lhost, uport, lport);
+                ugw.start();
+            }
         }
         public void stop() {
             listenThread.interrupt();
@@ -172,6 +230,15 @@ public class GatewayConnection {
         public void shutdown() {
             stop();
             try {
+                if (uport != 0) {
+                    if (shell != null) {
+                        shell.disconnect();
+                    }
+                    ugw.shutdown();
+                }
+                if (tcpip != null) {
+                    tcpip.disconnect();
+                }
                 listenSocket.close();
             } catch (IOException ex) {}
         }
@@ -184,24 +251,33 @@ public class GatewayConnection {
         public int getRemotePort() {
             return port;
         }
+        private int getUDPPort() {
+            return uport;
+        }
         public void run() {
             while (true) {
                 try {
-                    connection.redirectSocket(host, port, listenSocket.accept());
+                    redirectSocket(listenSocket.accept());
                 } catch (IOException ex) {
                     break;
                 }
             }
         }
+
         private ServerSocket listenSocket;
         private Thread listenThread;
         private GatewayConnection connection;
         private String host;
+        private String lhost;
         private int port;
+        private int lport;
+        private int uport;
+        private UDPGateway ugw;
+        private ChannelShell shell;
+        private ChannelDirectTCPIP tcpip;
     }
     
-    
-    public void shutdown() {
+    public void shutdown() {    
         for (Redirector r : redirectors) {
             r.shutdown();
         }
@@ -215,6 +291,7 @@ public class GatewayConnection {
     public static void main(String[] arg) {
         System.out.println("GatewayConnection");
     }
+
     public interface Authentication {
         public boolean promptAuthentication(String prompt);
         public boolean promptPassphrase(String prompt);
@@ -269,6 +346,5 @@ public class GatewayConnection {
             
         }
     };
-    
 }
 

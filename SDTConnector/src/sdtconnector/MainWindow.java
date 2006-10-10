@@ -8,6 +8,8 @@ package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,6 +40,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ListIterator;
 import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
@@ -65,9 +68,8 @@ import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
 import static com.opengear.util.IconLoader.getIcon;
 import static com.opengear.util.IconLoader.getMenuIcon;
+import static com.opengear.util.IconLoader.getButtonIcon;
 import static com.opengear.util.IconLoader.getToolbarIcon;
-import static com.opengear.util.IconLoader.getLargeIcon;
-
 
 public class MainWindow extends javax.swing.JFrame {
     
@@ -92,8 +94,10 @@ public class MainWindow extends javax.swing.JFrame {
                 Object last = gatewayList.getSelectionPath().getLastPathComponent();
                 if (last instanceof Gateway) {
                     descriptionArea.setText(((Gateway) last).getDescription());
-                } else {
+                } else if (last instanceof Host) {
                     descriptionArea.setText(((Host) last).getDescription());
+                } else if (last instanceof Service) {
+                    descriptionArea.setText(((Service) last).getName());
                 }
             }
             public void treeNodesInserted(TreeModelEvent e) { }
@@ -110,10 +114,10 @@ public class MainWindow extends javax.swing.JFrame {
         
         newGatewayAction.putValue(Action.SMALL_ICON, getMenuIcon("gateway"));
         newGatewayAction.putValue(Action.NAME, "New Gateway");
+        
+        listMenuAddGatewayItem.setAction(newGatewayAction);
         addGatewayMenuItem.setAction(newGatewayAction);
         addGatewayButton.setAction(newGatewayAction);
-        listMenuAddGatewayItem.setAction(newGatewayAction);
-        listMenuAddHostItem.setAction(newHostAction);
         
         editAction.putValue(Action.SMALL_ICON, getMenuIcon("edit"));
         editAction.putValue(Action.NAME, "Edit");
@@ -136,19 +140,18 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenuExitItem.setIcon(getMenuIcon("exit"));
         addGatewayButton.setIcon(getToolbarIcon("gateway"));
         addGatewayButton.setText("");
-        addGatewayButton.setToolTipText("Create a new Secure Desktop Tunnel");
+        addGatewayButton.setToolTipText("Create a secure tunnel to a gateway");
         addHostButton.setIcon(getToolbarIcon("host"));
         addHostButton.setText("");
-        addHostButton.setToolTipText("Add a Host via the Secure Desktop Tunnel");
+        addHostButton.setToolTipText("Add a host to access via the secure tunnel");
         editButton.setIcon(getToolbarIcon("edit"));
         editButton.setText("");
+        editButton.setToolTipText("Edit");
         deleteButton.setIcon(getToolbarIcon("delete"));
         deleteButton.setText("");
-        telnetButton.setIcon(getLargeIcon("telnet"));
-        webButton.setIcon(getLargeIcon("www"));
-        rdpButton.setIcon(getLargeIcon("tsclient"));
-        vncButton.setIcon(getLargeIcon("vnc"));
-        // Disable edit/delete actions on an empty list
+        deleteButton.setToolTipText("Delete");
+        
+        // Disable all but new gateway action on empty list
         if (gatewayList.getSelectionPath() == null) {
             newHostAction.setEnabled(false);
             deleteAction.setEnabled(false);
@@ -200,7 +203,6 @@ public class MainWindow extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        javax.swing.JPanel connectButtonPanel;
         javax.swing.JPanel jPanel1;
         javax.swing.JPanel jPanel2;
         javax.swing.JPanel jPanel3;
@@ -215,10 +217,6 @@ public class MainWindow extends javax.swing.JFrame {
         listEditMenuItem = new javax.swing.JMenuItem();
         listRemoveMenuItem = new javax.swing.JMenuItem();
         connectButtonPanel = new javax.swing.JPanel();
-        telnetButton = new javax.swing.JButton();
-        webButton = new javax.swing.JButton();
-        vncButton = new javax.swing.JButton();
-        rdpButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         gatewayList = new javax.swing.JTree();
         jToolBar1 = new javax.swing.JToolBar();
@@ -261,72 +259,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Opengear SDTConnector");
-        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect"));
-        telnetButton.setText("Telnet");
-        telnetButton.setEnabled(false);
-        telnetButton.setNextFocusableComponent(webButton);
-        telnetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                telnetButtonActionPerformed(evt);
-            }
-        });
+        connectButtonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
-        webButton.setText("Web");
-        webButton.setEnabled(false);
-        webButton.setNextFocusableComponent(rdpButton);
-        webButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                webButtonActionPerformed(evt);
-            }
-        });
-
-        vncButton.setText("VNC");
-        vncButton.setEnabled(false);
-        vncButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vncButtonActionPerformed(evt);
-            }
-        });
-
-        rdpButton.setText("RDP");
-        rdpButton.setEnabled(false);
-        rdpButton.setNextFocusableComponent(vncButton);
-        rdpButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rdpButtonActionPerformed(evt);
-            }
-        });
-
-        org.jdesktop.layout.GroupLayout connectButtonPanelLayout = new org.jdesktop.layout.GroupLayout(connectButtonPanel);
-        connectButtonPanel.setLayout(connectButtonPanelLayout);
-        connectButtonPanelLayout.setHorizontalGroup(
-            connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(connectButtonPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(webButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(telnetButton))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(vncButton)
-                    .add(rdpButton))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        connectButtonPanelLayout.linkSize(new java.awt.Component[] {rdpButton, telnetButton, vncButton, webButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
-        connectButtonPanelLayout.setVerticalGroup(
-            connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(connectButtonPanelLayout.createSequentialGroup()
-                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(telnetButton)
-                    .add(rdpButton))
-                .add(17, 17, 17)
-                .add(connectButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(webButton)
-                    .add(vncButton))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Services"));
+        connectButtonPanel.setMinimumSize(new java.awt.Dimension(220, 186));
+        connectButtonPanel.setPreferredSize(new java.awt.Dimension(220, 186));
 
         gatewayList.setRootVisible(false);
         gatewayList.setRowHeight(20);
@@ -380,7 +317,7 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -393,7 +330,7 @@ public class MainWindow extends javax.swing.JFrame {
         descriptionArea.setColumns(20);
         descriptionArea.setEditable(false);
         descriptionArea.setLineWrap(true);
-        descriptionArea.setRows(5);
+        descriptionArea.setRows(3);
         descriptionArea.setWrapStyleWord(true);
         descriptionArea.setAutoscrolls(false);
         descriptionArea.setBorder(null);
@@ -411,7 +348,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 272, Short.MAX_VALUE)
+            .add(0, 247, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
@@ -422,7 +359,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 272, Short.MAX_VALUE)
+            .add(0, 247, Short.MAX_VALUE)
         );
 
         fileMenu.setText("File");
@@ -505,42 +442,39 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(6, 6, 6)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                .addContainerGap()
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 219, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(descriptionScrollPane, 0, 0, Short.MAX_VALUE)
-                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                    .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-
-        layout.linkSize(new java.awt.Component[] {connectButtonPanel, descriptionScrollPane}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 151, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                        .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    static FileFilter xmlFileFilter = new FileFilter() {
+static FileFilter xmlFileFilter = new FileFilter() {
         public boolean accept(File f) {
             return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
         }
@@ -594,11 +528,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_importPreferencesMenuItemActionPerformed
-    
-    private void rdpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdpButtonActionPerformed
-        sshLaunch(new RDPViewer(), 3389);
-    }//GEN-LAST:event_rdpButtonActionPerformed
-    
+        
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         JDialog dlg = new AboutDialog(this, true, SDTConnector.VERSION);
         dlg.setLocationRelativeTo(this);
@@ -635,9 +565,11 @@ public class MainWindow extends javax.swing.JFrame {
         
         if (evt.isPopupTrigger()) {
             TreePath path = gatewayList.getPathForLocation(evt.getX(), evt.getY());
+            
             // If no selected node, unable to edit or delete it
             listRemoveMenuItem.setEnabled(path != null);
             listEditMenuItem.setEnabled(path != null);
+            // Services can only be added at or below a host node
             gatewayListPopup.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }
@@ -649,36 +581,29 @@ public class MainWindow extends javax.swing.JFrame {
         dlg.setVisible(true);
         updateButtonState();
     }//GEN-LAST:event_prefsMenuItemActionPerformed
-    
-    private void webButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonActionPerformed
-        sshLaunch(new Browser(), 80);
-    }//GEN-LAST:event_webButtonActionPerformed
-    
+        
     private void removeSelectedNode(TreePath path) {
         Object last = path.getLastPathComponent();
         if (last instanceof Gateway) {
-            SDTManager.removeGateway(last.toString());
+            SDTManager.removeGateway((Gateway)last);
             removeGatewayConnection(last.toString());
-        } else {
+        } else if (last instanceof Host) {
             SDTManager.removeHost((Gateway) path.getPathComponent(1), (Host) last);
         }
     }
-    
-    private void vncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vncButtonActionPerformed
-        sshLaunch(new VNCViewer(), 5900);
-    }//GEN-LAST:event_vncButtonActionPerformed
-    
+        
     private void gatewayListValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_gatewayListValueChanged
         TreePath path = gatewayList.getSelectionPath();
         boolean isGateway = false;
         boolean isHost = false;
         String desc = "";
+        String hint = "";
         if (path != null) {
             Object last = path.getLastPathComponent();
             if (last instanceof Gateway) {
                 desc = ((Gateway) last).getDescription();
                 isGateway = true;
-            } else {
+            } else if (last instanceof Host) {
                 desc = ((Host) last).getDescription();
                 isHost = true;
             }
@@ -712,12 +637,15 @@ public class MainWindow extends javax.swing.JFrame {
                     + last.toString() + "\n"
                     + "and all the hosts connected to it?";
         } else {
-            msg = "Are you sure you want to delete host " + last.toString();
+            msg = "Are you sure you want to delete host " + last.toString() + "?";
         }
         int retVal = JOptionPane.showConfirmDialog(this, msg, "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (retVal == JOptionPane.OK_OPTION) {
             removeSelectedNode(gatewayList.getSelectionPath());
+            connectButtonPanel.removeAll();
+            descriptionArea.setText("");
+            this.repaint();
         }
     }
     
@@ -750,7 +678,6 @@ public class MainWindow extends javax.swing.JFrame {
         dlg.setTitle("New SDT Host");
         dlg.setVisible(true);
         if (dlg.getReturnStatus() == dlg.RET_OK) {
-            
             // Add it to the DB
             SDTManager.addHost((Gateway) path.getPathComponent(1), host);
             
@@ -762,42 +689,51 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void editSelectedNode(final TreePath path) {
-        boolean isGateway = path.getPathCount() == 2;
+        Object last = path.getLastPathComponent();
         TreeModel model = (TreeModel) gatewayList.getModel();
         Gateway gw = (Gateway) path.getPathComponent(1);
         JDialog dlg;
         
-        if (isGateway) {
-            String oldAddress = gw.getAddress();
-            int oldPort = gw.getPort();
+        if (last instanceof Gateway) {
             dlg = new GatewayDialog(this, true, gw);
             dlg.setTitle("Edit SDT Gateway");
             dlg.setLocationRelativeTo(this);
             dlg.pack();
             dlg.setVisible(true);
-            if (!oldAddress.equals(gw.getAddress()) || gw.getPort() != oldPort) {
-                removeGatewayConnection(oldAddress);
-            }
-            SDTManager.updateGateway(gw, oldAddress);
-        } else {
-            Host host = (Host) path.getPathComponent(2);
-            
-            String oldAddress = host.getAddress();
+            SDTManager.updateGateway(gw);
+        } else if (last instanceof Host) {
+            Host host = (Host) last;
             dlg = new AddHostDialog(this, true, host);
             dlg.setTitle("Edit SDT Host");
             dlg.setLocationRelativeTo(this);
             dlg.pack();
             dlg.setVisible(true);
-            SDTManager.updateHost(gw, host, oldAddress);
+            SDTManager.updateHost(gw, host);
         }
-        model.valueForPathChanged(path, path.getLastPathComponent());
+        model.valueForPathChanged(path, last);
         updateButtonState();
     }
-    
-    private void telnetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telnetButtonActionPerformed
-        sshLaunch(new Telnet(), 23);
-    }//GEN-LAST:event_telnetButtonActionPerformed
-    
+    private void serviceButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        Service service = null;
+        for (Object o : SDTManager.getServiceList()) {
+            service = (Service) o;
+            if (service.getRecordID() == Integer.parseInt(evt.getActionCommand())) {
+                break;
+            }
+        }
+        if (service != null) {
+            TreePath path = gatewayList.getSelectionPath();
+            if (path == null) {
+                return;
+            }
+            Gateway gw = (Gateway) path.getPathComponent(1);
+            Host host = (Host) path.getLastPathComponent();
+            for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
+                Launcher l = (Launcher) it.next();
+                sshLaunch(gw, host, l);
+            }
+        }
+    }        
     private void updateButtonState() {
         TreePath path = gatewayList.getSelectionPath();
         if (path == null) {
@@ -808,63 +744,69 @@ public class MainWindow extends javax.swing.JFrame {
         boolean isHost = last instanceof Host;
         if (isHost) {
             host = (Host) last;
+            connectButtonPanel.removeAll();
+            for (Object o : host.getServiceList()) {
+                Service s = (Service) o;
+                javax.swing.JButton serviceButton = new javax.swing.JButton();
+                // TODO: there has got to be a better way
+                serviceButton.setPreferredSize(new Dimension(connectButtonPanel.getWidth()/2-10,32));
+                serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
+                serviceButton.setText(s.getName());
+                // For some pre-canned clients we can't guess the executable path, make the user set it
+                if (s.getFirstLauncher() != null
+                        && s.getFirstLauncher().getClient() != null
+                        && s.getFirstLauncher().getRecordID() < SDTManager.initialRecordID()
+                        && s.getFirstLauncher().getClient().getPath().equals(""))
+                {
+                    serviceButton.setToolTipText("Set client executable for " + s.getFirstLauncher().getClient()
+                            + "\r\n in Edit -> Preferences -> Clients");
+                    serviceButton.setEnabled(false);
+                } else {
+                    serviceButton.setToolTipText("Launch " + s + " connection to " + host);
+                }
+                serviceButton.setIcon(getButtonIcon(s.getIcon()));
+                serviceButton.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        serviceButtonActionPerformed(evt);
+                    }
+                });                
+                connectButtonPanel.add(serviceButton);
+            }
+            pack();
+            this.repaint();
+        }  else {
+            connectButtonPanel.removeAll();
+            this.repaint();
         }
-        boolean rdpIsSet = Settings.getProperty("rdp.path").length() > 0;
-        boolean vncIsSet = Settings.getProperty("vnc.path").length() > 0;
-        rdpButton.setEnabled(isHost && rdpIsSet && host.rdp);
-        if (!rdpIsSet) {
-            rdpButton.setToolTipText("Set the RDP client in Edit -> Preferences");
-        } else {
-            rdpButton.setToolTipText(isHost ?
-                "Connect to " + last + " using a RDP client" : "");
-        }
-        vncButton.setEnabled(isHost && vncIsSet && host.vnc);
-        if (!vncIsSet) {
-            vncButton.setToolTipText("Set the VNC client in Edit -> Preferences");
-        } else {
-            vncButton.setToolTipText(isHost ?
-                "Connect to " + last + " using a VNC client" : "");
-        }
-        telnetButton.setEnabled(isHost && host.telnet);
-        telnetButton.setToolTipText(isHost ? "Telnet to " + last : "");
-        webButton.setEnabled(isHost && host.www);
-        webButton.setToolTipText(isHost ? "Browse to " + last : "");
     }
-    GatewayConnection.Redirector getRedirectorForSelection(int port) {
+    GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport, int uport) {
         TreePath path = gatewayList.getSelectionPath();
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
-        System.out.println("Adding redirection to " + host + ":" + port + " via "
-                + gw);
-        return conn.getRedirector(host.toString(), port);
+        System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
+                + gw.getAddress());
+        return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
-    private void sshLaunch(final Launcher launcher, int port) {
-        
-        TreePath path = gatewayList.getSelectionPath();
-        if (path == null) {
-            return;
-        }
-        launcher.setHost("localhost");
-        launcher.setPort(getRedirectorForSelection(port).getLocalPort());
-        
-        Gateway gw = (Gateway) path.getPathComponent(1);
-        Host host = (Host) path.getLastPathComponent();
+    private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
+        launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
-        
         bgExec.execute(new Runnable() {
             public void run() {
                 if (conn.login()) {
-                    String cmd = launcher.getCommand();
-                    statusBar.setText("Launching " + cmd);
-                    if (!launcher.launch()) {
-                        statusBar.setText(cmd + " failed");
+                    if (launcher.getClient() != null) {
+                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
+                        statusBar.setText("Launching " + cmd);
+                        if (!launcher.launch()) {
+                            statusBar.setText(cmd + " failed");
+                        }
+                    } else {
+                        statusBar.setText("No client to launch");
                     }
                 }
             }
         });
-        
     }
     
     /**
@@ -1004,6 +946,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem addGatewayMenuItem;
     private javax.swing.JButton addHostButton;
     private javax.swing.JMenuItem addHostMenu;
+    private javax.swing.JPanel connectButtonPanel;
     private javax.swing.JButton deleteButton;
     private javax.swing.JTextArea descriptionArea;
     private javax.swing.JScrollPane descriptionScrollPane;
@@ -1023,11 +966,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem listMenuAddHostItem;
     private javax.swing.JMenuItem listRemoveMenuItem;
     private javax.swing.JMenuItem prefsMenuItem;
-    private javax.swing.JButton rdpButton;
     private org.jdesktop.swingx.JXStatusBar statusBar;
-    private javax.swing.JButton telnetButton;
-    private javax.swing.JButton vncButton;
-    private javax.swing.JButton webButton;
     // End of variables declaration//GEN-END:variables
     
     private SDTTreeModel treeModel;
@@ -1055,5 +994,4 @@ public class MainWindow extends javax.swing.JFrame {
             addGatewayActionPerformed(evt);
         }
     };
-    
 }
