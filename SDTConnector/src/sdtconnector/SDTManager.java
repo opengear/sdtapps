@@ -33,7 +33,7 @@ public class SDTManager {
     public static void load() {
         boolean loadDefaults = false;
         boolean migrate = false;
-        
+
         try {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector")) {
                 if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
@@ -65,6 +65,7 @@ public class SDTManager {
         }
 
         clientPreferences = Preferences.userRoot().node("opengear/sdtconnector/clients");
+        clientList.clear();
         try {
             for (String clientChildName : clientPreferences.childrenNames()) {
                 Preferences clientNode = clientPreferences.node(clientChildName);
@@ -91,6 +92,7 @@ public class SDTManager {
         }
         
         servicePreferences = Preferences.userRoot().node("opengear/sdtconnector/services");
+        serviceList.clear();
         try {
             for (String serviceChildName : servicePreferences.childrenNames()) {
                 Preferences serviceNode = servicePreferences.node(serviceChildName);
