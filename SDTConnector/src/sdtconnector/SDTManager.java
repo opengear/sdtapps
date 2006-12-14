@@ -68,9 +68,20 @@ public class SDTManager {
         clientList.clear();
         try {
             for (String clientChildName : clientPreferences.childrenNames()) {
+				String path = null;
+				String commandFormat = null;
                 Preferences clientNode = clientPreferences.node(clientChildName);
                 String name = clientNode.get("name", "");
-                String path = clientNode.get("path", "");
+				if (OS.isWindows()) {
+					path = clientNode.get("path-win", null);
+					commandFormat = clientNode.get("commandFormat-win", null);
+				}
+				if (path == null) {
+					path = clientNode.get("path", "");
+				}
+				if (commandFormat == null) {
+					commandFormat = clientNode.get("commandFormat", "");
+				}
                 if (migrate) {
                     if (name.equals("VNC viewer")) {
                         path = Settings.getProperty("vnc.path");
@@ -80,7 +91,6 @@ public class SDTManager {
                         Settings.removeProperty("rdp.path");
                     }
                 }
-                String commandFormat = clientNode.get("commandFormat", "");
                 Client client = new Client(Integer.parseInt(clientChildName), name, path, commandFormat);
                 clientList.add(client);
                 if (migrate) {
@@ -301,8 +311,13 @@ public class SDTManager {
     private static void saveClient(Client client) {
         Preferences clientNode = clientPreferences.node(String.valueOf(client.getRecordID()));
         clientNode.put("name", client.getName());
-        clientNode.put("path", client.getPath());
-        clientNode.put("commandFormat", client.getCommandFormat());
+		if (OS.isWindows()) {
+			clientNode.put("path-win", client.getPath());
+			clientNode.put("commandFormat-win", client.getCommandFormat());
+		} else {
+			clientNode.put("path", client.getPath());
+			clientNode.put("commandFormat", client.getCommandFormat());
+		}
         
         try {
             clientNode.sync();
