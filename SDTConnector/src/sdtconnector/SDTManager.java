@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.prefs.InvalidPreferencesFormatException;
+import org.jdesktop.swingx.util.OS;
 import sdtconnector.Gateway;
 import sdtconnector.Client;
 import java.util.Iterator;
