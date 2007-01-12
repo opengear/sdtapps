@@ -16,7 +16,7 @@ for f in $(echo $CP | sed s/:/\ /g); do
 done
 cp -al $DISTDIR/SDTConnector.jar main/main.jar
 
-jar xf $ROOTDIR/tools/one-jar-boot-0.95.jar
+jar xf $ROOTDIR/tools/one-jar-boot-0.96.jar
 jar -cfm $OUTJAR boot-manifest.mf .
 
 cp -al $ROOTDIR/../classlib/quaqua*.jar lib
