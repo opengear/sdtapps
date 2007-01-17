@@ -16,6 +16,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               value="%path% http://%host%:%port%/" />
               <entry key="name" value="HTTP browser" />
               <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
           <node name="2">
@@ -24,12 +25,15 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               value="%path% https://%host%:%port%/" />
               <entry key="name" value="HTTPS browser" />
               <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
           <node name="3">
             <map>
               <entry key="commandFormat"
               value="xterm -e %path% %host% %port%" />
+              <entry key="commandFormat-win"
+              value="cmd /c start %path% %host% %port%" />
               <entry key="name" value="Telnet client" />
               <entry key="path" value="telnet" />
             </map>
@@ -38,14 +42,19 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
             <map>
               <entry key="commandFormat"
               value="xterm -e %path% -o UserKnownHostsFile=/dev/null -p %port% %host%" />
+              <entry key="commandFormat-win"
+              value="%path% -ssh -P %port% %host%" />
               <entry key="name" value="SSH client" />
               <entry key="path" value="ssh" />
+              <entry key="path-win" value="" />
             </map>
           </node>
           <node name="5">
             <map>
               <entry key="commandFormat"
               value="%path% %host%:%port%" />
+              <entry key="commandFormat-win"
+              value="%path% %host%::%port%" />
               <entry key="name" value="VNC viewer" />
               <entry key="path" value="" />
             </map>
@@ -54,6 +63,8 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
             <map>
               <entry key="commandFormat"
               value="%path% %host%:%port%" />
+              <entry key="commandFormat-win"
+              value="%path% /console /v:%host%:%port%" />
               <entry key="name" value="RDP viewer" />
               <entry key="path" value="" />
             </map>
@@ -162,6 +173,64 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
                   <entry key="localAddress" value="localhost" />
                   <entry key="localPort" value="0" />
                   <entry key="remotePort" value="3389" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="19">
+            <map>
+              <entry key="name" value="Dell RAC" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="20">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="5900" />
+                  <entry key="remotePort" value="5900" />
+                </map>
+              </node>
+              <node name="8">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="443" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="21">
+            <map>
+              <entry key="name" value="Dell OpenManage" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="8">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="1311" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="22">
+            <map>
+              <entry key="name" value="Dell IT Assistant" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="8">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="2607" />
                 </map>
               </node>
             </node>
