@@ -106,7 +106,7 @@ public class Launcher implements Runnable {
     }
     public boolean launch() {
         try {
-            Runtime.getRuntime().exec(client.getCommand(localHost, /*udpPort != 0 ? udpPort :*/ boundPort));
+            Runtime.getRuntime().exec(client.getCommand(localHost, boundPort));
             return true;
         } catch (IOException ex) {
             return false;

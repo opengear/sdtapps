@@ -36,6 +36,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import org.omg.SendingContext.RunTime;
 
 
 public class GatewayConnection {
@@ -97,11 +98,11 @@ public class GatewayConnection {
             return false;
         }
     }
-        
+    
     private void setupSession(String username, String password) {
         try {
             jsch = new JSch();
-            session = jsch.getSession(username, gateway.getAddress(), gateway.getPort());
+            session = jsch.getSession(username, gateway.getActiveAddress(), gateway.getPort());
             session.setUserInfo(userinfo);
             session.setConfig(config);
             session.setPassword(password);
@@ -118,17 +119,38 @@ public class GatewayConnection {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
             listener.sshLoginStarted();
-            try {
-                session.connect(5000);
-            } catch (JSchException ex) {
-                listener.sshLoginFailed();
-                // Reset the session
-                setupSession(username, password);
-                return false;
-            }
+            connectSession();
             listener.sshLoginSucceeded();
             System.out.println("Connected");
         }
+        return true;
+    }
+    
+    private boolean connectSession() {
+        if (gateway.getOob()) {
+            try {
+                Process proc = Runtime.getRuntime().exec(gateway.getOobStart());
+                int retVal = proc.waitFor();
+            } catch (IOException ex) {
+            } catch (InterruptedException ex) {
+                /* FIXME */
+            }
+        }
+        try {
+            session.connect(5000);
+            //activeSession().connect(5000);
+        } catch (JSchException ex) {
+            listener.sshLoginFailed();
+            // Reset the session
+            setupSession(username, password);
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean disconnectSession() {
+        session.disconnect();
+        //activeSession().disconnect();
         return true;
     }
     
@@ -277,13 +299,15 @@ public class GatewayConnection {
         private ChannelDirectTCPIP tcpip;
     }
     
+    
+    
     public void shutdown() {    
         for (Redirector r : redirectors) {
             r.shutdown();
         }
         exec.execute(new Runnable() {
             public void run() {
-                session.disconnect();
+                disconnectSession();
                 exec.shutdown();
             }
         });
@@ -311,6 +335,7 @@ public class GatewayConnection {
     private Gateway gateway;
     private JSch jsch;
     private Session session;
+    private Session oobSession;
     private ExecutorService exec = Executors.newSingleThreadExecutor();
     private List<Redirector> redirectors = new ArrayList<Redirector>();
     private String username = "";

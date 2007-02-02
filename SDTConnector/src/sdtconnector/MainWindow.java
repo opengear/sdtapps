@@ -8,6 +8,7 @@ package sdtconnector;
 
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.io.FileOutputStream;
 import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 import sdtconnector.Gateway;
 import sdtconnector.GatewayConnection;
@@ -77,6 +79,8 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         setIconImage(getIcon("16x16", "gateway").getImage());
+        Color statusColor = statusBar.getBackground();
+
         
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -261,7 +265,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle("Opengear SDTConnector");
         connectButtonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
-        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Services"));
+        connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         connectButtonPanel.setMinimumSize(new java.awt.Dimension(220, 186));
         connectButtonPanel.setPreferredSize(new java.awt.Dimension(220, 186));
 
@@ -687,6 +691,33 @@ static FileFilter xmlFileFilter = new FileFilter() {
             gatewayList.setSelectionPath(path);
         }
     }
+
+    private void oobActionPerformed(ActionEvent evt) {
+        boolean oob;
+        
+        TreePath path = gatewayList.getSelectionPath();
+        if (path == null) {
+            return;
+        }
+        Gateway gw = (Gateway) path.getPathComponent(1);
+        oob = !gw.getOob();
+        gw.setOob(oob);
+        if (oob) {
+            statusBar.setBackground(Color.pink);
+            statusBar.setLeadingMessage("Out of band mode enabled for " + gw);
+        } else {
+            try {
+                Process proc = Runtime.getRuntime().exec(gw.getOobStop());
+                int retVal = proc.waitFor();
+                Runtime.getRuntime().exec(gw.getOobStop());
+            } catch (IOException ex) {
+            } catch (InterruptedException ex) {
+                /* FIXME */
+            }
+            statusBar.setBackground(statusColor);
+            statusBar.setLeadingMessage("Out of band mode disabled for " + gw);
+        }
+    }
     
     private void editSelectedNode(final TreePath path) {
         Object last = path.getLastPathComponent();
@@ -714,7 +745,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         updateButtonState();
     }
     private void serviceButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        Service service = null;
+            Service service = null;
         for (Object o : SDTManager.getServiceList()) {
             service = (Service) o;
             if (service.getRecordID() == Integer.parseInt(evt.getActionCommand())) {
@@ -742,14 +773,18 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Object last = path.getLastPathComponent();
         Host host = null;
         boolean isHost = last instanceof Host;
+        boolean isGateway = last instanceof Gateway;
         if (isHost) {
             host = (Host) last;
             connectButtonPanel.removeAll();
             for (Object o : host.getServiceList()) {
                 Service s = (Service) o;
                 javax.swing.JButton serviceButton = new javax.swing.JButton();
-                // TODO: there has got to be a better way
-                serviceButton.setPreferredSize(new Dimension(connectButtonPanel.getWidth()/2-10,32));
+                Insets panelInsets = connectButtonPanel.getInsets();
+                int buttonWidth = ((connectButtonPanel.getWidth()
+                    - panelInsets.left - panelInsets.right) / 2) - 2; // FlowLayout hgap is 2
+                
+                serviceButton.setPreferredSize(new Dimension(buttonWidth, 32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
                 serviceButton.setText(s.getName());
                 // For some pre-canned clients we can't guess the executable path, make the user set it
@@ -772,9 +807,30 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 });                
                 connectButtonPanel.add(serviceButton);
             }
+            ((TitledBorder) connectButtonPanel.getBorder()).setTitle("Services");
             pack();
             this.repaint();
-        }  else {
+        }  else if (isGateway) {
+            javax.swing.JToggleButton oobButton = new javax.swing.JToggleButton();
+            Insets panelInsets = connectButtonPanel.getInsets();
+            int buttonWidth = ((connectButtonPanel.getWidth()
+                - panelInsets.left - panelInsets.right) / 2) - 2; // FlowLayout hgap is 2
+            
+            oobButton.setPreferredSize(new Dimension(buttonWidth, 32));
+            oobButton.setAction(oobAction);
+            oobButton.setText("Out Of Band");
+            oobButton.setSelected(((Gateway)last).getOob());
+            if (((Gateway)last).getOobAddress().equals("")) {
+                oobButton.setEnabled(false);
+                oobButton.setToolTipText("To setup out of band mode, double click "
+                        + (Gateway)last + " and select the Out Of Band tab");
+            }
+            connectButtonPanel.removeAll();
+            connectButtonPanel.add(oobButton);
+            ((TitledBorder) connectButtonPanel.getBorder()).setTitle("Gateway Actions");
+            pack();
+            this.repaint();
+        } else {
             connectButtonPanel.removeAll();
             this.repaint();
         }
@@ -785,8 +841,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
         System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
-                + gw.getAddress());
-        return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
+                + gw.getActiveAddress());
+            return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
     private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
         launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
@@ -804,6 +860,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     } else {
                         statusBar.setText("No client to launch");
                     }
+                    launcher.setBoundPort(0);
                 }
             }
         });
@@ -821,7 +878,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
     }
     
     private GatewayConnection getGatewayConnection(Gateway gw) {
-        GatewayConnection conn = connections.get(gw.getAddress());
+        GatewayConnection conn = connections.get(gw.getActiveAddress());
         if (conn == null) {
             conn = new GatewayConnection(gw,
                     (GatewayConnection.Authentication) SwingInvocationProxy.create(
@@ -829,7 +886,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     new GatewayAuth(gw)));
             conn.setListener((GatewayConnection.Listener) SwingInvocationProxy.create(
                     GatewayConnection.Listener.class, new SSHListener(gw)));
-            connections.put(gw.getAddress(), conn);
+            connections.put(gw.getActiveAddress(), conn);
         }
         return conn;
     }
@@ -902,18 +959,18 @@ static FileFilter xmlFileFilter = new FileFilter() {
         
         public void sshLoginStarted() {
             statusBar.setLeadingMessage("Logging in to gateway " +
-                    gateway.getAddress());
+                    gateway);
             statusBar.progressStarted(progress);
         }
         
         public void sshLoginSucceeded() {
             statusBar.setLeadingMessage("Successfully logged in to " +
-                    gateway.getAddress());
+                    gateway);
             statusBar.progressEnded(progress);
         }
         public void sshLoginFailed() {
             statusBar.setLeadingMessage("Failed to authenticate to " +
-                    gateway.getAddress());
+                    gateway);
             statusBar.progressEnded(progress);
         }
         public void sshTcpChannelStarted(String host, int port) {
@@ -973,6 +1030,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
     private Map<String, GatewayConnection> connections;
     ExecutorService swingExec = new SwingExecutorService();
     ExecutorService bgExec = Executors.newSingleThreadExecutor();
+    private Color statusColor;
     
     private Action deleteAction = new AbstractAction() {
         public void actionPerformed(ActionEvent evt) {
@@ -992,6 +1050,11 @@ static FileFilter xmlFileFilter = new FileFilter() {
     private Action newGatewayAction = new AbstractAction() {
         public void actionPerformed(ActionEvent evt) {
             addGatewayActionPerformed(evt);
+        }
+    };
+    private Action oobAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent evt) {
+            oobActionPerformed(evt);
         }
     };
 }

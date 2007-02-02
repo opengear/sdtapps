@@ -137,13 +137,17 @@ public class SDTManager {
                 String description = gwNode.get("description", "");
                 String username = gwNode.get("username", "");
                 String password = gwNode.get("password", "");
+                String oobAddress = gwNode.get("oobaddress", "");
+                String oobStart = gwNode.get("oobstart", "");
+                String oobStop = gwNode.get("oobstop", "");
                 Gateway gw;
                 if (migrate) {
-                    gw = new Gateway(nextRecordID(), name, address, username, password, description);
+                    gw = new Gateway(nextRecordID(), name, address, username, password, description, oobAddress, oobStart, oobStop);
                 } else {
-                    gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description);
+                    gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description, oobAddress, oobStart, oobStop);
                 }
                 gw.setPort(gwNode.getInt("sshport", 22));
+                gw.setOobPort(gwNode.getInt("oobport", 22));
                 gatewayList.add(gw);
                 Preferences hostPrefs = gwNode.node("hosts");
                 for (String hostChildName : hostPrefs.childrenNames()) {
@@ -187,7 +191,7 @@ public class SDTManager {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
-  
+        
         Settings.setProperty("version", SDTConnector.VERSION);
         try {
             Preferences.userRoot().node("opengear/sdtconnector").sync();
@@ -234,6 +238,10 @@ public class SDTManager {
         gwPrefs.put("username", gw.getUsername());
         gwPrefs.put("password", gw.getPassword());
         gwPrefs.putInt("sshport", gw.getPort());
+        gwPrefs.put("oobaddress", gw.getOobAddress());
+        gwPrefs.put("oobstart", gw.getOobStart());
+        gwPrefs.put("oobstop", gw.getOobStop());
+        gwPrefs.putInt("oobport", gw.getOobPort());
         try {
             gwPrefs.sync();
         } catch (BackingStoreException ex) {}

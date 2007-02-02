@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.io.IOException;
 
 
 public class Gateway {
@@ -29,13 +30,17 @@ public class Gateway {
         recordID = SDTManager.nextRecordID();
     }
     public Gateway(int recordID, String name, String address, String username,
-            String password, String description) {
+            String password, String description, String oobAddress,
+            String oobStart, String oobStop) {
         this.recordID = recordID;
         this.name = name;
         this.address = address;
         this.username = username;
         this.password = password;
         this.description = description;
+        this.oobAddress = oobAddress;
+        this.oobStart = oobStart;
+        this.oobStop = oobStop;
     }
         
     public int getRecordID() {
@@ -115,6 +120,48 @@ public class Gateway {
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Gateway) obj).getRecordID());
     }
+    public String getActiveAddress() {
+        if (oob) {
+            return getOobAddress();
+        }
+        return address;
+    }
+    public int getActivePort() {
+        if (oob) {
+            return getOobPort();
+        }
+        return port;
+    }
+    public String getOobAddress() {
+        return oobAddress;
+    }
+    public void setOobAddress(String oobAddress) {
+        this.oobAddress = oobAddress;
+    }
+    public int getOobPort() {
+        return oobPort;
+    }
+    public void setOobPort(int oobPort) {
+        this.oobPort = oobPort;
+    }
+    public String getOobStart() {
+        return oobStart;
+    }
+    public void setOobStart(String oobStart) {
+        this.oobStart = oobStart;
+    }
+    public String getOobStop() {
+        return oobStop;
+    }
+    public void setOobStop(String oobStop) {
+        this.oobStop = oobStop;
+    }
+    public boolean getOob() {
+        return oob;
+    }
+    public void setOob(boolean oob) {
+        this.oob = oob;
+    }
     
     // Variables
     private int recordID;
@@ -125,6 +172,12 @@ public class Gateway {
     private String password = "";
     private String description = "";
     private EventList hostList = new BasicEventList();
-
+        
+    private String oobAddress = "";
+    private int oobPort = 22;
+    private String oobStart = "";
+    private String oobStop = "";
+    private boolean oob = false;
+    
     private int _hashCode = 0;
 }
