@@ -701,20 +701,27 @@ static FileFilter xmlFileFilter = new FileFilter() {
         oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
-            statusBar.setLeadingMessage("Out of band mode enabled for " + gw);
+            statusBar.setLeadingMessage("Enabled out of band mode for " +
+                    gw);
         } else {
-            try {
-                gw.getActiveAddress();
+            // FIXME: status isn't displayed
+            GatewayConnection conn = connections.get(gw.getActiveAddress());
+            if (conn != null) {
+                statusBar.setLeadingMessage("Stopping out of band connection to " +
+                        gw);
+                ProgressEvent progress = new ProgressEvent(this) {
+                public boolean isIndeterminate() {
+                    return true;
+                }
+                };
+                statusBar.progressStarted(progress);
+                conn.stopOob();
                 connections.remove(gw.getActiveAddress());
-                Process proc = Runtime.getRuntime().exec(gw.getOobStop());
-                int retVal = proc.waitFor();
-                Runtime.getRuntime().exec(gw.getOobStop());
-            } catch (IOException ex) {
-            } catch (InterruptedException ex) {
-                /* FIXME */
+                statusBar.progressEnded(progress);
             }
+            statusBar.setLeadingMessage("Out of band connection to " +
+                    gw + " disabled");
             statusBar.setBackground(statusColor);
-            statusBar.setLeadingMessage("Out of band mode disabled for " + gw);
         }
         gw.setOob(oob);
     }
@@ -964,7 +971,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     gateway);
             statusBar.progressStarted(progress);
         }
-        
+  
         public void sshLoginSucceeded() {
             statusBar.setLeadingMessage("Successfully logged in to " +
                     gateway);
@@ -975,6 +982,24 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     gateway);
             statusBar.progressEnded(progress);
         }
+        
+        public void oobStarted() {
+            statusBar.setLeadingMessage("Starting out of band connection to " +
+                    gateway);
+            statusBar.progressStarted(progress);
+        }
+        
+        public void oobSucceeded() {
+            statusBar.setLeadingMessage("Established out of band connection to " +
+                    gateway);
+            statusBar.progressEnded(progress);
+        }
+        public void oobFailed() {
+            statusBar.setLeadingMessage("Out of band connection to " + 
+                    gateway + " failed");
+            statusBar.progressEnded(progress);
+        }
+
         public void sshTcpChannelStarted(String host, int port) {
             statusBar.setLeadingMessage("Connecting to " + host + ":" + port);
             statusBar.progressStarted(progress);

@@ -62,9 +62,7 @@ public class GatewayConnection {
     public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && 
-                    (lport == 0 || lport == r.getLocalPort())
-                )
-            {
+                    (lport == 0 || lport == r.getLocalPort())) {
                 return r;
             }
             // shutdown redirector which has local port that required
@@ -121,9 +119,7 @@ public class GatewayConnection {
     private boolean doConnect()  {
         if (!session.isConnected()) {
             System.out.println("Connecting ...");
-            listener.sshLoginStarted();
             connectSession();
-            listener.sshLoginSucceeded();
             System.out.println("Connected");
         }
         return true;
@@ -131,14 +127,19 @@ public class GatewayConnection {
     
     private boolean connectSession() {
         if (gateway.getOob()) {
+            listener.oobStarted();
             try {
                 Process proc = Runtime.getRuntime().exec(gateway.getOobStart());
                 int retVal = proc.waitFor();
+                // FIXME: failure case
             } catch (IOException ex) {
             } catch (InterruptedException ex) {
-                /* FIXME */
+                listener.oobFailed();
+                return false;
             }
+            listener.oobSucceeded();
         }
+        listener.sshLoginStarted();
         try {
             session.connect(5000);
             //activeSession().connect(5000);
@@ -148,6 +149,7 @@ public class GatewayConnection {
             setupSession(username, password);
             return false;
         }
+        listener.sshLoginSucceeded();
         return true;
     }
     
@@ -155,6 +157,16 @@ public class GatewayConnection {
         session.disconnect();
         //activeSession().disconnect();
         return true;
+    }
+    
+    public void stopOob() {
+        try {
+            Process proc = Runtime.getRuntime().exec(gateway.getOobStop());
+            int retVal = proc.waitFor();
+            // FIXME: failure case
+        } catch (IOException ex) {
+        } catch (InterruptedException ex) {
+        }
     }
     
     public class Redirector implements Runnable {
@@ -330,6 +342,9 @@ public class GatewayConnection {
         public void sshLoginStarted();
         public void sshLoginSucceeded();
         public void sshLoginFailed();
+        public void oobStarted();
+        public void oobSucceeded();
+        public void oobFailed();
         public void sshTcpChannelStarted(String host, int port);
         public void sshTcpChannelEstablished(String host, int port);
         public void sshTcpChannelFailed(String host, int port);
@@ -350,6 +365,10 @@ public class GatewayConnection {
         public void sshLoginStarted() {}
         public void sshLoginSucceeded() {}
         public void sshLoginFailed() {}
+        public void oobEnabled() {}
+        public void oobStarted() {}
+        public void oobSucceeded() {}
+        public void oobFailed() {}
         public void sshTcpChannelStarted(String host, int port) {}
         public void sshTcpChannelEstablished(String host, int port) {}
         public void sshTcpChannelFailed(String host, int port) {}
