@@ -61,7 +61,10 @@ public class GatewayConnection {
     }
     public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
-            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && r.getLocalPort() == lport) {
+            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && 
+                    (lport == 0 || lport == r.getLocalPort())
+                )
+            {
                 return r;
             }
             // shutdown redirector which has local port that required

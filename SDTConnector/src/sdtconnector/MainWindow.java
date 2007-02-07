@@ -79,9 +79,7 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         setIconImage(getIcon("16x16", "gateway").getImage());
-        Color statusColor = statusBar.getBackground();
-
-        
+        statusColor = statusBar.getBackground();
         connections = new HashMap<String, GatewayConnection>();
         gatewayList.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         gatewayList.setShowsRootHandles(true);
@@ -701,12 +699,13 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }
         Gateway gw = (Gateway) path.getPathComponent(1);
         oob = !gw.getOob();
-        gw.setOob(oob);
         if (oob) {
             statusBar.setBackground(Color.pink);
             statusBar.setLeadingMessage("Out of band mode enabled for " + gw);
         } else {
             try {
+                gw.getActiveAddress();
+                connections.remove(gw.getActiveAddress());
                 Process proc = Runtime.getRuntime().exec(gw.getOobStop());
                 int retVal = proc.waitFor();
                 Runtime.getRuntime().exec(gw.getOobStop());
@@ -717,6 +716,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
             statusBar.setBackground(statusColor);
             statusBar.setLeadingMessage("Out of band mode disabled for " + gw);
         }
+        gw.setOob(oob);
     }
     
     private void editSelectedNode(final TreePath path) {
@@ -845,22 +845,24 @@ static FileFilter xmlFileFilter = new FileFilter() {
             return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
     private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
-        launcher.setBoundPort(getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getBoundPort(), launcher.getUdpPort()).getLocalPort());
+        final int boundPort = getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getLocalPort(), launcher.getUdpPort()).getLocalPort();
         final GatewayConnection conn = getGatewayConnection(gw);
         //getGlassPane().setVisible(true);
         bgExec.execute(new Runnable() {
             public void run() {
                 if (conn.login()) {
                     if (launcher.getClient() != null) {
-                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), launcher.getBoundPort());
+                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
                         statusBar.setText("Launching " + cmd);
+                        int localPort = launcher.getLocalPort();
+                        launcher.setLocalPort(boundPort);
                         if (!launcher.launch()) {
                             statusBar.setText(cmd + " failed");
                         }
+                        launcher.setLocalPort(localPort);
                     } else {
                         statusBar.setText("No client to launch");
                     }
-                    launcher.setBoundPort(0);
                 }
             }
         });
