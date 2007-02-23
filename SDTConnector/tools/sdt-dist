@@ -1,0 +1,35 @@
+#!/bin/bash
+
+distdir="`dirname $0`/../dist"
+if [[ ! -d  "$distdir" ]] ; then
+	echo "Can't find dist directory"
+	exit 1
+fi
+if [[ ! -e "${distdir}/sdtcon.jar" ]] || [[ ! -e "${distdir}/sdtcon-mac.jar" ]] ; then
+	echo "Can't find sdtcon JAR files in ${distdir}, have you built them?"
+	exit 1
+fi
+cd "$distdir"
+
+version=`grep VERSION ../src/sdtconnector/SDTConnector.java|sed 's/.*\"\(.*\)\".*/\1/'`
+echo "SDTConnector version: $version"
+
+tardir="sdtconnector-${version}"
+if [[ -e "$tardir" ]] ; then
+	rm -rf "$tardir"
+fi
+mkdir "$tardir"
+
+cp ../tools/defaults.xml "$tardir"
+cp sdtcon.jar "$tardir"
+distfile="sdtconnector-${version}.tar"
+tar -c "$tardir" > "$distfile"
+gzip "$distfile"
+rm "${tardir}/sdtcon.jar"
+cp sdtcon-mac.jar "$tardir"
+distfile="sdtconnector-mac-${version}.tar"
+tar -c "$tardir" > "$distfile"
+gzip "$distfile"
+
+rm -rf "$tardir"
+cd - &> /dev/null
