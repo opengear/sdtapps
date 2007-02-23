@@ -601,6 +601,16 @@ static FileFilter xmlFileFilter = new FileFilter() {
         String desc = "";
         String hint = "";
         if (path != null) {
+             Gateway gw = (Gateway) path.getPathComponent(1);
+            if (gw.getOob()) {
+                statusBar.setBackground(Color.pink);
+                statusBar.setLeadingMessage("Out of band enabled");
+            } else {
+                 if (statusBar.getLeadingMessage().equals("Out of band enabled")) {
+                     statusBar.setLeadingMessage("");
+                 }
+                 statusBar.setBackground(statusColor);
+            }
             Object last = path.getLastPathComponent();
             if (last instanceof Gateway) {
                 desc = ((Gateway) last).getDescription();
@@ -701,10 +711,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
         oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
-            statusBar.setLeadingMessage("Enabled out of band mode for " +
-                    gw);
+            statusBar.setLeadingMessage("Out of band enabled");
         } else {
-            // FIXME: status isn't displayed
             GatewayConnection conn = connections.get(gw.getActiveAddress());
             if (conn != null) {
                 statusBar.setLeadingMessage("Stopping out of band connection to " +
@@ -719,8 +727,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 connections.remove(gw.getActiveAddress());
                 statusBar.progressEnded(progress);
             }
-            statusBar.setLeadingMessage("Out of band connection to " +
-                    gw + " disabled");
+            statusBar.setLeadingMessage("Out of band disabled");
             statusBar.setBackground(statusColor);
         }
         gw.setOob(oob);

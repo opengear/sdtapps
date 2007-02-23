@@ -131,7 +131,7 @@ public class GatewayConnection {
             try {
                 Process proc = Runtime.getRuntime().exec(gateway.getOobStart());
                 int retVal = proc.waitFor();
-                // FIXME: failure case
+                // TODO: failure case
             } catch (IOException ex) {
             } catch (InterruptedException ex) {
                 listener.oobFailed();
@@ -163,7 +163,7 @@ public class GatewayConnection {
         try {
             Process proc = Runtime.getRuntime().exec(gateway.getOobStop());
             int retVal = proc.waitFor();
-            // FIXME: failure case
+            // TODO: failure case
         } catch (IOException ex) {
         } catch (InterruptedException ex) {
         }
