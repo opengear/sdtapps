@@ -82,7 +82,7 @@ public class UDPGateway implements Runnable {
         ByteBuffer buffer = ByteBuffer.allocate(BUF_LEN);
         System.out.println("UDP-TCP: " + localHost + ":" + udpPort + " <-> " + localHost + ":" + tcpPort);
         init();
-        System.out.println("UDP-TCP: Waiting");
+        System.out.println("UDP-TCP: Local UDP gateway started");
         while (true) {
             try {
                 selector.select();
@@ -121,6 +121,8 @@ public class UDPGateway implements Runnable {
                     }
                 }
             } catch (UnknownHostException ex) {
+                System.out.println("UDPGateway: Unknown host: " + ex.getMessage());
+                break;
             } catch (IOException ex) {
                 System.out.println("UDPGateway: IO error, terminating");
                 break;

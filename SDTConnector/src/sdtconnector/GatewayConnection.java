@@ -36,6 +36,8 @@ import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import org.omg.SendingContext.RunTime;
 
 
@@ -133,6 +135,8 @@ public class GatewayConnection {
                 int retVal = proc.waitFor();
                 // TODO: failure case
             } catch (IOException ex) {
+                listener.oobFailed();
+                return false;
             } catch (InterruptedException ex) {
                 listener.oobFailed();
                 return false;
@@ -165,49 +169,80 @@ public class GatewayConnection {
             int retVal = proc.waitFor();
             // TODO: failure case
         } catch (IOException ex) {
+            // FIXME
         } catch (InterruptedException ex) {
+            // Ignore
         }
     }
+    
+    private void shellWrite(PrintStream ps, String line) {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ex) {}
+        ps.println(line);
+        ps.flush();
+        System.out.println("TCP-UDP: Sent: " + line);
+    }
+
+    private String shellRead(BufferedReader br, int timeout) throws Exception {
+        String strbuf = "";
+        int i, len;
+        char[] cbuf = new char[1024];
+
+        for (i = timeout / 10; i > 0; i--) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {}
+            if (br.ready() == false) {
+                continue;
+            }
+            len = br.read(cbuf, 0, 1024);
+            strbuf = strbuf + String.valueOf(cbuf, 0, len);
+        }
+
+        if (strbuf == "") {
+            System.out.println("TCP-UDP: Timeout reading from remote shell");
+            throw new Exception();
+        }
+
+        System.out.println("TCP-UDP: Received: " + strbuf);
+        return strbuf;
+    }
+    
     
     public class Redirector implements Runnable {
         private boolean redirectSocket(final Socket s) {
             Future f = exec.submit(new Callable() {
 
                 private void redirectRemoteUDPSocket() throws Exception {
-                    String command = "udpgw " + port + " " + host + " " + uport;
-                    String result = "TCP-UDP: Timeout";
+                    String command = "{ udpgw " + port + " " + host + " " + uport + " & } &> /dev/null ; echo $!";
+                    String regex = "[0-9]+";
+                    CharSequence cs;
+                    String s;
+  
                     System.out.println("TCP-UDP: 127.0.0.1:" + port + " <-> " + host + ":" + uport);
-                    shell  = (ChannelShell) session.openChannel("shell");
-                    PrintStream shOut = new PrintStream(shell.getOutputStream());
-                    BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
-
-                    shell.connect();
+                    remoteUDPGatewayShell = (ChannelShell) session.openChannel("shell");
+                    PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
+                    BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
+                    remoteUDPGatewayShell.connect();
                     System.out.println("TCP-UDP: Shell connected");
-                    // TODO: configurable timeouts
-                    for (int i = 3000; i > 0; i--) {
-                        Thread.sleep(10);
-                        if (shIn.ready()) {
-                            String line = shIn.readLine();
-                            System.out.println("TCP-UDP: Remote: " + line);
-                            // TODO: configurable expected banner
-                            if (line.indexOf("SDT SSH connection established") != -1
-                                    || line.indexOf("#") != -1)
-                            {
-                                for (int j = 30; j > 0; j--) {
-                                    System.out.println("TCP-UDP: Trying " + command);
-                                    shOut.println(command);
-                                    shOut.flush();
-                                    Thread.sleep(1000);
-                                    if (shIn.ready()) {
-                                        result = "TCP-UDP: OK";
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
+
+                    shellWrite(shOut, "stty -echo");
+                    // Wait for shell to be ready
+                    shellRead(shIn, 1000);
+                    // Send command
+                    shellWrite(shOut, command);
+                    // Wait for shell to be ready
+                    s = shellRead(shIn, 1000);
+
+                    Matcher m = Pattern.compile(regex).matcher(s);
+                    if (m.find() == true) {
+                        remoteUDPGatewayPID = Integer.parseInt(s.substring(m.start(), m.end()));
+                    } else {
+                        remoteUDPGatewayPID = 0;
                     }
-                    System.out.println(result);
+
+                    System.out.println("TCP-UDP: Remote UDP gateway started, PID " + remoteUDPGatewayPID);
                 }
 
                 private void redirectTCPSocket(final String host) throws Exception {
@@ -236,6 +271,9 @@ public class GatewayConnection {
                     } catch (JSchException ex) {
                         listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
                         return null;
+                    } catch (Exception ex) {
+                        listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
+                        return null;
                     }
                 }
             });
@@ -257,27 +295,91 @@ public class GatewayConnection {
             listenThread.setDaemon(true);
             listenThread.start();
             if (uport != 0) {
-                ugw = new UDPGateway(lhost, uport, lport);
-                ugw.start();
+                localUDPGateway = new UDPGateway(lhost, uport, lport);
+                localUDPGateway.start();
             }
         }
         public void stop() {
             listenThread.interrupt();
         }
+        
+        private void shutdownLocalUDPRedirection() {
+            localUDPGateway.shutdown();
+        }
+
+        private void shutdownRemoteUDPRedirection() {
+            if (remoteUDPGatewayShell != null) {
+                if (remoteUDPGatewayPID != 0) {
+                    String command = "kill " + remoteUDPGatewayPID;
+                    try {
+                        PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
+                        BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
+
+                        shellWrite(shOut, "");
+                        // Wait for shell to be ready
+                        shellRead(shIn, 1);
+                        // Send command
+                        shellWrite(shOut, command);
+                        // Wait for shell to be ready
+                        shellRead(shIn, 1);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                remoteUDPGatewayShell.disconnect();
+            }
+        }
+        
+        private void shellWrite(PrintStream ps, String line) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {}
+            ps.println(line);
+            ps.flush();
+            System.out.println("TCP-UDP: Sent: " + line);
+        }
+
+        private String shellRead(BufferedReader br, int timeout) throws Exception {
+            String strbuf = "";
+            int i, len;
+            char[] cbuf = new char[1024];
+
+            for (i = timeout / 10; i > 0; i--) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {}
+                if (br.ready() == false) {
+                    continue;
+                }
+                len = br.read(cbuf, 0, 1024);
+                strbuf = strbuf + String.valueOf(cbuf, 0, len);
+            }
+
+            if (strbuf == "") {
+                System.out.println("TCP-UDP: Timeout reading from remote shell");
+                throw new Exception();
+            }
+
+            System.out.println("TCP-UDP: Received: " + strbuf);
+            return strbuf;
+        }    
+
         public void shutdown() {
             stop();
             try {
                 if (uport != 0) {
-                    if (shell != null) {
-                        shell.disconnect();
-                    }
-                    ugw.shutdown();
+                    shutdownLocalUDPRedirection();
+                    shutdownRemoteUDPRedirection();
                 }
                 if (tcpip != null) {
                     tcpip.disconnect();
                 }
                 listenSocket.close();
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+                // Ignore
+            }
         }
         public int getLocalPort() {
             return listenSocket.getLocalPort();
@@ -309,8 +411,9 @@ public class GatewayConnection {
         private int port;
         private int lport;
         private int uport;
-        private UDPGateway ugw;
-        private ChannelShell shell;
+        private UDPGateway localUDPGateway;
+        private ChannelShell remoteUDPGatewayShell;
+        private int remoteUDPGatewayPID;
         private ChannelDirectTCPIP tcpip;
     }
     
