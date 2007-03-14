@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.io.IOException;
-
+import org.apache.commons.lang.StringUtils;
 
 public class Gateway {
     
@@ -31,7 +31,8 @@ public class Gateway {
     }
     public Gateway(int recordID, String name, String address, String username,
             String password, String description, String oobAddress,
-            String oobStart, String oobStop) {
+            String oobStart, String oobStop, String udpgwStartFormat,
+            String udpgwStopFormat, String udpgwPidRegex) {
         this.recordID = recordID;
         this.name = name;
         this.address = address;
@@ -41,6 +42,21 @@ public class Gateway {
         this.oobAddress = oobAddress;
         this.oobStart = oobStart;
         this.oobStop = oobStop;
+        if (udpgwStartFormat.equals("")) {
+            udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
+        } else{
+            this.udpgwStartFormat = udpgwStartFormat;
+        }
+        if (udpgwStopFormat.equals("")) {
+            this.udpgwStopFormat = "kill %pid%";
+        } else {
+            this.udpgwStopFormat = udpgwStopFormat;
+        }
+        if (udpgwPidRegex.equals("")) {
+            this.udpgwPidRegex = "[0-9]+";
+        } else {
+            this.udpgwPidRegex = udpgwPidRegex;
+        }
     }
         
     public int getRecordID() {
@@ -162,6 +178,41 @@ public class Gateway {
     public void setOob(boolean oob) {
         this.oob = oob;
     }
+    public void setUdpgwStartFormat(String udpgwStartFormat) {
+        this.udpgwStartFormat = udpgwStartFormat;
+    }
+    public String getUdpgwStartFormat() {
+        return udpgwStartFormat;
+    }
+    public String getUdpgwStartCommand(String host, int port, int uport) {
+        String cmd = udpgwStartFormat;
+
+        cmd = StringUtils.replace(cmd, "%udphost%", host);
+        cmd = StringUtils.replace(cmd, "%port%", String.valueOf(port));
+        cmd = StringUtils.replace(cmd, "%udpport%", String.valueOf(uport));
+        return cmd;
+    }
+    public void setUdpgwStopFormat(String udpgwStopFormat) {
+        this.udpgwStopFormat = udpgwStopFormat;
+    }
+    public String getUdpgwStopFormat() {
+        return udpgwStopFormat;
+    }
+    public String getUdpgwStopCommand(String host, int port, int uport, int pid) {
+        String cmd = udpgwStopFormat;
+        
+        cmd = StringUtils.replace(cmd, "%udphost%", host);
+        cmd = StringUtils.replace(cmd, "%port%", String.valueOf(port));
+        cmd = StringUtils.replace(cmd, "%udpport%", String.valueOf(uport));
+        cmd = StringUtils.replace(cmd, "%pid%", String.valueOf(pid));
+        return cmd;        
+    }
+    public void setUdpgwPidRegex(String udpgwPidRegex) {
+        this.udpgwPidRegex = udpgwPidRegex;
+    }
+    public String getUdpgwPidRegex() {
+        return udpgwPidRegex;
+    }
     
     // Variables
     private int recordID;
@@ -179,5 +230,9 @@ public class Gateway {
     private String oobStop = "";
     private boolean oob = false;
     
+    private String udpgwStartFormat;
+    private String udpgwStopFormat;
+    private String udpgwPidRegex;
+
     private int _hashCode = 0;
 }

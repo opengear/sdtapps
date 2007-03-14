@@ -44,6 +44,9 @@ public class GatewayDialog extends javax.swing.JDialog {
         oobPortField.setValue(new Integer(gw.getOobPort()));
         oobStartField.setText(gw.getOobStart());
         oobStopField.setText(gw.getOobStop());
+        udpgwStartFormatField.setText(gw.getUdpgwStartFormat());
+        udpgwStopFormatField.setText(gw.getUdpgwStopFormat());
+        udpgwPidRegexField.setText(gw.getUdpgwPidRegex());
 
         KeyListener keyListener = new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
@@ -70,7 +73,10 @@ public class GatewayDialog extends javax.swing.JDialog {
         oobAddressField.addKeyListener(keyListener);
         oobPortField.addKeyListener(keyListener);
         oobStartField.addKeyListener(keyListener);
-        oobStopField.addKeyListener(keyListener);        
+        oobStopField.addKeyListener(keyListener); 
+        udpgwStartFormatField.addKeyListener(keyListener);
+        udpgwPidRegexField.addKeyListener(keyListener);
+        udpgwStopFormatField.addKeyListener(keyListener);
        //descriptionField.addKeyListener(keyListener);
         
         //
@@ -95,6 +101,9 @@ public class GatewayDialog extends javax.swing.JDialog {
         oobPortField.addFocusListener(focus);
         oobStartField.addFocusListener(focus);
         oobStopField.addFocusListener(focus);        
+        udpgwStartFormatField.addFocusListener(focus);
+        udpgwPidRegexField.addFocusListener(focus);
+        udpgwStopFormatField.addFocusListener(focus);
 //        descriptionField.addFocusListener(focus);
         pack();
     }
@@ -137,6 +146,13 @@ public class GatewayDialog extends javax.swing.JDialog {
         jLabel10 = new javax.swing.JLabel();
         oobStopField = new javax.swing.JTextField();
         oobPortField = new javax.swing.JFormattedTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        udpgwStartFormatField = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        udpgwPidRegexField = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        udpgwStopFormatField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -235,7 +251,7 @@ public class GatewayDialog extends javax.swing.JDialog {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel4)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 65, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
         jTabbedPane1.addTab("General", jPanel1);
 
@@ -287,9 +303,51 @@ public class GatewayDialog extends javax.swing.JDialog {
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel10)
                     .add(oobStopField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(149, Short.MAX_VALUE))
+                .addContainerGap(157, Short.MAX_VALUE))
         );
         jTabbedPane1.addTab("Out Of Band", jPanel2);
+
+        jLabel13.setText("Start Command");
+
+        jLabel14.setText("Returned PID Regex");
+
+        jLabel15.setText("Stop Command");
+
+        org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jLabel15)
+                    .add(jLabel14)
+                    .add(jLabel13))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(udpgwStartFormatField)
+                    .add(udpgwPidRegexField)
+                    .add(udpgwStopFormatField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel13)
+                    .add(udpgwStartFormatField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel14)
+                    .add(udpgwPidRegexField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel15)
+                    .add(udpgwStopFormatField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(157, Short.MAX_VALUE))
+        );
+        jTabbedPane1.addTab("Remote UDP Gateway", jPanel3);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -347,6 +405,9 @@ public class GatewayDialog extends javax.swing.JDialog {
             gateway.setOobAddress(oobAddressField.getText());
             gateway.setOobStart(oobStartField.getText());
             gateway.setOobStop(oobStopField.getText());
+            gateway.setUdpgwStartFormat(udpgwStartFormatField.getText());
+            gateway.setUdpgwPidRegex(udpgwPidRegexField.getText());
+            gateway.setUdpgwStopFormat(udpgwStopFormatField.getText());
             try {                
                 sshPortField.commitEdit();
                 gateway.setPort(Integer.parseInt(sshPortField.getValue().toString()));
@@ -366,6 +427,9 @@ public class GatewayDialog extends javax.swing.JDialog {
     private javax.swing.JTextArea descriptionField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -376,6 +440,7 @@ public class GatewayDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField nameField;
@@ -386,6 +451,9 @@ public class GatewayDialog extends javax.swing.JDialog {
     private javax.swing.JTextField oobStopField;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JFormattedTextField sshPortField;
+    private javax.swing.JTextField udpgwPidRegexField;
+    private javax.swing.JTextField udpgwStartFormatField;
+    private javax.swing.JTextField udpgwStopFormatField;
     private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
     

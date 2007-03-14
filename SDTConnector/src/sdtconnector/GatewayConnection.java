@@ -215,8 +215,8 @@ public class GatewayConnection {
             Future f = exec.submit(new Callable() {
 
                 private void redirectRemoteUDPSocket() throws Exception {
-                    String command = "{ udpgw " + port + " " + host + " " + uport + " & } &> /dev/null ; echo $!";
-                    String regex = "[0-9]+";
+                    String command = gateway.getUdpgwStartCommand(host, port, uport);
+                    String regex = gateway.getUdpgwPidRegex();
                     CharSequence cs;
                     String s;
   
@@ -310,7 +310,7 @@ public class GatewayConnection {
         private void shutdownRemoteUDPRedirection() {
             if (remoteUDPGatewayShell != null) {
                 if (remoteUDPGatewayPID != 0) {
-                    String command = "kill " + remoteUDPGatewayPID;
+                    String command = gateway.getUdpgwStopCommand(host, port, uport, remoteUDPGatewayPID);
                     try {
                         PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
                         BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));

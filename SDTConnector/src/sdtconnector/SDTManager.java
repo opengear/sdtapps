@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.prefs.InvalidPreferencesFormatException;
+import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
 import sdtconnector.Gateway;
 import sdtconnector.Client;
@@ -31,23 +32,54 @@ public class SDTManager {
         load();
     }
     
+    private static int compareVersions(String str1, String str2) {
+        String[] v1 = { "0", "0", "0" };
+        String[] v2 = { "0", "0", "0" };
+        int i;
+
+        v1 = str1.split("\\.");
+        v2 = str2.split("\\.");
+        
+        for (i = 0; i < 3; i++) {
+            if (v1[i].equals(v2[i]) == false)
+                return Integer.parseInt(v1[i]) - Integer.parseInt(v2[i]);
+        }
+        return 0;
+    }
+    
     public static void load() {
-        boolean loadDefaults = false;
+        boolean loadDefaults = true;
         boolean migrate = false;
 
         try {
-            if (Preferences.userRoot().nodeExists("opengear/sdtconnector")) {
-                if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
-                    try {
-                        recordID = Integer.parseInt(Settings.getProperty("recordID"));
-                    } catch (NumberFormatException nfex) {
-                        recordID = initialRecordID();
-                        loadDefaults = true;
-                        migrate = true;
-                    }
+            if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
+                try {
+                    recordID = Integer.parseInt(Settings.getProperty("recordID"));
+                } catch (NumberFormatException nfex) {
+                    recordID = initialRecordID();
+                    migrate = true;
                 }
-            } else {
-                loadDefaults = true;
+                String version = Settings.getProperty("version");
+                if (compareVersions(version, SDTConnector.VERSION) < 0) {
+                    int retVal = JOptionPane.showConfirmDialog(null, 
+                            "SDTConnector has found preferences created by an older version (" + version + ").\n" +
+                            "The version you are running (" +  SDTConnector.VERSION + ") may contain updated service and client\n" +
+                            "settings.\n\n" +
+                            "Do you want to delete the old preferences and load the new default\n" +
+                            "preferences now?  You will lose any existing gateway and host settings.\n\n",
+                            "Load new default configuration?",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (retVal != JOptionPane.YES_OPTION) {
+                        JOptionPane.showMessageDialog(null, 
+                                "To load the new default configuration later, click File -> Import\n" +
+                                "Preferences and select: defaults.xml\n\n",
+                                "Hint",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        loadDefaults = false;
+                    }
+                } else {
+                    loadDefaults = false;
+                }
             }
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
@@ -60,6 +92,11 @@ public class SDTManager {
                 Preferences.importPreferences(new FileInputStream(defaults));
                 recordID = Integer.parseInt(Settings.getProperty("recordID"));
             } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(null, 
+                        "To load the default configuration manually, click File -> Import\n" +
+                        "Preferences and locatet: defaults.xml\n\n",
+                        "Default preferences file not found",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (InvalidPreferencesFormatException ex) {
             } catch (IOException ex) {
             }            
@@ -140,11 +177,14 @@ public class SDTManager {
                 String oobAddress = gwNode.get("oobaddress", "");
                 String oobStart = gwNode.get("oobstart", "");
                 String oobStop = gwNode.get("oobstop", "");
+                String udpgwStart = gwNode.get("udpgwstart", "");
+                String udpgwPid = gwNode.get("udpgwpid", "");
+                String udpgwStop = gwNode.get("udpgwstop", "");
                 Gateway gw;
                 if (migrate) {
-                    gw = new Gateway(nextRecordID(), name, address, username, password, description, oobAddress, oobStart, oobStop);
+                    gw = new Gateway(nextRecordID(), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
                 } else {
-                    gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description, oobAddress, oobStart, oobStop);
+                    gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
                 }
                 gw.setPort(gwNode.getInt("sshport", 22));
                 gw.setOobPort(gwNode.getInt("oobport", 22));
@@ -242,6 +282,9 @@ public class SDTManager {
         gwPrefs.put("oobstart", gw.getOobStart());
         gwPrefs.put("oobstop", gw.getOobStop());
         gwPrefs.putInt("oobport", gw.getOobPort());
+        gwPrefs.put("udpgwstart", gw.getUdpgwStartFormat());
+        gwPrefs.put("udpgwpid", gw.getUdpgwPidRegex());
+        gwPrefs.put("udpgwstop", gw.getUdpgwStopFormat());
         try {
             gwPrefs.sync();
         } catch (BackingStoreException ex) {}
