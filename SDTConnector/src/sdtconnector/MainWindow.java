@@ -6,6 +6,8 @@
 
 package sdtconnector;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import com.jcraft.jsch.UserInfo;
 import com.jgoodies.looks.LookUtils;
 import java.awt.Component;
@@ -701,14 +703,12 @@ static FileFilter xmlFileFilter = new FileFilter() {
     }
 
     private void oobActionPerformed(ActionEvent evt) {
-        boolean oob;
-        
         TreePath path = gatewayList.getSelectionPath();
         if (path == null) {
             return;
         }
         Gateway gw = (Gateway) path.getPathComponent(1);
-        oob = !gw.getOob();
+        boolean oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
             statusBar.setLeadingMessage("Out of band enabled");
@@ -732,7 +732,30 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }
         gw.setOob(oob);
     }
-    
+
+    private void autohostsActionPerformed(ActionEvent evt) {
+        TreePath path = gatewayList.getSelectionPath();
+        if (path == null) {
+            return;
+        }
+        Gateway gw = (Gateway) path.getPathComponent(1);
+        
+        if (gw.getHostList().isEmpty() == false) {
+            int retVal = JOptionPane.showConfirmDialog(null, 
+                    "This will delete all existing hosts for " + gw,
+                    "Warning",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (retVal == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+        }
+        
+        GatewayConnection conn = getGatewayConnection(gw);
+		EventList hosts = conn.getHosts();
+		int i = 0;
+    }
+
     private void editSelectedNode(final TreePath path) {
         Object last = path.getLastPathComponent();
         TreeModel model = (TreeModel) gatewayList.getModel();
@@ -825,10 +848,15 @@ static FileFilter xmlFileFilter = new FileFilter() {
             pack();
             this.repaint();
         }  else if (isGateway) {
-            javax.swing.JToggleButton oobButton = new javax.swing.JToggleButton();
             Insets panelInsets = connectButtonPanel.getInsets();
             int buttonWidth = ((connectButtonPanel.getWidth()
                 - panelInsets.left - panelInsets.right) / 2) - 2; // FlowLayout hgap is 2
+
+            connectButtonPanel.removeAll();
+            //
+            // Display OOB button
+            //
+            javax.swing.JToggleButton oobButton = new javax.swing.JToggleButton();
             
             oobButton.setPreferredSize(new Dimension(buttonWidth, 32));
             oobButton.setAction(oobAction);
@@ -839,8 +867,17 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 oobButton.setToolTipText("To setup out of band mode, double click "
                         + (Gateway)last + " and select the Out Of Band tab");
             }
-            connectButtonPanel.removeAll();
             connectButtonPanel.add(oobButton);
+            //
+            // Display auto-configure hosts button
+            //
+            javax.swing.JButton autohostsButton = new javax.swing.JButton();
+            
+            autohostsButton.setPreferredSize(new Dimension(buttonWidth, 32));
+            autohostsButton.setAction(autohostsAction);
+            autohostsButton.setText("Retrieve Hosts");
+            connectButtonPanel.add(autohostsButton);
+            
             ((TitledBorder) connectButtonPanel.getBorder()).setTitle("Gateway Actions");
             pack();
             this.repaint();
@@ -1089,6 +1126,11 @@ static FileFilter xmlFileFilter = new FileFilter() {
     private Action oobAction = new AbstractAction() {
         public void actionPerformed(ActionEvent evt) {
             oobActionPerformed(evt);
+        }
+    };
+    private Action autohostsAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent evt) {
+            autohostsActionPerformed(evt);
         }
     };
 }

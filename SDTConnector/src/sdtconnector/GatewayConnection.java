@@ -3,6 +3,8 @@
  */
 
 package sdtconnector;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelDirectTCPIP;
 import com.jcraft.jsch.ChannelExec;
@@ -14,6 +16,7 @@ import com.jcraft.jsch.UserInfo;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -181,13 +184,14 @@ public class GatewayConnection {
         } catch (InterruptedException ex) {}
         ps.println(line);
         ps.flush();
-        System.out.println("TCP-UDP: Sent: " + line);
+        System.out.println("Shell: Sent: " + line);
     }
 
     private String shellRead(BufferedReader br, int timeout) throws Exception {
-        String strbuf = "";
         int i, len;
-        char[] cbuf = new char[1024];
+		String s;
+        StringBuffer sb = new StringBuffer();
+        char[] cb = new char[1024];
 
         for (i = timeout / 10; i > 0; i--) {
             try {
@@ -196,19 +200,74 @@ public class GatewayConnection {
             if (br.ready() == false) {
                 continue;
             }
-            len = br.read(cbuf, 0, 1024);
-            strbuf = strbuf + String.valueOf(cbuf, 0, len);
+            len = br.read(cb, 0, 1024);
+            sb.append(cb, 0, len);
         }
+		
+		s = sb.toString();
 
-        if (strbuf == "") {
-            System.out.println("TCP-UDP: Timeout reading from remote shell");
+        if (s.equals("")) {
+            System.out.println("Shell: Timeout reading from remote shell");
             throw new Exception();
         }
 
-        System.out.println("TCP-UDP: Received: " + strbuf);
-        return strbuf;
+        System.out.println("Shell: Received: " + s);
+        return s;
     }
-    
+
+    public EventList getHosts() {
+		Future f = exec.submit(new Callable() {
+			public EventList call() {
+				EventList hosts = null;
+			   
+				if (session.isConnected() == false) {
+					try {
+						session.connect(5000);
+					} catch (JSchException ex) {
+						// FIXME
+						setupSession(username, password);
+						return hosts;
+					}
+				}
+
+				try {
+					ChannelShell shell = (ChannelShell) session.openChannel("shell");
+					PrintStream shOut = new PrintStream(shell.getOutputStream());
+					BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+					AutohostsParser parser = new AutohostsParser();
+					
+					shell.connect();
+					
+					shellWrite(shOut, "stty -echo");
+					// Wait for shell to be ready
+					shellRead(shIn, 1000);
+					// Send command
+					shellWrite(shOut, "cat $HOME/.sdt");
+				
+					hosts = parser.parse(shell.getInputStream());
+					
+				} catch (JSchException ex) {
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				return hosts;
+			}
+		});
+		
+		EventList hosts = null;
+		
+		try {
+			hosts = (EventList) f.get();
+		} catch (ExecutionException ex) {
+			ex.printStackTrace();
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
+		return hosts;
+	}
     
     public class Redirector implements Runnable {
         private boolean redirectSocket(final Socket s) {
@@ -358,11 +417,11 @@ public class GatewayConnection {
             }
 
             if (strbuf == "") {
-                System.out.println("TCP-UDP: Timeout reading from remote shell");
+                System.out.println("Shell: Timeout reading from remote shell");
                 throw new Exception();
             }
 
-            System.out.println("TCP-UDP: Received: " + strbuf);
+            System.out.println("Shell: Received: " + strbuf);
             return strbuf;
         }    
 

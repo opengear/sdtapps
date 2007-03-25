@@ -50,6 +50,20 @@ public class Host {
             }
         }        
     }
+	public void addService(int remotePort, int udpPort) {
+        for (Object s: SDTManager.getServiceList()) {
+            Service service = (Service) s;
+			for (Object l : service.getLauncherList()) {
+				Launcher launcher = (Launcher) l;
+				if ((remotePort != 0 && launcher.getRemotePort() == remotePort) ||
+						(udpPort != 0 && launcher.getUdpPort() == udpPort))
+				{
+					serviceList.add(service);
+					break;
+				}
+			}
+        }        
+	} 
     public void removeService(Service service) {
         serviceList.remove(service);
     }

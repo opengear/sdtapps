@@ -104,6 +104,9 @@ public class Gateway {
     public EventList getHostList() {
         return hostList;
     }
+	void setHostList(EventList hostList) {
+		this.hostList = hostList;
+	}
     public void addHost(Host host) {
         hostList.add(host);
     }
@@ -213,7 +216,7 @@ public class Gateway {
     public String getUdpgwPidRegex() {
         return udpgwPidRegex;
     }
-    
+
     // Variables
     private int recordID;
     private String name = "";
