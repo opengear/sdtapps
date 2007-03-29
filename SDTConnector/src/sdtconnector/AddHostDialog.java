@@ -38,7 +38,7 @@ public class AddHostDialog extends javax.swing.JDialog {
         for (Object o : SDTManager.getServiceList()) {
             Service s = (Service) o;
             javax.swing.JCheckBox serviceCheckBox = new javax.swing.JCheckBox();
-            serviceCheckBox.setText(s.getName());
+            serviceCheckBox.setText(s.toString());
             serviceCheckBox.setActionCommand(String.valueOf(s.getRecordID()));
             serviceCheckBox.setSelected(host.hasService(s));
             servicesPanel.add(serviceCheckBox);

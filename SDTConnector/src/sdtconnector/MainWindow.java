@@ -527,6 +527,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 Preferences.importPreferences(new FileInputStream(jc.getSelectedFile().getAbsolutePath()));
                 Preferences.userRoot().node(path).sync();
                 SDTManager.load();
+				updateButtonState();
             } catch (FileNotFoundException ex) {
             } catch (java.util.prefs.BackingStoreException ex) {
             } catch (IOException ex) {
@@ -713,30 +714,16 @@ static FileFilter xmlFileFilter = new FileFilter() {
         boolean oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
-            statusBar.setLeadingMessage("Out of band enabled");
+     
+			statusBar.setLeadingMessage("Out of band enabled");
+			gw.setOob(true);
         } else {
-            GatewayConnection conn = connections.get(gw.getActiveAddress());
-            if (conn != null) {
-                statusBar.setLeadingMessage("Stopping out of band connection to " +
-                        gw);
-				/*
-                ProgressEvent progress = new ProgressEvent(this) {
-					public boolean isIndeterminate() {
-						return true;
-					}
-				};
-                statusBar.progressStarted(progress);
-				 */
-                conn.stopOob();
-                connections.remove(gw.getActiveAddress());
-				/*
-                statusBar.progressEnded(progress);
-				 */
-            }
-            statusBar.setLeadingMessage("Out of band disabled");
-            statusBar.setBackground(statusColor);
+			GatewayConnection conn = connections.get(gw.getActiveAddress()); // REVISIT
+			conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
+				GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
+		
+            conn.stopOob();
         }
-        gw.setOob(oob);
     }
 
     private void autohostsActionPerformed(ActionEvent evt) {
@@ -746,9 +733,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }
         Gateway gw = (Gateway) path.getPathComponent(1);
         
-        statusBar.setLeadingMessage("Retrieving hosts"); // FIXME
-		statusBar.repaint();
-		
         if (gw.getHostList().isEmpty() == false) {
             int retVal = JOptionPane.showConfirmDialog(null, 
                     "This will delete all existing hosts for " + gw,
@@ -760,23 +744,11 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 return;
             }
         }
-	
-		EventList hosts = getGatewayConnection(gw).getHosts();
-		
-		if (hosts != null && hosts.isEmpty() == false) {
-			EventList hl = gw.getHostList();
-			while (hl.isEmpty() == false) {
-				Host h = (Host) hl.get(0);
-				SDTManager.removeHost(gw, h);
-			}
-			for (Object o : hosts) {
-				Host h = (Host) o;
-				SDTManager.addHost(gw, h);
-			}
-			statusBar.setLeadingMessage("Successfully retrieved hosts");
-		} else {
-			statusBar.setLeadingMessage("Unable to retrieve hosts, is the " + gw + " configured?");
-		}
+
+		GatewayConnection conn = getGatewayConnection(gw);
+        conn.setAutohostsListener((GatewayConnection.AutohostsListener) SwingInvocationProxy.create(
+				GatewayConnection.AutohostsListener.class, new AutohostsListener(gw)));
+		conn.getHosts();
     }
 
     private void editSelectedNode(final TreePath path) {
@@ -828,6 +800,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
     private void updateButtonState() {
         TreePath path = gatewayList.getSelectionPath();
         if (path == null) {
+            connectButtonPanel.removeAll();
+            ((TitledBorder) connectButtonPanel.getBorder()).setTitle("");
+            this.repaint();
             return;
         }
         Object last = path.getLastPathComponent();
@@ -906,6 +881,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
             this.repaint();
         } else {
             connectButtonPanel.removeAll();
+            ((TitledBorder) connectButtonPanel.getBorder()).setTitle("");
             this.repaint();
         }
     }
@@ -960,8 +936,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     (GatewayConnection.Authentication) SwingInvocationProxy.create(
                     GatewayConnection.Authentication.class,
                     new GatewayAuth(gw)));
-            conn.setListener((GatewayConnection.Listener) SwingInvocationProxy.create(
-                    GatewayConnection.Listener.class, new SSHListener(gw)));
+            conn.setSSHListener((GatewayConnection.SSHListener) SwingInvocationProxy.create(
+                    GatewayConnection.SSHListener.class, new SSHListener(gw)));
             connections.put(gw.getActiveAddress(), conn);
         }
         return conn;
@@ -1027,7 +1003,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         String username = "";
         String password = "";
     }
-    class SSHListener implements GatewayConnection.Listener {
+    class SSHListener implements GatewayConnection.SSHListener {
         public SSHListener(Gateway gw) {
             gateway = gw;
         }
@@ -1088,8 +1064,94 @@ static FileFilter xmlFileFilter = new FileFilter() {
         };
         
         Gateway gateway;
-        
     }
+	
+    class StopOobListener implements GatewayConnection.StopOobListener {
+        public StopOobListener(Gateway gw) {
+            gateway = gw;
+        }
+        public void stopOobStarted() {
+			for (Component c : connectButtonPanel.getComponents()) {
+				c.setEnabled(false);
+			}
+			connectButtonPanel.repaint();
+            statusBar.setLeadingMessage("Stopping out of band connection to " +
+                    gateway);
+            statusBar.progressStarted(progress);
+        }
+        public void stopOobSucceeded() {
+            statusBar.setLeadingMessage("Out of band disabled for " + gateway);
+            statusBar.setBackground(statusColor);
+            connections.remove(gateway.getActiveAddress());
+            statusBar.progressEnded(progress);
+			updateButtonState();
+        }
+        public void stopOobFailed() {
+			JOptionPane.showMessageDialog(null,
+					"Unable to stop the out of band connection,\nyou must stop it manually.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+            statusBar.setLeadingMessage("Out of band disabled for " + gateway);
+            statusBar.setBackground(statusColor);
+            connections.remove(gateway.getActiveAddress());
+            statusBar.progressEnded(progress);
+			updateButtonState();
+        }
+		
+        ProgressEvent progress = new ProgressEvent(this) {
+            public boolean isIndeterminate() {
+                return true;
+            }
+        };
+        
+        Gateway gateway;
+	}
+    class AutohostsListener implements GatewayConnection.AutohostsListener {
+        public AutohostsListener(Gateway gw) {
+            gateway = gw;
+        }
+        public void autohostsStarted() {
+			for (Component c : connectButtonPanel.getComponents()) {
+				c.setEnabled(false);
+			}
+			connectButtonPanel.repaint();
+            statusBar.setLeadingMessage("Retrieving hosts from " +
+                    gateway);
+            statusBar.progressStarted(progress);
+        }
+        public void autohostsSucceeded(EventList hosts) {
+			if (hosts != null && hosts.isEmpty() == false) {
+				EventList hl = gateway.getHostList();
+				while (hl.isEmpty() == false) {
+					Host h = (Host) hl.get(0);
+					SDTManager.removeHost(gateway, h);
+				}
+				for (Object o : hosts) {
+					Host h = (Host) o;
+					SDTManager.addHost(gateway, h);
+				}
+			}
+		
+            statusBar.setLeadingMessage("Successfully retrieved hosts from " +
+                    gateway);
+            statusBar.progressEnded(progress);
+			updateButtonState();
+        }
+        public void autohostsFailed() {
+            statusBar.setLeadingMessage("Failed to retrieve hosts from " +
+                    gateway);
+            statusBar.progressEnded(progress);
+			updateButtonState();
+        }
+		
+        ProgressEvent progress = new ProgressEvent(this) {
+            public boolean isIndeterminate() {
+                return true;
+            }
+        };
+        
+        Gateway gateway;
+	}
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;

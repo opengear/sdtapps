@@ -61,9 +61,16 @@ public class GatewayConnection {
         setupSession(username, password);
     }
     
-    public void setListener(Listener l) {
-        listener = l;
+	public void setSSHListener(SSHListener l) {
+        sshListener = l;
     }
+	public void setAutohostsListener(AutohostsListener l) {
+        autohostsListener = l;
+    }
+	public void setStopOobListener(StopOobListener l) {
+        stopOobListener = l;
+    }
+	
     public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
             if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && 
@@ -132,31 +139,31 @@ public class GatewayConnection {
     
     private boolean connectSession() {
         if (gateway.getOob()) {
-            listener.oobStarted();
+            sshListener.oobStarted();
             try {
                 Process proc = Runtime.getRuntime().exec(gateway.getOobStart());
                 int retVal = proc.waitFor();
                 // TODO: failure case
             } catch (IOException ex) {
-                listener.oobFailed();
+                sshListener.oobFailed();
                 return false;
             } catch (InterruptedException ex) {
-                listener.oobFailed();
+                sshListener.oobFailed();
                 return false;
             }
-            listener.oobSucceeded();
+            sshListener.oobSucceeded();
         }
-        listener.sshLoginStarted();
+        sshListener.sshLoginStarted();
         try {
             session.connect(5000);
             //activeSession().connect(5000);
         } catch (JSchException ex) {
-            listener.sshLoginFailed();
+            sshListener.sshLoginFailed();
             // Reset the session
             setupSession(username, password);
             return false;
         }
-        listener.sshLoginSucceeded();
+        sshListener.sshLoginSucceeded();
         return true;
     }
     
@@ -167,15 +174,21 @@ public class GatewayConnection {
     }
     
     public void stopOob() {
-        try {
-            Process proc = Runtime.getRuntime().exec(gateway.getOobStop());
-            int retVal = proc.waitFor();
-            // TODO: failure case
-        } catch (IOException ex) {
-            // FIXME
-        } catch (InterruptedException ex) {
-            // Ignore
-        }
+		exec.execute(new Runnable() {
+			public void run() {
+				Process proc;
+				stopOobListener.stopOobStarted();
+				try {
+					proc = Runtime.getRuntime().exec(gateway.getOobStop());
+					int retVal = proc.waitFor();
+				} catch (IOException ex) {
+					stopOobListener.stopOobFailed();
+				} catch (InterruptedException ex) {
+					stopOobListener.stopOobFailed();
+				}
+				stopOobListener.stopOobSucceeded();
+			}
+		});
     }
     
     private void shellWrite(PrintStream ps, String line) {
@@ -215,18 +228,20 @@ public class GatewayConnection {
         return s;
     }
 
-    public EventList getHosts() {
-		Future f = exec.submit(new Callable() {
-			public EventList call() {
+    public void getHosts() {
+		exec.execute(new Runnable() {
+			public void run() {
 				EventList hosts = null;
-			   
+		
+				autohostsListener.autohostsStarted();
+				
 				if (session.isConnected() == false) {
 					try {
 						session.connect(5000);
 					} catch (JSchException ex) {
 						// FIXME
 						setupSession(username, password);
-						return hosts;
+						autohostsListener.autohostsFailed();
 					}
 				}
 
@@ -253,20 +268,9 @@ public class GatewayConnection {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-				return hosts;
+				autohostsListener.autohostsSucceeded(hosts);
 			}
 		});
-		
-		EventList hosts = null;
-	
-		try {
-			hosts = (EventList) f.get();
-		} catch (ExecutionException ex) {
-			ex.printStackTrace();
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-		}
-		return hosts;
 	}
     
     public class Redirector implements Runnable {
@@ -310,9 +314,9 @@ public class GatewayConnection {
                     tcpip.setPort(port);
                     tcpip.setInputStream(s.getInputStream());
                     tcpip.setOutputStream(s.getOutputStream());
-                    listener.sshTcpChannelStarted(host, port);
+                    sshListener.sshTcpChannelStarted(host, port);
                     tcpip.connect();
-                    listener.sshTcpChannelEstablished(host, port);
+                    sshListener.sshTcpChannelEstablished(host, port);
                 }
 
                 public Channel call() throws Exception {
@@ -328,10 +332,10 @@ public class GatewayConnection {
                         }
                         return tcpip;
                     } catch (JSchException ex) {
-                        listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
+                        sshListener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
                         return null;
                     } catch (Exception ex) {
-                        listener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
+                        sshListener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
                         return null;
                     }
                 }
@@ -500,7 +504,7 @@ public class GatewayConnection {
         public String getPassword();
         public String getPassphrase();
     }
-    public interface Listener {
+    public interface SSHListener {
         public void sshLoginStarted();
         public void sshLoginSucceeded();
         public void sshLoginFailed();
@@ -511,7 +515,16 @@ public class GatewayConnection {
         public void sshTcpChannelEstablished(String host, int port);
         public void sshTcpChannelFailed(String host, int port);
     }
-    
+    public interface AutohostsListener {
+		public void autohostsStarted();
+		public void autohostsSucceeded(EventList hosts);
+		public void autohostsFailed();
+	} 
+    public interface StopOobListener {
+		public void stopOobStarted();
+		public void stopOobSucceeded();
+		public void stopOobFailed();
+	} 
     private Gateway gateway;
     private JSch jsch;
     private Session session;
@@ -523,7 +536,7 @@ public class GatewayConnection {
     Hashtable<String, String> config = new Hashtable<String, String>();
     private Authentication authentication;
     
-    private Listener listener = new Listener() {
+    private SSHListener sshListener = new SSHListener() {
         public void sshLoginStarted() {}
         public void sshLoginSucceeded() {}
         public void sshLoginFailed() {}
@@ -535,6 +548,16 @@ public class GatewayConnection {
         public void sshTcpChannelEstablished(String host, int port) {}
         public void sshTcpChannelFailed(String host, int port) {}
     };
+	private AutohostsListener autohostsListener = new AutohostsListener() {
+		public void autohostsStarted() {}
+		public void autohostsSucceeded(EventList hosts) {}
+		public void autohostsFailed() {}
+	};
+	private StopOobListener stopOobListener = new StopOobListener() {
+		public void stopOobStarted() {}
+		public void stopOobSucceeded() {}
+		public void stopOobFailed() {}
+	};
     UserInfo userinfo = new UserInfo() {
         public String getPassphrase() {
             return authentication.getPassphrase();

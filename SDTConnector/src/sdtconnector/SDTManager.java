@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
@@ -30,8 +31,24 @@ public class SDTManager {
         gatewayList = new BasicEventList();
         clientList = new BasicEventList();
         serviceList = new BasicEventList();
-        loadDefaults();
-    }
+		
+		sortedClientList = new SortedList(SDTManager.clientList, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				Client c1 = (Client) o1;
+				Client c2 = (Client) o2;
+				return c1.getRecordID() - c2.getRecordID();
+			}
+		});
+   		sortedServiceList = new SortedList(SDTManager.serviceList, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				Service s1 = (Service) o1;
+				Service s2 = (Service) o2;
+				return s1.getRecordID() - s2.getRecordID();
+			}
+		});
+		
+		loadDefaults();
+	}
     
     private static int compareVersions(String str1, String str2) {
         String[] v1 = { "0", "0", "0" };
@@ -88,7 +105,7 @@ public class SDTManager {
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null, 
                         "To load the default configuration manually, click File -> Import\n" +
-                        "Preferences and locatet: defaults.xml\n\n",
+                        "Preferences and locate: defaults.xml\n\n",
                         "Default preferences file not found",
                         JOptionPane.ERROR_MESSAGE);
             } catch (InvalidPreferencesFormatException ex) {
@@ -367,7 +384,7 @@ public class SDTManager {
         }
     }
     public static EventList getServiceList() {
-        return (EventList) serviceList;
+        return (EventList) sortedServiceList;
     }
 	public static Service getServiceByPort(int remotePort, int udpPort) {
 		Service service;
@@ -456,9 +473,14 @@ public class SDTManager {
     
     private static EventList gatewayList;  
     private static Preferences gatewayPreferences;
+	
     private static EventList clientList;
+	private static SortedList sortedClientList;
     private static Preferences clientPreferences;
+	
     private static EventList serviceList;
+	private static SortedList sortedServiceList;
     private static Preferences servicePreferences;
+	
     private static int recordID;
 }
