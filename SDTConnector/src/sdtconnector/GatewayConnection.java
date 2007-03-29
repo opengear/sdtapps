@@ -258,7 +258,7 @@ public class GatewayConnection {
 		});
 		
 		EventList hosts = null;
-		
+	
 		try {
 			hosts = (EventList) f.get();
 		} catch (ExecutionException ex) {

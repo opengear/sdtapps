@@ -88,7 +88,7 @@ public class Launcher implements Runnable {
         this.remoteHost = remoteHost;
     }
     public boolean equals(Object obj) {
-        return (obj != null && recordID == ((Service) obj).getRecordID());
+        return (obj != null && recordID == ((Launcher) obj).getRecordID());
     }
     public String toString() {
         return (localPort == 0 ? "Any" : String.valueOf(localPort)) +

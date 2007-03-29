@@ -81,7 +81,20 @@ public class Service {
         return (obj != null && recordID == ((Service) obj).getRecordID());
     }
     public String toString() {
-        return name;
+		if (name.equals("") == false) {
+			return name;
+		}
+		// Construct a descriptive name
+		String unnamedName = "Unnamed service";
+		Launcher launcher = this.getFirstLauncher();
+		if (launcher != null) {
+			if (launcher.getUdpPort() != 0) {
+				unnamedName = "UDP port " + launcher.getUdpPort();
+			} else if (launcher.getRemotePort() != 0) {
+				unnamedName = "TCP port " + launcher.getRemotePort();
+			}
+		}
+		return unnamedName;
     }
     
     private int recordID;

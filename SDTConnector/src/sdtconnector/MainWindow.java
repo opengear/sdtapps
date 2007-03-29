@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
@@ -315,13 +316,14 @@ public class MainWindow extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         statusBar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        statusBar.setDoubleBuffered(false);
         statusBar.setFocusable(false);
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+            .add(statusBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -446,7 +448,7 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 219, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -454,8 +456,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                    .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
+                    .add(connectButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                    .add(descriptionScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -717,15 +719,19 @@ static FileFilter xmlFileFilter = new FileFilter() {
             if (conn != null) {
                 statusBar.setLeadingMessage("Stopping out of band connection to " +
                         gw);
+				/*
                 ProgressEvent progress = new ProgressEvent(this) {
-                public boolean isIndeterminate() {
-                    return true;
-                }
-                };
+					public boolean isIndeterminate() {
+						return true;
+					}
+				};
                 statusBar.progressStarted(progress);
+				 */
                 conn.stopOob();
                 connections.remove(gw.getActiveAddress());
+				/*
                 statusBar.progressEnded(progress);
+				 */
             }
             statusBar.setLeadingMessage("Out of band disabled");
             statusBar.setBackground(statusColor);
@@ -740,6 +746,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
         }
         Gateway gw = (Gateway) path.getPathComponent(1);
         
+        statusBar.setLeadingMessage("Retrieving hosts"); // FIXME
+		statusBar.repaint();
+		
         if (gw.getHostList().isEmpty() == false) {
             int retVal = JOptionPane.showConfirmDialog(null, 
                     "This will delete all existing hosts for " + gw,
@@ -747,13 +756,27 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (retVal == JOptionPane.CANCEL_OPTION) {
+				statusBar.setLeadingMessage(""); // FIXME
                 return;
             }
         }
-        
-        GatewayConnection conn = getGatewayConnection(gw);
-		EventList hosts = conn.getHosts();
-		int i = 0;
+	
+		EventList hosts = getGatewayConnection(gw).getHosts();
+		
+		if (hosts != null && hosts.isEmpty() == false) {
+			EventList hl = gw.getHostList();
+			while (hl.isEmpty() == false) {
+				Host h = (Host) hl.get(0);
+				SDTManager.removeHost(gw, h);
+			}
+			for (Object o : hosts) {
+				Host h = (Host) o;
+				SDTManager.addHost(gw, h);
+			}
+			statusBar.setLeadingMessage("Successfully retrieved hosts");
+		} else {
+			statusBar.setLeadingMessage("Unable to retrieve hosts, is the " + gw + " configured?");
+		}
     }
 
     private void editSelectedNode(final TreePath path) {
@@ -823,7 +846,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 
                 serviceButton.setPreferredSize(new Dimension(buttonWidth, 32));
                 serviceButton.setActionCommand(String.valueOf(s.getRecordID()));
-                serviceButton.setText(s.getName());
+                serviceButton.setText(s.toString());
                 // For some pre-canned clients we can't guess the executable path, make the user set it
                 if (s.getFirstLauncher() != null
                         && s.getFirstLauncher().getClient() != null

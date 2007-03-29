@@ -8,6 +8,7 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +30,7 @@ public class SDTManager {
         gatewayList = new BasicEventList();
         clientList = new BasicEventList();
         serviceList = new BasicEventList();
-        load();
+        loadDefaults();
     }
     
     private static int compareVersions(String str1, String str2) {
@@ -47,18 +48,11 @@ public class SDTManager {
         return 0;
     }
     
-    public static void load() {
+    private static void loadDefaults() {
         boolean loadDefaults = true;
-        boolean migrate = false;
 
         try {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
-                try {
-                    recordID = Integer.parseInt(Settings.getProperty("recordID"));
-                } catch (NumberFormatException nfex) {
-                    recordID = initialRecordID();
-                    migrate = true;
-                }
                 String version = Settings.getProperty("version");
                 if (compareVersions(version, SDTConnector.VERSION) < 0) {
                     int retVal = JOptionPane.showConfirmDialog(null, 
@@ -101,7 +95,23 @@ public class SDTManager {
             } catch (IOException ex) {
             }            
         }
+		load();
+	}
 
+    public static void load() {
+		//
+		// Old config format pre user definable services (pre SDTConnector 1.2)
+		// may need to be migrated
+		//
+        boolean migrateFixedServices = false; 
+		
+        try {
+			recordID = Integer.parseInt(Settings.getProperty("recordID"));
+        } catch (NumberFormatException nfex) {
+			recordID = initialRecordID();
+			migrateFixedServices = true;
+        }
+		
         clientPreferences = Preferences.userRoot().node("opengear/sdtconnector/clients");
         clientList.clear();
         try {
@@ -120,7 +130,7 @@ public class SDTManager {
 				if (commandFormat == null) {
 					commandFormat = clientNode.get("commandFormat", "");
 				}
-                if (migrate) {
+                if (migrateFixedServices) {
                     if (name.equals("VNC viewer")) {
                         path = Settings.getProperty("vnc.path");
                         Settings.removeProperty("vnc.path");
@@ -131,7 +141,7 @@ public class SDTManager {
                 }
                 Client client = new Client(Integer.parseInt(clientChildName), name, path, commandFormat);
                 clientList.add(client);
-                if (migrate) {
+                if (migrateFixedServices) {
                     saveClient(client);
                 }
             }
@@ -181,7 +191,7 @@ public class SDTManager {
                 String udpgwPid = gwNode.get("udpgwpid", "");
                 String udpgwStop = gwNode.get("udpgwstop", "");
                 Gateway gw;
-                if (migrate) {
+                if (migrateFixedServices) {
                     gw = new Gateway(nextRecordID(), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
                 } else {
                     gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
@@ -196,13 +206,13 @@ public class SDTManager {
                     String hostAddress = hostNode.get("address", "");
                     String hostDescription = hostNode.get("description", "");
                     Host host;
-                    if (migrate) {
+                    if (migrateFixedServices) {
                         host = new Host(nextRecordID(), hostName, hostAddress, hostDescription);
                     } else {
                         host = new Host(Integer.parseInt(hostChildName), hostName, hostAddress, hostDescription);
                     }
                     gw.addHost(host);
-                    if (migrate) {
+                    if (migrateFixedServices) {
                         Preferences protocolPrefs = hostNode.node("protocols");
                         if (!(protocolPrefs.get("www", "")).equals("")) {
                             host.addService("HTTP");
@@ -223,7 +233,7 @@ public class SDTManager {
                         }
                     }
                 }
-                if (migrate) {
+                if (migrateFixedServices) {
                     gwNode.removeNode();
                     saveGateway(gw);
                 }
@@ -359,6 +369,34 @@ public class SDTManager {
     public static EventList getServiceList() {
         return (EventList) serviceList;
     }
+	public static Service getServiceByPort(int remotePort, int udpPort) {
+		Service service;
+		Launcher launcher;
+		
+        for (Object s : getServiceList()) {
+            service = (Service) s;
+			for (Object l : service.getLauncherList()) {
+				launcher = (Launcher) l;
+				if ((remotePort != 0 && launcher.getRemotePort() == remotePort) ||
+						(udpPort != 0 && launcher.getUdpPort() == udpPort))
+				{
+					return service;
+				}
+			}
+        }
+		//
+		// If there are no matching services, create a new one
+		//
+		launcher = new Launcher();
+		service = new Service();
+		launcher.setRemotePort(remotePort);
+		launcher.setUdpPort(udpPort);
+		service.addLauncher(launcher);
+		addService(service);
+		
+		return service;
+	}
+	
     
     private static void saveClient(Client client) {
         Preferences clientNode = clientPreferences.node(String.valueOf(client.getRecordID()));

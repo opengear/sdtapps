@@ -233,9 +233,9 @@ public class Gateway {
     private String oobStop = "";
     private boolean oob = false;
     
-    private String udpgwStartFormat;
-    private String udpgwStopFormat;
-    private String udpgwPidRegex;
+    private String udpgwStartFormat = "";
+    private String udpgwStopFormat = "";
+    private String udpgwPidRegex = "";
 
     private int _hashCode = 0;
 }

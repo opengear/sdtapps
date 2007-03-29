@@ -318,6 +318,7 @@
                 <EmptyBorder bottom="1" left="2" right="2" top="1"/>
               </Border>
             </Property>
+            <Property name="doubleBuffered" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
         </Component>
