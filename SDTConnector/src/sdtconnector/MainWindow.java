@@ -714,14 +714,14 @@ static FileFilter xmlFileFilter = new FileFilter() {
         boolean oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
-     
-			statusBar.setLeadingMessage("Out of band enabled");
-			gw.setOob(true);
+            
+            statusBar.setLeadingMessage("Out of band enabled");
+            gw.setOob(true);
         } else {
-			GatewayConnection conn = connections.get(gw.getActiveAddress()); // REVISIT
-			conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
-				GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
-		
+            GatewayConnection conn = connections.get(gw.getActiveAddress()); // REVISIT
+            conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
+                    GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
+            
             conn.stopOob();
         }
     }
@@ -734,21 +734,21 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Gateway gw = (Gateway) path.getPathComponent(1);
         
         if (gw.getHostList().isEmpty() == false) {
-            int retVal = JOptionPane.showConfirmDialog(null, 
+            int retVal = JOptionPane.showConfirmDialog(null,
                     "This will delete all existing hosts for " + gw,
                     "Warning",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (retVal == JOptionPane.CANCEL_OPTION) {
-				statusBar.setLeadingMessage(""); // FIXME
+                statusBar.setLeadingMessage(""); // FIXME
                 return;
             }
         }
-
-		GatewayConnection conn = getGatewayConnection(gw);
+        
+        GatewayConnection conn = getGatewayConnection(gw);
         conn.setAutohostsListener((GatewayConnection.AutohostsListener) SwingInvocationProxy.create(
-				GatewayConnection.AutohostsListener.class, new AutohostsListener(gw)));
-		conn.getHosts();
+                GatewayConnection.AutohostsListener.class, new AutohostsListener(gw)));
+        conn.getHosts();
     }
 
     private void editSelectedNode(final TreePath path) {

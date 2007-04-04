@@ -61,19 +61,19 @@ public class GatewayConnection {
         setupSession(username, password);
     }
     
-	public void setSSHListener(SSHListener l) {
+    public void setSSHListener(SSHListener l) {
         sshListener = l;
     }
-	public void setAutohostsListener(AutohostsListener l) {
+    public void setAutohostsListener(AutohostsListener l) {
         autohostsListener = l;
     }
-	public void setStopOobListener(StopOobListener l) {
+    public void setStopOobListener(StopOobListener l) {
         stopOobListener = l;
     }
-	
+    
     public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
         for (Redirector r : redirectors) {
-            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port && 
+            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port &&
                     (lport == 0 || lport == r.getLocalPort())) {
                 return r;
             }
@@ -84,7 +84,7 @@ public class GatewayConnection {
                 break;
             }
         }
-
+        
         // Create a new redirector
         try {
             Redirector r = new Redirector(this, host, port, lhost, lport, uport);
@@ -95,7 +95,7 @@ public class GatewayConnection {
             return null;
         }
     }
-   
+    
     //
     // Wait for the login to complete - runs on the GatewayConnection thread.
     //
@@ -122,7 +122,7 @@ public class GatewayConnection {
             // Add any configured private keys
             for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
                 jsch.addIdentity(path, "passphrase");
-            }           
+            }
         } catch (com.jcraft.jsch.JSchException jsche) {
             System.out.println("Jsch exception " + jsche);
         }
@@ -174,21 +174,21 @@ public class GatewayConnection {
     }
     
     public void stopOob() {
-		exec.execute(new Runnable() {
-			public void run() {
-				Process proc;
-				stopOobListener.stopOobStarted();
-				try {
-					proc = Runtime.getRuntime().exec(gateway.getOobStop());
-					int retVal = proc.waitFor();
-				} catch (IOException ex) {
-					stopOobListener.stopOobFailed();
-				} catch (InterruptedException ex) {
-					stopOobListener.stopOobFailed();
-				}
-				stopOobListener.stopOobSucceeded();
-			}
-		});
+        exec.execute(new Runnable() {
+            public void run() {
+                Process proc;
+                stopOobListener.stopOobStarted();
+                try {
+                    proc = Runtime.getRuntime().exec(gateway.getOobStop());
+                    int retVal = proc.waitFor();
+                } catch (IOException ex) {
+                    stopOobListener.stopOobFailed();
+                } catch (InterruptedException ex) {
+                    stopOobListener.stopOobFailed();
+                }
+                stopOobListener.stopOobSucceeded();
+            }
+        });
     }
     
     private void shellWrite(PrintStream ps, String line) {
@@ -199,13 +199,13 @@ public class GatewayConnection {
         ps.flush();
         System.out.println("Shell: Sent: " + line);
     }
-
+    
     private String shellRead(BufferedReader br, int timeout) throws Exception {
         int i, len;
-		String s;
+        String s;
         StringBuffer sb = new StringBuffer();
         char[] cb = new char[1024];
-
+        
         for (i = timeout / 10; i > 0; i--) {
             try {
                 Thread.sleep(10);
@@ -216,80 +216,80 @@ public class GatewayConnection {
             len = br.read(cb, 0, 1024);
             sb.append(cb, 0, len);
         }
-		
-		s = sb.toString();
-
+        
+        s = sb.toString();
+        
         if (s.equals("")) {
             System.out.println("Shell: Timeout reading from remote shell");
             throw new Exception();
         }
-
+        
         System.out.println("Shell: Received: " + s);
         return s;
     }
-
+    
     public void getHosts() {
-		exec.execute(new Runnable() {
-			public void run() {
-				EventList hosts = null;
-		
-				autohostsListener.autohostsStarted();
-				
-				if (session.isConnected() == false) {
-					try {
-						session.connect(5000);
-					} catch (JSchException ex) {
-						// FIXME
-						setupSession(username, password);
-						autohostsListener.autohostsFailed();
-					}
-				}
-
-				try {
-					ChannelShell shell = (ChannelShell) session.openChannel("shell");
-					PrintStream shOut = new PrintStream(shell.getOutputStream());
-					BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
-					AutohostsParser parser = new AutohostsParser();
-					
-					shell.connect();
-					
-					shellWrite(shOut, "stty -echo");
-					// Wait for shell to be ready
-					shellRead(shIn, 1000);
-					// Send command
-					shellWrite(shOut, "cat $HOME/.sdt");
-				
-					hosts = parser.parse(shell.getInputStream());
-					
-				} catch (JSchException ex) {
-					ex.printStackTrace();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				autohostsListener.autohostsSucceeded(hosts);
-			}
-		});
-	}
+        exec.execute(new Runnable() {
+            public void run() {
+                EventList hosts = null;
+                
+                autohostsListener.autohostsStarted();
+                
+                if (session.isConnected() == false) {
+                    try {
+                        session.connect(5000);
+                    } catch (JSchException ex) {
+                        // FIXME
+                        setupSession(username, password);
+                        autohostsListener.autohostsFailed();
+                    }
+                }
+                
+                try {
+                    ChannelShell shell = (ChannelShell) session.openChannel("shell");
+                    PrintStream shOut = new PrintStream(shell.getOutputStream());
+                    BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+                    AutohostsParser parser = new AutohostsParser();
+                    
+                    shell.connect();
+                    
+                    shellWrite(shOut, "stty -echo");
+                    // Wait for shell to be ready
+                    shellRead(shIn, 1000);
+                    // Send command
+                    shellWrite(shOut, "cat $HOME/.sdt");
+                    
+                    hosts = parser.parse(shell.getInputStream());
+                    
+                } catch (JSchException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                autohostsListener.autohostsSucceeded(hosts);
+            }
+        });
+    }
     
     public class Redirector implements Runnable {
         private boolean redirectSocket(final Socket s) {
             Future f = exec.submit(new Callable() {
-
+                
                 private void redirectRemoteUDPSocket() throws Exception {
                     String command = gateway.getUdpgwStartCommand(host, port, uport);
                     String regex = gateway.getUdpgwPidRegex();
                     CharSequence cs;
                     String s;
-  
+                    
                     System.out.println("TCP-UDP: 127.0.0.1:" + port + " <-> " + host + ":" + uport);
                     remoteUDPGatewayShell = (ChannelShell) session.openChannel("shell");
                     PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
                     BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
                     remoteUDPGatewayShell.connect();
                     System.out.println("TCP-UDP: Shell connected");
-
+                    
                     shellWrite(shOut, "stty -echo");
                     // Wait for shell to be ready
                     shellRead(shIn, 1000);
@@ -297,17 +297,17 @@ public class GatewayConnection {
                     shellWrite(shOut, command);
                     // Wait for shell to be ready
                     s = shellRead(shIn, 1000);
-
+                    
                     Matcher m = Pattern.compile(regex).matcher(s);
                     if (m.find() == true) {
                         remoteUDPGatewayPID = Integer.parseInt(s.substring(m.start(), m.end()));
                     } else {
                         remoteUDPGatewayPID = 0;
                     }
-
+                    
                     System.out.println("TCP-UDP: Remote UDP gateway started, PID " + remoteUDPGatewayPID);
                 }
-
+                
                 private void redirectTCPSocket(final String host) throws Exception {
                     tcpip = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
                     tcpip.setHost(host);
@@ -318,7 +318,7 @@ public class GatewayConnection {
                     tcpip.connect();
                     sshListener.sshTcpChannelEstablished(host, port);
                 }
-
+                
                 public Channel call() throws Exception {
                     if (!doConnect()) {
                         throw new JSchException("Failed to connect");
@@ -342,7 +342,7 @@ public class GatewayConnection {
             });
             return true;
         }
-
+        
         public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport, int uport) throws IOException {
             listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
             this.connection = conn;
@@ -369,7 +369,7 @@ public class GatewayConnection {
         private void shutdownLocalUDPRedirection() {
             localUDPGateway.shutdown();
         }
-
+        
         private void shutdownRemoteUDPRedirection() {
             if (remoteUDPGatewayShell != null) {
                 if (remoteUDPGatewayPID != 0) {
@@ -377,7 +377,7 @@ public class GatewayConnection {
                     try {
                         PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
                         BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
-
+                        
                         shellWrite(shOut, "");
                         // Wait for shell to be ready
                         shellRead(shIn, 1);
@@ -403,12 +403,12 @@ public class GatewayConnection {
             ps.flush();
             System.out.println("TCP-UDP: Sent: " + line);
         }
-
+        
         private String shellRead(BufferedReader br, int timeout) throws Exception {
             String strbuf = "";
             int i, len;
             char[] cbuf = new char[1024];
-
+            
             for (i = timeout / 10; i > 0; i--) {
                 try {
                     Thread.sleep(10);
@@ -419,16 +419,16 @@ public class GatewayConnection {
                 len = br.read(cbuf, 0, 1024);
                 strbuf = strbuf + String.valueOf(cbuf, 0, len);
             }
-
+            
             if (strbuf == "") {
                 System.out.println("Shell: Timeout reading from remote shell");
                 throw new Exception();
             }
-
+            
             System.out.println("Shell: Received: " + strbuf);
             return strbuf;
-        }    
-
+        }
+        
         public void shutdown() {
             stop();
             try {
@@ -465,7 +465,7 @@ public class GatewayConnection {
                 }
             }
         }
-
+        
         private ServerSocket listenSocket;
         private Thread listenThread;
         private GatewayConnection connection;
@@ -482,7 +482,7 @@ public class GatewayConnection {
     
     
     
-    public void shutdown() {    
+    public void shutdown() {
         for (Redirector r : redirectors) {
             r.shutdown();
         }
@@ -496,7 +496,7 @@ public class GatewayConnection {
     public static void main(String[] arg) {
         System.out.println("GatewayConnection");
     }
-
+    
     public interface Authentication {
         public boolean promptAuthentication(String prompt);
         public boolean promptPassphrase(String prompt);
@@ -516,15 +516,15 @@ public class GatewayConnection {
         public void sshTcpChannelFailed(String host, int port);
     }
     public interface AutohostsListener {
-		public void autohostsStarted();
-		public void autohostsSucceeded(EventList hosts);
-		public void autohostsFailed();
-	} 
+        public void autohostsStarted();
+        public void autohostsSucceeded(EventList hosts);
+        public void autohostsFailed();
+    }
     public interface StopOobListener {
-		public void stopOobStarted();
-		public void stopOobSucceeded();
-		public void stopOobFailed();
-	} 
+        public void stopOobStarted();
+        public void stopOobSucceeded();
+        public void stopOobFailed();
+    }
     private Gateway gateway;
     private JSch jsch;
     private Session session;
@@ -548,16 +548,16 @@ public class GatewayConnection {
         public void sshTcpChannelEstablished(String host, int port) {}
         public void sshTcpChannelFailed(String host, int port) {}
     };
-	private AutohostsListener autohostsListener = new AutohostsListener() {
-		public void autohostsStarted() {}
-		public void autohostsSucceeded(EventList hosts) {}
-		public void autohostsFailed() {}
-	};
-	private StopOobListener stopOobListener = new StopOobListener() {
-		public void stopOobStarted() {}
-		public void stopOobSucceeded() {}
-		public void stopOobFailed() {}
-	};
+    private AutohostsListener autohostsListener = new AutohostsListener() {
+        public void autohostsStarted() {}
+        public void autohostsSucceeded(EventList hosts) {}
+        public void autohostsFailed() {}
+    };
+    private StopOobListener stopOobListener = new StopOobListener() {
+        public void stopOobStarted() {}
+        public void stopOobSucceeded() {}
+        public void stopOobFailed() {}
+    };
     UserInfo userinfo = new UserInfo() {
         public String getPassphrase() {
             return authentication.getPassphrase();
