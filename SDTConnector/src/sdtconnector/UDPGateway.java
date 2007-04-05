@@ -32,56 +32,50 @@ public class UDPGateway implements Runnable {
     }
     
     public void stop() {
-        thread.interrupt();
+        if (thread != null) {
+            thread.interrupt();
+        }
     }
     
     public void shutdown() {
-        uninit();
         stop();
+        uninit();
     }
     
-    private void init() {
-        try {
-            selector = Selector.open();
-            udpChannel = DatagramChannel.open();
-            udpChannel.socket().bind(new InetSocketAddress(InetAddress.getByName(localHost), udpPort));
-            udpChannel.configureBlocking(false);
-            udpKey = udpChannel.register(selector, SelectionKey.OP_READ);
-            tcpChannel = SocketChannel.open();
-        } catch (ClosedChannelException ex) {
-            ex.printStackTrace();
-        } catch (UnknownHostException ex) {
-            ex.printStackTrace();
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }    
+    public void init() throws Exception {
+        selector = Selector.open();
+        udpChannel = DatagramChannel.open();
+        udpSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), udpPort);
+        udpChannel.socket().bind(udpSockAddr);
+        udpChannel.configureBlocking(false);
+        udpKey = udpChannel.register(selector, SelectionKey.OP_READ);
+        tcpChannel = SocketChannel.open();
     }
     
     private void uninit() {
         try {
-            for (Object o : selector.keys()) {
-                SelectionKey key = (SelectionKey) o;
-                key.cancel();
+            if (selector != null) {
+                for (Object o : selector.keys()) {
+                    SelectionKey key = (SelectionKey) o;
+                    key.cancel();
+                }
+                selector.close();
             }
-            selector.close();
-            udpChannel.disconnect();
-            udpChannel.close();
-            tcpChannel.close();
+            if (udpChannel != null) {
+                udpChannel.socket().close();
+                udpChannel.disconnect();
+            }
+            if (tcpChannel != null) {
+                tcpChannel.socket().close();
+                tcpChannel.close();
+            }
         } catch (IOException ex) {
         }
     }
     
-    public void reinit() {
-        uninit();
-        init();
-    }
-
     public void run() {
         ByteBuffer buffer = ByteBuffer.allocate(BUF_LEN);
         System.out.println("UDP-TCP: " + localHost + ":" + udpPort + " <-> " + localHost + ":" + tcpPort);
-        init();
         System.out.println("UDP-TCP: Local UDP gateway started");
         while (true) {
             try {
@@ -130,6 +124,7 @@ public class UDPGateway implements Runnable {
         }
     }
 
+    private InetSocketAddress udpSockAddr;
     private DatagramChannel udpChannel;
     private SocketChannel tcpChannel;
     private Selector selector;

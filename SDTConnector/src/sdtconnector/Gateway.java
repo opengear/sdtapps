@@ -43,7 +43,7 @@ public class Gateway {
         this.oobStart = oobStart;
         this.oobStop = oobStop;
         if (udpgwStartFormat.equals("")) {
-            udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
+            this.udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
         } else{
             this.udpgwStartFormat = udpgwStartFormat;
         }

@@ -77,7 +77,7 @@ public class GatewayConnection {
                     (lport == 0 || lport == r.getLocalPort())) {
                 return r;
             }
-            // shutdown redirector which has local port that required
+            // Remove redirector if it's using a requested local port
             if (r.getLocalPort() == lport || (uport != 0 && r.getUDPPort() == uport)) {
                 r.shutdown();
                 redirectors.remove(r);
@@ -86,14 +86,18 @@ public class GatewayConnection {
         }
         
         // Create a new redirector
+        Redirector redirector = null;
         try {
-            Redirector r = new Redirector(this, host, port, lhost, lport, uport);
-            redirectors.add(r);
-            r.start();
-            return r;
-        } catch (IOException ex) {
+            redirector = new Redirector(this, host, port, lhost, lport, uport);
+            redirector.start();
+        } catch (Exception ex) {
+            if (redirector != null) {
+                redirector.shutdown();
+            }
             return null;
         }
+        redirectors.add(redirector);
+        return redirector;
     }
     
     //
@@ -302,7 +306,8 @@ public class GatewayConnection {
                     if (m.find() == true) {
                         remoteUDPGatewayPID = Integer.parseInt(s.substring(m.start(), m.end()));
                     } else {
-                        remoteUDPGatewayPID = 0;
+                        System.out.println("TCP-UDP: No PID returned from remote UDP gateway command");
+                        throw new Exception();
                     }
                     
                     System.out.println("TCP-UDP: Remote UDP gateway started, PID " + remoteUDPGatewayPID);
@@ -331,15 +336,21 @@ public class GatewayConnection {
                             redirectTCPSocket(host);
                         }
                         return tcpip;
-                    } catch (JSchException ex) {
-                        sshListener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
-                        return null;
                     } catch (Exception ex) {
                         sshListener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
                         return null;
                     }
                 }
             });
+            try {
+                if (f.get() == null) {
+                    return false;
+                }
+            } catch (ExecutionException ex) {
+                    return false;
+            } catch (InterruptedException ex) {
+                    return false;
+            }
             return true;
         }
         
@@ -353,12 +364,13 @@ public class GatewayConnection {
             this.uport = uport;
             this.connection = connection;
         }
-        public void start() {
+        public void start() throws Exception {
             listenThread = new Thread(this);
             listenThread.setDaemon(true);
             listenThread.start();
             if (uport != 0) {
                 localUDPGateway = new UDPGateway(lhost, uport, lport);
+                localUDPGateway.init();
                 localUDPGateway.start();
             }
         }
@@ -367,7 +379,9 @@ public class GatewayConnection {
         }
         
         private void shutdownLocalUDPRedirection() {
-            localUDPGateway.shutdown();
+            if (localUDPGateway != null) {
+                localUDPGateway.shutdown();
+            }
         }
         
         private void shutdownRemoteUDPRedirection() {
@@ -459,7 +473,11 @@ public class GatewayConnection {
         public void run() {
             while (true) {
                 try {
-                    redirectSocket(listenSocket.accept());
+                    if (redirectSocket(listenSocket.accept()) == false) {
+                        this.shutdown();
+                        redirectors.remove(this);
+                        break;
+                    }
                 } catch (IOException ex) {
                     break;
                 }
@@ -476,8 +494,8 @@ public class GatewayConnection {
         private int uport;
         private UDPGateway localUDPGateway;
         private ChannelShell remoteUDPGatewayShell;
-        private int remoteUDPGatewayPID;
         private ChannelDirectTCPIP tcpip;
+        private int remoteUDPGatewayPID = 0;
     }
     
     

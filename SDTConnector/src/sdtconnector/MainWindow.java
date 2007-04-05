@@ -721,7 +721,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
             GatewayConnection conn = connections.get(gw.getActiveAddress()); // REVISIT
             conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
                     GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
-            
             conn.stopOob();
         }
     }
@@ -892,11 +891,21 @@ static FileFilter xmlFileFilter = new FileFilter() {
         GatewayConnection conn = getGatewayConnection(gw);
         System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
                 + gw.getActiveAddress());
-            return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
+        return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
     }
     private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
-        final int boundPort = getRedirectorForSelection(launcher.getRemotePort(), launcher.getLocalHost(), launcher.getLocalPort(), launcher.getUdpPort()).getLocalPort();
-        final GatewayConnection conn = getGatewayConnection(gw);
+        GatewayConnection.Redirector r;
+        final int boundPort;
+        final GatewayConnection conn;
+
+        r = getRedirectorForSelection(launcher.getRemotePort(),launcher.getLocalHost(), launcher.getLocalPort(), launcher.getUdpPort());
+        if (r == null) {
+            statusBar.setText("Failed to create redirection");
+            return;
+        }
+        boundPort = r.getLocalPort();
+        conn = getGatewayConnection(gw);
+
         //getGlassPane().setVisible(true);
         bgExec.execute(new Runnable() {
             public void run() {
@@ -1051,6 +1060,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         public void sshTcpChannelFailed(String host, int port) {
             statusBar.setLeadingMessage("Failed to connect to " + host + ":" + port);
             statusBar.progressEnded(progress);
+            
         }
         
         public void sshTcpChannelEstablished(String host, int port) {

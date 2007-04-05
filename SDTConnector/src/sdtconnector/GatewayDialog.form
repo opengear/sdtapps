@@ -340,9 +340,9 @@
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="udpgwStartFormatField" alignment="0" max="32767" attributes="1"/>
-                          <Component id="udpgwPidRegexField" alignment="0" max="32767" attributes="1"/>
-                          <Component id="udpgwStopFormatField" alignment="0" pref="251" max="32767" attributes="1"/>
+                          <Component id="udpgwStartFormatField" alignment="0" pref="247" max="32767" attributes="1"/>
+                          <Component id="udpgwPidRegexField" alignment="0" pref="247" max="32767" attributes="1"/>
+                          <Component id="udpgwStopFormatField" alignment="0" pref="247" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
