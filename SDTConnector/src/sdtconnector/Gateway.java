@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.swingx.util.OS;
 
 public class Gateway {
     
@@ -39,22 +40,34 @@ public class Gateway {
         this.username = username;
         this.password = password;
         this.description = description;
-        this.oobAddress = oobAddress;
-        this.oobStart = oobStart;
-        this.oobStop = oobStop;
-        if (udpgwStartFormat.equals("")) {
-            this.udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
-        } else{
+        if (oobAddress != null) {
+            this.oobAddress = oobAddress;
+        }
+        if (oobStart != null) {
+            this.oobStart = oobStart;
+        } else {
+            if (OS.isWindows()) {
+                this.oobStart = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial OOB login password";
+            } else {
+                this.oobStart = "pon OOB";
+            }
+        }
+        if (oobStop != null) {
+            this.oobStop = oobStop;
+        } else {
+            if (OS.isWindows()) {
+                this.oobStop = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial network_connection login password";
+            } else {
+                this.oobStop = "poff OOB";
+            }
+        }
+        if (udpgwStartFormat != null) {
             this.udpgwStartFormat = udpgwStartFormat;
         }
-        if (udpgwStopFormat.equals("")) {
-            this.udpgwStopFormat = "kill %pid%";
-        } else {
+        if (udpgwStopFormat != null) {
             this.udpgwStopFormat = udpgwStopFormat;
         }
-        if (udpgwPidRegex.equals("")) {
-            this.udpgwPidRegex = "[0-9]+";
-        } else {
+        if (udpgwPidRegex != null) {
             this.udpgwPidRegex = udpgwPidRegex;
         }
     }
@@ -233,9 +246,9 @@ public class Gateway {
     private String oobStop = "";
     private boolean oob = false;
     
-    private String udpgwStartFormat = "";
-    private String udpgwStopFormat = "";
-    private String udpgwPidRegex = "";
+    private String udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
+    private String udpgwStopFormat = "kill %pid%";
+    private String udpgwPidRegex = "[0-9]+";
 
     private int _hashCode = 0;
 }

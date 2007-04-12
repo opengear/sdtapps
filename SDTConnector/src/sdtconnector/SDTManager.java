@@ -31,30 +31,30 @@ public class SDTManager {
         gatewayList = new BasicEventList();
         clientList = new BasicEventList();
         serviceList = new BasicEventList();
-		
-		sortedClientList = new SortedList(SDTManager.clientList, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				Client c1 = (Client) o1;
-				Client c2 = (Client) o2;
-				return c1.getRecordID() - c2.getRecordID();
-			}
-		});
-   		sortedServiceList = new SortedList(SDTManager.serviceList, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				Service s1 = (Service) o1;
-				Service s2 = (Service) o2;
-				return s1.getRecordID() - s2.getRecordID();
-			}
-		});
-		
-		loadDefaults();
-	}
+        
+        sortedClientList = new SortedList(SDTManager.clientList, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Client c1 = (Client) o1;
+                Client c2 = (Client) o2;
+                return c1.getRecordID() - c2.getRecordID();
+            }
+        });
+        sortedServiceList = new SortedList(SDTManager.serviceList, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Service s1 = (Service) o1;
+                Service s2 = (Service) o2;
+                return s1.getRecordID() - s2.getRecordID();
+            }
+        });
+        
+        loadDefaults();
+    }
     
     private static int compareVersions(String str1, String str2) {
         String[] v1 = { "0", "0", "0" };
         String[] v2 = { "0", "0", "0" };
         int i;
-
+        
         v1 = str1.split("\\.");
         v2 = str2.split("\\.");
         
@@ -67,12 +67,12 @@ public class SDTManager {
     
     private static void loadDefaults() {
         boolean loadDefaults = true;
-
+        
         try {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
                 String version = Settings.getProperty("version");
                 if (compareVersions(version, SDTConnector.VERSION) < 0) {
-                    int retVal = JOptionPane.showConfirmDialog(null, 
+                    int retVal = JOptionPane.showConfirmDialog(null,
                             "SDTConnector has found preferences created by an older version (" + version + ").\n" +
                             "The version you are running (" +  SDTConnector.VERSION + ") may contain updated service and client\n" +
                             "settings.\n\n" +
@@ -81,7 +81,7 @@ public class SDTManager {
                             "Load new default configuration?",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (retVal != JOptionPane.YES_OPTION) {
-                        JOptionPane.showMessageDialog(null, 
+                        JOptionPane.showMessageDialog(null,
                                 "To load the new default configuration later, click File -> Import\n" +
                                 "Preferences and select: defaults.xml\n\n",
                                 "Hint",
@@ -103,50 +103,50 @@ public class SDTManager {
                 Preferences.importPreferences(new FileInputStream(defaults));
                 recordID = Integer.parseInt(Settings.getProperty("recordID"));
             } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(null,
                         "To load the default configuration manually, click File -> Import\n" +
                         "Preferences and locate: defaults.xml\n\n",
                         "Default preferences file not found",
                         JOptionPane.ERROR_MESSAGE);
             } catch (InvalidPreferencesFormatException ex) {
             } catch (IOException ex) {
-            }            
+            }
         }
-		load();
-	}
-
+        load();
+    }
+    
     public static void load() {
-		//
-		// Old config format pre user definable services (pre SDTConnector 1.2)
-		// may need to be migrated
-		//
-        boolean migrateFixedServices = false; 
-		
+        //
+        // Old config format pre user definable services (pre SDTConnector 1.2)
+        // may need to be migrated
+        //
+        boolean migrateFixedServices = false;
+        
         try {
-			recordID = Integer.parseInt(Settings.getProperty("recordID"));
+            recordID = Integer.parseInt(Settings.getProperty("recordID"));
         } catch (NumberFormatException nfex) {
-			recordID = initialRecordID();
-			migrateFixedServices = true;
+            recordID = initialRecordID();
+            migrateFixedServices = true;
         }
-		
+        
         clientPreferences = Preferences.userRoot().node("opengear/sdtconnector/clients");
         clientList.clear();
         try {
             for (String clientChildName : clientPreferences.childrenNames()) {
-				String path = null;
-				String commandFormat = null;
+                String path = null;
+                String commandFormat = null;
                 Preferences clientNode = clientPreferences.node(clientChildName);
                 String name = clientNode.get("name", "");
-				if (OS.isWindows()) {
-					path = clientNode.get("path-win", null);
-					commandFormat = clientNode.get("commandFormat-win", null);
-				}
-				if (path == null) {
-					path = clientNode.get("path", "");
-				}
-				if (commandFormat == null) {
-					commandFormat = clientNode.get("commandFormat", "");
-				}
+                if (OS.isWindows()) {
+                    path = clientNode.get("path-win", null);
+                    commandFormat = clientNode.get("commandFormat-win", null);
+                }
+                if (path == null) {
+                    path = clientNode.get("path", "");
+                }
+                if (commandFormat == null) {
+                    commandFormat = clientNode.get("commandFormat", "");
+                }
                 if (migrateFixedServices) {
                     if (name.equals("VNC viewer")) {
                         path = Settings.getProperty("vnc.path");
@@ -190,7 +190,7 @@ public class SDTManager {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
-
+        
         gatewayPreferences = Preferences.userRoot().node("opengear/sdtconnector/gateways");
         gatewayList.clear();
         try {
@@ -201,18 +201,21 @@ public class SDTManager {
                 String description = gwNode.get("description", "");
                 String username = gwNode.get("username", "");
                 String password = gwNode.get("password", "");
-                String oobAddress = gwNode.get("oobaddress", "");
-                String oobStart = gwNode.get("oobstart", "");
-                String oobStop = gwNode.get("oobstop", "");
-                String udpgwStart = gwNode.get("udpgwstart", "");
-                String udpgwPid = gwNode.get("udpgwpid", "");
-                String udpgwStop = gwNode.get("udpgwstop", "");
+                String oobAddress = gwNode.get("oobaddress", null);
+                String oobStart = gwNode.get("oobstart", null);
+                String oobStop = gwNode.get("oobstop", null);
+                String udpgwStart = gwNode.get("udpgwstart", null);
+                String udpgwPid = gwNode.get("udpgwpid", null);
+                String udpgwStop = gwNode.get("udpgwstop", null);
                 Gateway gw;
+                int gwRecordID;
+                
                 if (migrateFixedServices) {
-                    gw = new Gateway(nextRecordID(), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
+                    gwRecordID = nextRecordID();
                 } else {
-                    gw = new Gateway(Integer.parseInt(gwChildName), name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
+                    gwRecordID = Integer.parseInt(gwChildName);
                 }
+                gw = new Gateway(gwRecordID, name, address, username, password, description, oobAddress, oobStart, oobStop, udpgwStart, udpgwStop, udpgwPid);
                 gw.setPort(gwNode.getInt("sshport", 22));
                 gw.setOobPort(gwNode.getInt("oobport", 22));
                 gatewayList.add(gw);
@@ -471,16 +474,16 @@ public class SDTManager {
         return (Client) clientList.get(0); // By default the HTTP client is first
     }
     
-    private static EventList gatewayList;  
+    private static EventList gatewayList;
     private static Preferences gatewayPreferences;
-	
+    
     private static EventList clientList;
-	private static SortedList sortedClientList;
+    private static SortedList sortedClientList;
     private static Preferences clientPreferences;
-	
+    
     private static EventList serviceList;
-	private static SortedList sortedServiceList;
+    private static SortedList sortedServiceList;
     private static Preferences servicePreferences;
-	
+    
     private static int recordID;
 }
