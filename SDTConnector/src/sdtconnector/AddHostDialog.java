@@ -115,10 +115,10 @@ public class AddHostDialog extends javax.swing.JDialog {
         okButton.setText("OK");
         okButton.setIconTextGap(6);
         okButton.setMargin(new java.awt.Insets(2, 7, 2, 14));
-        okButton.setMaximumSize(new java.awt.Dimension(68, 25));
-        okButton.setMinimumSize(new java.awt.Dimension(68, 25));
+        okButton.setMaximumSize(new java.awt.Dimension(46, 25));
+        okButton.setMinimumSize(new java.awt.Dimension(46, 25));
         okButton.setNextFocusableComponent(cancelButton);
-        okButton.setPreferredSize(new java.awt.Dimension(68, 25));
+        okButton.setPreferredSize(new java.awt.Dimension(46, 25));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -200,8 +200,8 @@ public class AddHostDialog extends javax.swing.JDialog {
                         .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 61, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(cancelButton)
-                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cancelButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                     .add(descLabel))
                 .addContainerGap())
         );

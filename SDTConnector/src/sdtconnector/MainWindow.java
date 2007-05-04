@@ -884,14 +884,19 @@ static FileFilter xmlFileFilter = new FileFilter() {
             this.repaint();
         }
     }
-    GatewayConnection.Redirector getRedirectorForSelection(int port, String lhost, int lport, int uport) {
+    GatewayConnection.Redirector getRedirectorForSelection(int remotePort, String localHost, int localPort, int udpOverTcpPort) {
+        // Stop any redirectors using a requested local port
+        for (GatewayConnection gwc : connections.values()) {
+            gwc.shutdownConflictingRedirectors(localHost, localPort, udpOverTcpPort);
+        }
         TreePath path = gatewayList.getSelectionPath();
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
         GatewayConnection conn = getGatewayConnection(gw);
-        System.out.println("Adding redirection to " + host.getAddress() + ":" + port + " via "
+        System.out.println("Adding redirection to " + host.getAddress() + ":" + remotePort + " via "
                 + gw.getActiveAddress());
-        return conn.getRedirector(host.getAddress(), port, lhost, lport, uport);
+
+        return conn.getRedirector(host.getAddress(), remotePort, localHost, localPort, udpOverTcpPort);
     }
     private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
         GatewayConnection.Redirector r;
@@ -900,7 +905,26 @@ static FileFilter xmlFileFilter = new FileFilter() {
 
         r = getRedirectorForSelection(launcher.getRemotePort(),launcher.getLocalHost(), launcher.getLocalPort(), launcher.getUdpPort());
         if (r == null) {
-            statusBar.setText("Failed to create redirection");
+            StringBuilder msg = new StringBuilder("Couldn't create redirection using ");
+            
+            if (launcher.getLocalPort() != 0) {
+                
+                msg.append(" using local TCP port " + String.valueOf(launcher.getLocalPort()));
+            } else {
+                msg.append(" any local TCP port");
+            }
+            if (launcher.getUdpPort() != 0) {
+                msg.append(", local UDP port " + String.valueOf(launcher.getUdpPort()));
+            }
+
+            if (OS.isWindows() == false) {
+                if ((launcher.getLocalPort() > 0 && launcher.getLocalPort() < 1024)
+                    || (launcher.getUdpPort() > 0 && launcher.getUdpPort() > 1024))
+                {
+                    msg.append(", root privileges required");
+                }
+            }
+            statusBar.setText(msg.toString());
             return;
         }
         boundPort = r.getLocalPort();
@@ -925,8 +949,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 }
             }
         });
-    }
-    
+    }       
     /**
      * @param args the command line arguments
      */

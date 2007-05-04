@@ -25,9 +25,12 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -39,6 +42,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import org.omg.SendingContext.RunTime;
@@ -60,7 +64,7 @@ public class GatewayConnection {
         config.put("compression.c2s", "zlib,none");
         setupSession(username, password);
     }
-    
+
     public void setSSHListener(SSHListener l) {
         sshListener = l;
     }
@@ -71,24 +75,18 @@ public class GatewayConnection {
         stopOobListener = l;
     }
     
-    public Redirector getRedirector(String host, int port, String lhost, int lport, int uport) {
+    public Redirector getRedirector(String remoteHost, int remotePort, String localHost, int localPort, int udpOverTcpPort) {
         for (Redirector r : redirectors) {
-            if (r.getRemoteHost().equals(host) && r.getRemotePort() == port &&
-                    (lport == 0 || lport == r.getLocalPort())) {
+            if (r.getRemoteHost().equals(remoteHost) && r.getRemotePort() == remotePort &&
+                    (localPort == 0 || localPort == r.getLocalPort())) {
                 return r;
-            }
-            // Remove redirector if it's using a requested local port
-            if (r.getLocalPort() == lport || (uport != 0 && r.getUDPPort() == uport)) {
-                r.shutdown();
-                redirectors.remove(r);
-                break;
             }
         }
         
         // Create a new redirector
         Redirector redirector = null;
         try {
-            redirector = new Redirector(this, host, port, lhost, lport, uport);
+            redirector = new Redirector(this, remoteHost, remotePort, localHost, localPort, udpOverTcpPort);
             redirector.start();
         } catch (Exception ex) {
             if (redirector != null) {
@@ -282,12 +280,13 @@ public class GatewayConnection {
             Future f = exec.submit(new Callable() {
                 
                 private void redirectRemoteUDPSocket() throws Exception {
-                    String command = gateway.getUdpgwStartCommand(host, port, uport);
+                    String command = gateway.getUdpgwStartCommand(remoteHost, remotePort, udpOverTcpPort);
                     String regex = gateway.getUdpgwPidRegex();
                     CharSequence cs;
                     String s;
                     
-                    System.out.println("TCP-UDP: 127.0.0.1:" + port + " <-> " + host + ":" + uport);
+                    System.out.println("TCP-UDP: Remote UDP to TCP gateway starting");
+                    System.out.println("TCP-UDP: 127.0.0.1:" + remotePort + " <-> " + remoteHost + ":" + udpOverTcpPort);
                     remoteUDPGatewayShell = (ChannelShell) session.openChannel("shell");
                     PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
                     BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
@@ -305,23 +304,21 @@ public class GatewayConnection {
                     Matcher m = Pattern.compile(regex).matcher(s);
                     if (m.find() == true) {
                         remoteUDPGatewayPID = Integer.parseInt(s.substring(m.start(), m.end()));
+                        System.out.println("TCP-UDP: PID " + remoteUDPGatewayPID);
                     } else {
-                        System.out.println("TCP-UDP: No PID returned from remote UDP gateway command");
-                        throw new Exception();
+                        System.out.println("TCP-UDP: Warning, no PID returned");
                     }
-                    
-                    System.out.println("TCP-UDP: Remote UDP gateway started, PID " + remoteUDPGatewayPID);
                 }
                 
                 private void redirectTCPSocket(final String host) throws Exception {
                     tcpip = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");
                     tcpip.setHost(host);
-                    tcpip.setPort(port);
+                    tcpip.setPort(remotePort);
                     tcpip.setInputStream(s.getInputStream());
                     tcpip.setOutputStream(s.getOutputStream());
-                    sshListener.sshTcpChannelStarted(host, port);
+                    sshListener.sshTcpChannelStarted(host, remotePort);
                     tcpip.connect();
-                    sshListener.sshTcpChannelEstablished(host, port);
+                    sshListener.sshTcpChannelEstablished(host, remotePort);
                 }
                 
                 public Channel call() throws Exception {
@@ -329,15 +326,15 @@ public class GatewayConnection {
                         throw new JSchException("Failed to connect");
                     }
                     try {
-                        if (uport != 0) {
+                        if (udpOverTcpPort != 0) {
                             redirectRemoteUDPSocket();
-                            redirectTCPSocket(lhost);
+                            redirectTCPSocket(localHost);
                         } else {
-                            redirectTCPSocket(host);
+                            redirectTCPSocket(remoteHost);
                         }
                         return tcpip;
                     } catch (Exception ex) {
-                        sshListener.sshTcpChannelFailed(uport != 0 ? lhost : host, port);
+                        sshListener.sshTcpChannelFailed(udpOverTcpPort != 0 ? localHost : remoteHost, remotePort);
                         return null;
                     }
                 }
@@ -354,22 +351,28 @@ public class GatewayConnection {
             return true;
         }
         
-        public Redirector(GatewayConnection conn, String host, int port, String lhost, int lport, int uport) throws IOException {
-            listenSocket = new ServerSocket(lport, 50, InetAddress.getByName(lhost));
+        public Redirector(GatewayConnection conn, String remoteHost, int remotePort, String localHost, int localPort, int udpOverTcpPort) throws InterruptedException, IOException {
+            InetSocketAddress listenSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), localPort);
+
             this.connection = conn;
-            this.host = host;
-            this.lhost = lhost;
-            this.port = port;
-            this.lport = port;
-            this.uport = uport;
+            this.remoteHost = remoteHost;
+            this.localHost = localHost;
+            this.remotePort = remotePort;
+            this.localPort = localPort;
+            this.udpOverTcpPort = udpOverTcpPort;
             this.connection = connection;
+
+            listenSocket = new ServerSocket();
+            SocketHelper.bindSocket(listenSocket, listenSockAddr);
+
+            this.localPort = listenSocket.getLocalPort();
         }
         public void start() throws Exception {
             listenThread = new Thread(this);
             listenThread.setDaemon(true);
             listenThread.start();
-            if (uport != 0) {
-                localUDPGateway = new UDPGateway(lhost, uport, lport);
+            if (udpOverTcpPort != 0) {
+                localUDPGateway = new UDPGateway(localHost, udpOverTcpPort, localPort);
                 localUDPGateway.init();
                 localUDPGateway.start();
             }
@@ -387,18 +390,18 @@ public class GatewayConnection {
         private void shutdownRemoteUDPRedirection() {
             if (remoteUDPGatewayShell != null) {
                 if (remoteUDPGatewayPID != 0) {
-                    String command = gateway.getUdpgwStopCommand(host, port, uport, remoteUDPGatewayPID);
+                    String command = gateway.getUdpgwStopCommand(remoteHost, remotePort, udpOverTcpPort, remoteUDPGatewayPID);
                     try {
                         PrintStream shOut = new PrintStream(remoteUDPGatewayShell.getOutputStream());
                         BufferedReader shIn = new BufferedReader(new InputStreamReader(remoteUDPGatewayShell.getInputStream()));
                         
                         shellWrite(shOut, "");
                         // Wait for shell to be ready
-                        shellRead(shIn, 1);
+                        shellRead(shIn, 1000);
                         // Send command
                         shellWrite(shOut, command);
                         // Wait for shell to be ready
-                        shellRead(shIn, 1);
+                        shellRead(shIn, 1000);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     } catch (Exception ex) {
@@ -446,7 +449,7 @@ public class GatewayConnection {
         public void shutdown() {
             stop();
             try {
-                if (uport != 0) {
+                if (udpOverTcpPort != 0) {
                     shutdownLocalUDPRedirection();
                     shutdownRemoteUDPRedirection();
                 }
@@ -459,21 +462,28 @@ public class GatewayConnection {
             }
         }
         public int getLocalPort() {
-            return listenSocket.getLocalPort();
+            return localPort;
         }
         public String getRemoteHost() {
-            return host;
+            return remoteHost;
         }
         public int getRemotePort() {
-            return port;
+            return remotePort;
         }
         private int getUDPPort() {
-            return uport;
+            return udpOverTcpPort;
+        }
+        private String getLocalHost() {
+            return localHost;
         }
         public void run() {
+            Socket s;
+
             while (true) {
                 try {
-                    if (redirectSocket(listenSocket.accept()) == false) {
+                    s = listenSocket.accept();
+                    s.setReuseAddress(true);
+                    if (redirectSocket(s) == false) {
                         this.shutdown();
                         redirectors.remove(this);
                         break;
@@ -487,11 +497,11 @@ public class GatewayConnection {
         private ServerSocket listenSocket;
         private Thread listenThread;
         private GatewayConnection connection;
-        private String host;
-        private String lhost;
-        private int port;
-        private int lport;
-        private int uport;
+        private String remoteHost;
+        private String localHost;
+        private int remotePort;
+        private int localPort;
+        private int udpOverTcpPort;
         private UDPGateway localUDPGateway;
         private ChannelShell remoteUDPGatewayShell;
         private ChannelDirectTCPIP tcpip;
@@ -513,6 +523,34 @@ public class GatewayConnection {
     }
     public static void main(String[] arg) {
         System.out.println("GatewayConnection");
+    }
+
+    public List<Redirector> getRedirectors() {
+        return redirectors;
+    }
+
+    public void shutdownConflictingRedirectors(String localHost, int localPort, int udpOverTcpPort) {
+        List<Redirector> conflicting = new ArrayList<Redirector>();
+        
+        for (Redirector r : redirectors) {
+            String rLocalHost = r.getLocalHost();
+            int rLocalPort = r.getLocalPort();
+            int rUdpOverTcpPort = r.getUDPPort();
+            
+            if (r.getLocalHost().equals(localHost)) {
+                if ((localPort != 0 && r.getLocalPort() == localPort)
+                    || (udpOverTcpPort != 0 && r.getUDPPort() == udpOverTcpPort))
+                {
+                    conflicting.add(r);
+                }
+            }
+        }
+        for (Redirector r : conflicting) {
+            System.out.println("Stopping conflicting redirection " + r.getLocalHost() + ":" +
+                    r.getLocalPort() + " -> " + r.getRemoteHost() + ":" + r.getRemotePort());
+            r.shutdown();
+            redirectors.remove(r);
+        }
     }
     
     public interface Authentication {

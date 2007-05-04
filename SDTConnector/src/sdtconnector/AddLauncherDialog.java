@@ -251,19 +251,23 @@ public class AddLauncherDialog extends javax.swing.JDialog {
         setVisible(false);
         dispose();
         if (retStatus == RET_OK) {
+            launcher.setLocalHost(localHostField.getText());
             if (remotePortField.getText().equals("")) {
-                returnStatus = RET_CANCEL;
+                launcher.setRemotePort(0);
             } else {
-                launcher.setLocalHost(localHostField.getText());
-                if (localPortField.getText().equals("") == false) {
-                    launcher.setLocalPort(Integer.parseInt(localPortField.getText()));
-                }
                 launcher.setRemotePort(Integer.parseInt(remotePortField.getText()));
-                if (udpPortField.getText().equals("") == false) {
-                    launcher.setUdpPort(Integer.parseInt(udpPortField.getText()));
-                }
-                launcher.setClient((Client) clientComboBox.getSelectedItem());
             }
+            if (localPortField.getText().equals("")) {
+                launcher.setLocalPort(0);
+            } else {
+                launcher.setLocalPort(Integer.parseInt(localPortField.getText()));
+            }
+            if (udpPortField.getText().equals("")) {
+                launcher.setUdpPort(0);
+            } else {
+                launcher.setUdpPort(Integer.parseInt(udpPortField.getText()));
+            }
+            launcher.setClient((Client) clientComboBox.getSelectedItem());
         }
     }
     

@@ -2,8 +2,10 @@ package sdtconnector;
 
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -19,10 +21,10 @@ import java.util.Set;
 
 public class UDPGateway implements Runnable {
     
-    public UDPGateway(String localHost, int udpPort, int tcpPort) {
+    public UDPGateway(String localHost, int udpOverTcpPort, int localPort) {
         this.localHost = localHost;
-        this.udpPort = udpPort;
-        this.tcpPort = tcpPort;
+        this.udpOverTcpPort = udpOverTcpPort;
+        this.localPort = localPort;
     }
     
     public void start() {
@@ -43,13 +45,15 @@ public class UDPGateway implements Runnable {
     }
     
     public void init() throws Exception {
+        InetSocketAddress udpSockAddr;
+        
         selector = Selector.open();
+        tcpChannel = SocketChannel.open();        
         udpChannel = DatagramChannel.open();
-        udpSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), udpPort);
-        udpChannel.socket().bind(udpSockAddr);
+        udpSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), udpOverTcpPort);
         udpChannel.configureBlocking(false);
         udpKey = udpChannel.register(selector, SelectionKey.OP_READ);
-        tcpChannel = SocketChannel.open();
+        SocketHelper.bindSocket(udpChannel.socket(), udpSockAddr);
     }
     
     private void uninit() {
@@ -75,8 +79,8 @@ public class UDPGateway implements Runnable {
     
     public void run() {
         ByteBuffer buffer = ByteBuffer.allocate(BUF_LEN);
-        System.out.println("UDP-TCP: " + localHost + ":" + udpPort + " <-> " + localHost + ":" + tcpPort);
-        System.out.println("UDP-TCP: Local UDP gateway started");
+        System.out.println("UDP-TCP: Local UDP to TCP gateway starting");
+        System.out.println("UDP-TCP: " + localHost + ":" + udpOverTcpPort + " <-> " + localHost + ":" + localPort);
         while (true) {
             try {
                 selector.select();
@@ -92,12 +96,17 @@ public class UDPGateway implements Runnable {
                         if (key.isReadable()) {
                             udpClient = udpChannel.receive(buffer);
                             if (!tcpChannel.isConnected()) {
+                                InetSocketAddress tcpSockAddr;
+
                                 System.out.println("UDP-TCP: Received first UDP packet");
                                 tcpChannel.configureBlocking(true);
-                                tcpChannel.connect(new InetSocketAddress(InetAddress.getByName(localHost), tcpPort));
+                                
+                                tcpSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), localPort);
+                                tcpChannel.connect(tcpSockAddr);
+                                System.out.println("UDP-TCP: Using TCP transport port " + tcpSockAddr.getPort());
                                 tcpChannel.configureBlocking(false);
                                 tcpKey = tcpChannel.register(selector, SelectionKey.OP_READ);
-                                System.out.println("UDP-TCP: Connected TCP channel");
+                                System.out.println("UDP-TCP: Connected TCP transport channel");
                             }
                             buffer.flip();
                             tcpChannel.write(buffer);
@@ -115,16 +124,15 @@ public class UDPGateway implements Runnable {
                     }
                 }
             } catch (UnknownHostException ex) {
-                System.out.println("UDPGateway: Unknown host: " + ex.getMessage());
+                System.out.println("UDP-TCP: Unknown host: " + ex.getMessage());
                 break;
             } catch (IOException ex) {
-                System.out.println("UDPGateway: IO error, terminating");
+                System.out.println("UDP-TCP: IO error: " + ex.getMessage());
                 break;
             }
         }
     }
 
-    private InetSocketAddress udpSockAddr;
     private DatagramChannel udpChannel;
     private SocketChannel tcpChannel;
     private Selector selector;
@@ -133,8 +141,8 @@ public class UDPGateway implements Runnable {
     private Set keys;
     private SocketAddress udpClient;    
     private String localHost;
-    private int udpPort;
-    private int tcpPort;
+    private int udpOverTcpPort;
+    private int localPort;
     private Thread thread;
     public static final int BUF_LEN = 1024;
 }

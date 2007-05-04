@@ -21,7 +21,7 @@ public class Launcher implements Runnable {
         this.localHost = localHost;
         this.localPort = localPort;
         this.remotePort = remotePort;
-        this.udpPort = udpPort;
+        this.udpOverTcpPort = udpPort;
         if (clientID != 0) {
             this.setClient(clientID);
         } else {
@@ -33,7 +33,7 @@ public class Launcher implements Runnable {
         this.localHost = localHost;
         this.localPort = localPort;
         this.remotePort = remotePort;
-        this.udpPort = udpPort;
+        this.udpOverTcpPort = udpPort;
         this.client = client;
     }
     public void setLocalHost(String localAddress) {
@@ -55,10 +55,10 @@ public class Launcher implements Runnable {
         return remotePort;
     }
     public int getUdpPort() {
-        return udpPort;
+        return udpOverTcpPort;
     }
     public void setUdpPort(int udpPort) {
-        this.udpPort = udpPort;
+        this.udpOverTcpPort = udpPort;
     }
     public void setRecordID(int recordID) {
         this.recordID = recordID;
@@ -91,8 +91,9 @@ public class Launcher implements Runnable {
         return (obj != null && recordID == ((Launcher) obj).getRecordID());
     }
     public String toString() {
-        return (localPort == 0 ? "Any" : String.valueOf(localPort)) +
-                " -> " + String.valueOf(remotePort);
+        return ((localPort == 0 ? "Any" : String.valueOf(localPort)) +
+                " -> " +
+                (remotePort == 0 ? "Any" : String.valueOf(remotePort)));
     }
         
     public void run() {
@@ -106,11 +107,11 @@ public class Launcher implements Runnable {
             return false;
         }        
     }
-    
+
     private Client client;
     private String localHost = "localhost";
     private String remoteHost = "";
-    private int udpPort = 0;
+    private int udpOverTcpPort = 0;
     private int localPort = 0;
     private int remotePort = 0;
     private int recordID;
