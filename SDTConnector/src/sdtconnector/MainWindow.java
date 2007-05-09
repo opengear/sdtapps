@@ -905,21 +905,15 @@ static FileFilter xmlFileFilter = new FileFilter() {
 
         r = getRedirectorForSelection(launcher.getRemotePort(),launcher.getLocalHost(), launcher.getLocalPort(), launcher.getUdpPort());
         if (r == null) {
-            StringBuilder msg = new StringBuilder("Couldn't create redirection using ");
+            StringBuilder msg = new StringBuilder("Failed to redirect ");
             
-            if (launcher.getLocalPort() != 0) {
-                
-                msg.append(" using local TCP port " + String.valueOf(launcher.getLocalPort()));
-            } else {
-                msg.append(" any local TCP port");
-            }
+            msg.append("local TCP port " + (launcher.getLocalPort() == 0 ? "(any)" : String.valueOf(launcher.getLocalPort())));
             if (launcher.getUdpPort() != 0) {
                 msg.append(", local UDP port " + String.valueOf(launcher.getUdpPort()));
             }
-
             if (OS.isWindows() == false) {
                 if ((launcher.getLocalPort() > 0 && launcher.getLocalPort() < 1024)
-                    || (launcher.getUdpPort() > 0 && launcher.getUdpPort() > 1024))
+                    || (launcher.getUdpPort() > 0 && launcher.getUdpPort() < 1024))
                 {
                     msg.append(", root privileges required");
                 }
