@@ -69,6 +69,13 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="path" value="" />
             </map>
           </node>
+          <node name="48">
+            <map>
+              <entry key="commandFormat" value="%path% /t %host%:%port%"/>
+              <entry key="name" value="HyperTerminal"/>
+              <entry key="path" value="C:\Program Files\Windows NT\HyperTerminal\HyperTrm.exe"/>
+            </map>
+          </node>
         </node>
         <node name="gateways">
           <map />
