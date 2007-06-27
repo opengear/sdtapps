@@ -157,8 +157,7 @@ public class GatewayConnection {
         }
         sshListener.sshLoginStarted();
         try {
-            session.connect(5000);
-            //activeSession().connect(5000);
+            session.connect(1200000);
         } catch (JSchException ex) {
             sshListener.sshLoginFailed();
             // Reset the session
@@ -171,7 +170,6 @@ public class GatewayConnection {
     
     private boolean disconnectSession() {
         session.disconnect();
-        //activeSession().disconnect();
         return true;
     }
     
