@@ -937,9 +937,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
                             statusBar.setText(cmd + " failed");
                         }
                         launcher.setLocalPort(localPort);
-                    } else {
+                    }/* else {
                         statusBar.setText("No client to launch");
-                    }
+                    }*/
                 }
             }
         });
