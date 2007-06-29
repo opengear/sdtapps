@@ -1,5 +1,19 @@
 #!/bin/bash
 
+function tarup () {	
+	jarfile="$1"
+	configfile="$2"
+	distfile="$3"
+
+	rm -rf "$tardir" &> /dev/null
+	mkdir "$tardir"
+	cp "$jarfile" "$tardir"
+	cp "$configfile" "$tardir"/defaults.xml
+	tar -c "$tardir" > "$distfile".tar
+	gzip "$distfile".tar
+	rm -rf "$tardir"
+}
+
 distdir="`dirname $0`/../dist"
 if [[ ! -d  "$distdir" ]] ; then
 	echo "Can't find dist directory"
@@ -15,21 +29,13 @@ version=`grep VERSION ../src/sdtconnector/SDTConnector.java|sed 's/.*\"\(.*\)\".
 echo "SDTConnector version: $version"
 
 tardir="sdtconnector-${version}"
-if [[ -e "$tardir" ]] ; then
-	rm -rf "$tardir"
+
+tarup "sdtcon.jar" "../tools/defaults.xml" "sdtconnector-${version}"
+tarup "sdtcon-mac.jar" "../tools/defaults.xml" "sdtconnector-mac-${version}"
+
+if [[ -e "../tools/defaults-prop.xml" ]] ; then
+	tarup "sdtcon.jar" "../tools/defaults-prop.xml" "sdtconnector-${version}-prop"
+	tarup "sdtcon-mac.jar" "../tools/defaults-prop.xml" "sdtconnector-mac-${version}-prop"
 fi
-mkdir "$tardir"
 
-cp ../tools/defaults.xml "$tardir"
-cp sdtcon.jar "$tardir"
-distfile="sdtconnector-${version}.tar"
-tar -c "$tardir" > "$distfile"
-gzip "$distfile"
-rm "${tardir}/sdtcon.jar"
-cp sdtcon-mac.jar "$tardir"
-distfile="sdtconnector-mac-${version}.tar"
-tar -c "$tardir" > "$distfile"
-gzip "$distfile"
-
-rm -rf "$tardir"
 cd - &> /dev/null
