@@ -242,6 +242,7 @@ public class GatewayConnection {
                         // FIXME
                         setupSession(username, password);
                         autohostsListener.autohostsFailed();
+                        return;
                     }
                 }
                 
