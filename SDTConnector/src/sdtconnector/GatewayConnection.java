@@ -237,7 +237,7 @@ public class GatewayConnection {
                 
                 if (session.isConnected() == false) {
                     try {
-                        session.connect(5000);
+                        session.connect(1200000);
                     } catch (JSchException ex) {
                         // FIXME
                         setupSession(username, password);
