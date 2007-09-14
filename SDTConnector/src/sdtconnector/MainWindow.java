@@ -714,14 +714,18 @@ static FileFilter xmlFileFilter = new FileFilter() {
         boolean oob = !gw.getOob();
         if (oob) {
             statusBar.setBackground(Color.pink);
-            
-            statusBar.setLeadingMessage("Out of band enabled");
+            statusBar.setLeadingMessage("Out of band enabled for " + gw);
             gw.setOob(true);
         } else {
-            GatewayConnection conn = connections.get(gw.getActiveAddress()); // REVISIT
-            conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
-                    GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
-            conn.stopOob();
+            GatewayConnection conn = connections.get(gw.getActiveAddress());
+            if (conn != null) {
+                conn.setStopOobListener((GatewayConnection.StopOobListener) SwingInvocationProxy.create(
+                        GatewayConnection.StopOobListener.class, new StopOobListener(gw)));
+                        conn.stopOob();
+            }
+            statusBar.setBackground(statusColor);
+            statusBar.setLeadingMessage("Out of band disabled for " + gw);
+            gw.setOob(false);
         }
     }
 
@@ -1107,8 +1111,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
             statusBar.progressStarted(progress);
         }
         public void stopOobSucceeded() {
-            statusBar.setLeadingMessage("Out of band disabled for " + gateway);
-            statusBar.setBackground(statusColor);
             connections.remove(gateway.getActiveAddress());
             statusBar.progressEnded(progress);
 			updateButtonState();
