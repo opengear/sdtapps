@@ -1,13 +1,13 @@
 /*
  * Launcher.java
  *
- *
  */
 
 package sdtconnector;
 
 import java.io.IOException;
 import java.util.ListIterator;
+import java.util.Random;
 
 
 public class Launcher implements Runnable {
@@ -59,6 +59,30 @@ public class Launcher implements Runnable {
     }
     public void setUdpPort(int udpPort) {
         this.udpOverTcpPort = udpPort;
+        if (remotePort == 0) {
+            //
+            // Choose a random, unused ephemeral TCP port between 1024 and 65534
+            // to tunnel the UDP traffic across
+            //
+            Random generator = new Random();
+            Service service;
+            Launcher launcher;
+            int r;
+            while (true) {
+                r = generator.nextInt(65534 - 1024) + 1024;
+                for (Object s : SDTManager.getServiceList()) {
+                    service = (Service) s;
+                    for (Object l : service.getLauncherList()) {
+                        launcher = (Launcher) l;
+                        if (r == launcher.getRemotePort()) {
+                            continue;
+                        }
+                    }
+                }
+                remotePort = r;
+                break;
+            }
+        }
     }
     public void setRecordID(int recordID) {
         this.recordID = recordID;
@@ -91,9 +115,20 @@ public class Launcher implements Runnable {
         return (obj != null && recordID == ((Launcher) obj).getRecordID());
     }
     public String toString() {
-        return ((localPort == 0 ? "Any" : String.valueOf(localPort)) +
-                " -> " +
-                (remotePort == 0 ? "Any" : String.valueOf(remotePort)));
+        StringBuffer sb  =  new StringBuffer("UDP XXXXX over TCP XXXXX -> XXXXX".length());
+        
+        if (udpOverTcpPort != 0) {
+            sb.append("UDP ");
+            sb.append(udpOverTcpPort);
+            sb.append(" over TCP ");
+        } else {
+            sb.append("TCP ");
+        }
+        sb.append((localPort == 0 ? "(any)" : localPort));
+        sb.append(" -> ");
+        sb.append((remotePort == 0 ? "(any)" : remotePort));
+        
+        return sb.toString();
     }
         
     public void run() {

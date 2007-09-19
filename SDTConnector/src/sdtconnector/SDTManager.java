@@ -389,33 +389,34 @@ public class SDTManager {
     public static EventList getServiceList() {
         return (EventList) sortedServiceList;
     }
-	public static Service getServiceByPort(int remotePort, int udpPort) {
-		Service service;
-		Launcher launcher;
+
+    public static Service getServiceByPort(int remotePort, int udpPort) {
+        Service service;
+        Launcher launcher;
 		
         for (Object s : getServiceList()) {
-            service = (Service) s;
-			for (Object l : service.getLauncherList()) {
-				launcher = (Launcher) l;
-				if ((remotePort != 0 && launcher.getRemotePort() == remotePort) ||
-						(udpPort != 0 && launcher.getUdpPort() == udpPort))
-				{
-					return service;
-				}
-			}
+                service = (Service) s;
+		for (Object l : service.getLauncherList()) {
+                    launcher = (Launcher) l;
+                    if ((remotePort != 0 && launcher.getRemotePort() == remotePort) ||
+                        (udpPort != 0 && launcher.getUdpPort() == udpPort))
+                    {
+                        return service;
+                    }
+		}
         }
-		//
-		// If there are no matching services, create a new one
-		//
-		launcher = new Launcher();
-		service = new Service();
-		launcher.setRemotePort(remotePort);
-		launcher.setUdpPort(udpPort);
-		service.addLauncher(launcher);
-		addService(service);
-		
-		return service;
-	}
+        //
+        // If there are no matching services, create a new one
+        //
+        launcher = new Launcher();
+        service = new Service();
+        launcher.setRemotePort(remotePort);
+        launcher.setUdpPort(udpPort);
+        service.addLauncher(launcher);
+        addService(service);
+
+        return service;
+    }
 	
     
     private static void saveClient(Client client) {

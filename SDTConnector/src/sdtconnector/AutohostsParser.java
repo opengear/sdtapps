@@ -75,8 +75,14 @@ public class AutohostsParser {
                 port = new Port();
                 port.protocol = atts.getValue("type");
             } else if (element.equals("host")) {
+                String value;
                 host = new Host();
-                host.setAddress(atts.getValue("address"));
+                if ((value = atts.getValue("address")) != null) {
+                    host.setAddress(value);
+                }
+                if ((value = atts.getValue("description")) != null) {
+                    host.setDescription(value);
+                }
             }
         }
         public void characters(char[] ch, int start, int length) throws SAXException {
