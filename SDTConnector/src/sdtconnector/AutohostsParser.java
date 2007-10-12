@@ -67,7 +67,7 @@ public class AutohostsParser {
         }
         return hosts;
     }
-    
+
     private final class AutohostsHandler extends DefaultHandler {
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             element = localName;
@@ -92,18 +92,60 @@ public class AutohostsParser {
         }
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             if (localName.equals("port")) {
-                if (port.protocol.equalsIgnoreCase("udp")) {
-                    Service service = SDTManager.getServiceByPort(0, port.portNumber);
-                    host.addService(service);
-                } else if (port.protocol.equalsIgnoreCase("tcp")) {
-                    Service service = SDTManager.getServiceByPort(port.portNumber, 0);
-                    host.addService(service);
-                }
+                Service service = configureService(port);
+                host.addService(service);
                 element = "host";
             } else if (localName.equals("host")) {
+                if (host.getAddress().equals("127.0.0.1") || host.getAddress().equalsIgnoreCase("localhost")) {
+                    host.setName("Local Services");
+                }
                 hosts.add(host);
                 element = "";
             }
+        }
+        
+        private Service configureService(AutohostsParser.Port port) {
+            Service service = null;
+            
+            if (port.protocol.equalsIgnoreCase("udp")) {
+                service = SDTManager.getServiceByPort(0, port.portNumber);
+            } else if (port.protocol.equalsIgnoreCase("tcp")) {
+                service = SDTManager.getServiceByPort(port.portNumber, 0);
+            }
+
+            if (service == null) {
+                // If there are no matching services, create a new one
+                Launcher launcher = new Launcher();
+ 
+                service = new Service();
+ 
+                if (port.protocol.equalsIgnoreCase("tcp")) {
+                    Service s = null;
+                    if (port.portNumber >= 2000 && port.portNumber <= 2096) {
+                        // Serial telnet
+                        s = SDTManager.getServiceByPort(23, 0);
+                        service.setName("Serial " + (port.portNumber - 2000) + " Telnet");
+                    } else if (port.portNumber >= 3000 && port.portNumber <= 3096) {
+                        // Serial SSH
+                        s = SDTManager.getServiceByPort(22, 0);
+                        service.setName("Serial " + (port.portNumber - 3000) + " SSH");
+                    }
+                    if (s != null) {
+                       service.setIcon(s.getIcon());
+                       launcher.setClient(s.getFirstLauncher().getClient());
+                    }
+                }
+
+                if (port.protocol.equalsIgnoreCase("tcp")) {
+                    launcher.setRemotePort(port.portNumber);
+                } else if (port.protocol.equalsIgnoreCase("udp")) {
+                    launcher.setUdpPort(port.portNumber);
+                }
+                service.addLauncher(launcher);
+                SDTManager.addService(service);
+            }
+
+            return service;
         }
     }
     

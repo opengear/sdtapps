@@ -934,16 +934,16 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 if (conn.login()) {
                     if (launcher.getClient() != null) {
                         String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
-                        statusBar.setText("Launching " + cmd);
+                        statusBar.setText("Launching " + launcher.getClient());
                         int localPort = launcher.getLocalPort();
                         launcher.setLocalPort(boundPort);
                         if (!launcher.launch()) {
-                            statusBar.setText(cmd + " failed");
+                            statusBar.setText("Failed, check settings in Edit -> Preferences -> Clients -> "
+                                    + launcher.getClient() + " -> Edit");
+                            System.out.println(cmd + " failed");
                         }
                         launcher.setLocalPort(localPort);
-                    }/* else {
-                        statusBar.setText("No client to launch");
-                    }*/
+                    }
                 }
             }
         });
