@@ -67,6 +67,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               value="%path% /console /v:%host%:%port%" />
               <entry key="name" value="RDP viewer" />
               <entry key="path" value="" />
+              <entry key="path-win" value="mstsc.exe" />
             </map>
           </node>
           <node name="48">
