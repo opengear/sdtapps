@@ -27,6 +27,9 @@ import com.jgoodies.looks.LookUtils;
 
 
 public class SDTManager {
+    
+    public static final String prefsPath = "opengear/sdtconnector";
+
     static {
         gatewayList = new BasicEventList();
         clientList = new BasicEventList();
@@ -100,7 +103,10 @@ public class SDTManager {
             try {
                 File cwd = new File(System.getProperty("user.dir"));
                 File defaults = new File(cwd, "defaults.xml");
+
+                Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
                 Preferences.importPreferences(new FileInputStream(defaults));
+                Preferences.userRoot().node(SDTManager.prefsPath).sync();
                 recordID = Integer.parseInt(Settings.getProperty("recordID"));
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null,
@@ -110,9 +116,10 @@ public class SDTManager {
                         JOptionPane.ERROR_MESSAGE);
             } catch (InvalidPreferencesFormatException ex) {
             } catch (IOException ex) {
+            } catch (BackingStoreException ex) {
             }
         }
-        load();
+        load();               
     }
     
     public static void load() {

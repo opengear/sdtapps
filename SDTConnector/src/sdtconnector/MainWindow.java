@@ -521,13 +521,11 @@ static FileFilter xmlFileFilter = new FileFilter() {
         
         if (jc.showDialog(this, "OK") == JFileChooser.APPROVE_OPTION) {
             try {
-                String path = "opengear/sdtconnector";
-                
-                Preferences.userRoot().node(path).removeNode();
+                Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
                 Preferences.importPreferences(new FileInputStream(jc.getSelectedFile().getAbsolutePath()));
-                Preferences.userRoot().node(path).sync();
+                Preferences.userRoot().node(SDTManager.prefsPath).sync();
                 SDTManager.load();
-				updateButtonState();
+		updateButtonState();
             } catch (FileNotFoundException ex) {
             } catch (java.util.prefs.BackingStoreException ex) {
             } catch (IOException ex) {

@@ -85,11 +85,10 @@ public class Main {
         File preferences = new File(cwd, "preferences.xml");
         
         Preferences userRoot = Preferences.userRoot();
-        String prefsPath = "opengear/sdtconnector";
         try {
-            if (preferences.exists() && !userRoot.nodeExists(prefsPath)) {
+            if (preferences.exists() && !userRoot.nodeExists(SDTManager.prefsPath)) {
                 Preferences.importPreferences(new FileInputStream(preferences));
-                userRoot.node(prefsPath).sync();
+                userRoot.node(SDTManager.prefsPath).sync();
             }
         } catch (BackingStoreException ex) {
         } catch (FileNotFoundException ex) {

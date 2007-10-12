@@ -67,5 +67,5 @@ public class Settings {
             return new String[] { };
         }
     }
-    static String path = "opengear/sdtconnector/settings";
+    static String path = SDTManager.prefsPath + "/settings";
 }
