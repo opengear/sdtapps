@@ -261,7 +261,12 @@ public class GatewayConnection {
                     shellWrite(shOut, "cat $HOME/.sdt");
                     
                     hosts = parser.parse(shell.getInputStream());
-                    
+
+                    if (hosts.isEmpty() == false) {
+                        autohostsListener.autohostsSucceeded(hosts);
+                    } else {
+                        autohostsListener.autohostsFailed();
+                    }
                 } catch (JSchException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
@@ -269,7 +274,6 @@ public class GatewayConnection {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                autohostsListener.autohostsSucceeded(hosts);
             }
         });
     }
