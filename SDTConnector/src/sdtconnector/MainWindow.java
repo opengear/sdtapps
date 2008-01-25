@@ -199,6 +199,13 @@ public class MainWindow extends javax.swing.JFrame {
             gatewayList.setRowHeight(24); // GTK needs a larger row height
         }
         pack();
+        
+        if (SDTConnector.DEBUG == true) {
+            JOptionPane.showMessageDialog(null,
+                        "Not for general distribution",
+                        "Debug build",
+                        JOptionPane.WARNING_MESSAGE);
+        }
     }
     
     /** This method is called from within the constructor to
@@ -894,7 +901,9 @@ static FileFilter xmlFileFilter = new FileFilter() {
         TreePath path = gatewayList.getSelectionPath();
         Gateway gw = (Gateway) path.getPathComponent(1);
         Host host = (Host) path.getLastPathComponent();
+        
         GatewayConnection conn = getGatewayConnection(gw);
+        
         System.out.println("Adding redirection to " + host.getAddress() + ":" + remotePort + " via "
                 + gw.getActiveAddress());
 
@@ -931,14 +940,17 @@ static FileFilter xmlFileFilter = new FileFilter() {
             public void run() {
                 if (conn.login()) {
                     if (launcher.getClient() != null) {
-                        String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
+                        String[] cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
                         statusBar.setText("Launching " + launcher.getClient());
                         int localPort = launcher.getLocalPort();
                         launcher.setLocalPort(boundPort);
                         if (!launcher.launch()) {
                             statusBar.setText("Failed, check settings in Edit -> Preferences -> Clients -> "
                                     + launcher.getClient() + " -> Edit");
-                            System.out.println(cmd + " failed");
+                            for (String c : cmd) {
+                                System.out.print(c + " ");
+                            }
+                            System.out.println(" failed");
                         }
                         launcher.setLocalPort(localPort);
                     }
@@ -956,18 +968,25 @@ static FileFilter xmlFileFilter = new FileFilter() {
             }
         });
     }
-    
+
     private GatewayConnection getGatewayConnection(Gateway gw) {
         GatewayConnection conn = connections.get(gw.getActiveAddress());
-        if (conn == null) {
-            conn = new GatewayConnection(gw,
-                    (GatewayConnection.Authentication) SwingInvocationProxy.create(
-                    GatewayConnection.Authentication.class,
-                    new GatewayAuth(gw)));
-            conn.setSSHListener((GatewayConnection.SSHListener) SwingInvocationProxy.create(
-                    GatewayConnection.SSHListener.class, new SSHListener(gw)));
-            connections.put(gw.getActiveAddress(), conn);
+        
+        if (conn != null && conn.getUsername().equals(gw.getUsername()) && conn.getPassword().equals(gw.getPassword())) {
+            return conn;
+        } else if (conn != null) {
+            // Re-create the connection if the username has changed between logins
+            conn.shutdown();
         }
+        // Create new gateway connection
+        conn = new GatewayConnection(gw,
+                (GatewayConnection.Authentication) SwingInvocationProxy.create(
+                GatewayConnection.Authentication.class,
+                new GatewayAuth(gw)));
+        conn.setSSHListener((GatewayConnection.SSHListener) SwingInvocationProxy.create(
+                GatewayConnection.SSHListener.class, new SSHListener(gw)));
+        connections.put(gw.getActiveAddress(), conn);
+        
         return conn;
     }
     private void removeGatewayConnection(String oldAddress) {

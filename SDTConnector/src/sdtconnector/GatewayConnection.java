@@ -131,12 +131,16 @@ public class GatewayConnection {
     }
     
     private boolean doConnect()  {
-        if (!session.isConnected()) {
+        if (session.isConnected()) {
+            return true;
+        } else {
             System.out.println("Connecting ...");
-            connectSession();
-            System.out.println("Connected");
+            if (connectSession()) {
+                System.out.println("Connected");
+                return true;
+            }
         }
-        return true;
+        return false;
     }
     
     private boolean connectSession() {
@@ -554,6 +558,14 @@ public class GatewayConnection {
             r.shutdown();
             redirectors.remove(r);
         }
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    
+    public String getUsername() {
+        return username;
     }
     
     public interface Authentication {
