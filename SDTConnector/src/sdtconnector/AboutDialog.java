@@ -24,7 +24,11 @@ public class AboutDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         imagePanel.setImage(ImageLoader.getImage("opengear.gif"));
-        versionField.setText(version);
+        if (SDTConnector.DEBUG == true) {
+            versionField.setText(version + " DEBUG");
+        } else {
+            versionField.setText(version);
+        }
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
                 + "<font face=\"Verdana,Helvetica,Arial\">"
