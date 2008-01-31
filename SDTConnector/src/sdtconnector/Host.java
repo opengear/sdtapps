@@ -86,6 +86,17 @@ public class Host {
     public void setAddress(String address) {
         this.address = address;
     }
+    public Service getServiceByName(String name) {
+        Service service;
+        
+        for (Object s : serviceList) {
+            service = (Service) s;
+            if (service.getName().equalsIgnoreCase(name)) {
+                return service;
+            }
+        }
+        return null;
+    }
     public String toString() {
         if (name.equals("")) {
             return address;

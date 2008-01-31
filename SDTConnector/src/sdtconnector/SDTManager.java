@@ -415,6 +415,18 @@ public class SDTManager {
         return null;
     }	
     
+    public static Gateway getGatewayByNameOrAddress(String nameOrAddress) {
+        Gateway gateway;
+        
+        for (Object g : getGatewayList()) {
+            gateway = (Gateway) g;
+            if (gateway.getName().equalsIgnoreCase(nameOrAddress) || gateway.getAddress().equalsIgnoreCase(nameOrAddress)) {
+                return gateway;
+            }
+        }
+        return null;
+    }
+    
     private static void saveClient(Client client) {
         Preferences clientNode = clientPreferences.node(String.valueOf(client.getRecordID()));
         clientNode.put("name", client.getName());
@@ -461,12 +473,14 @@ public class SDTManager {
     public static int initialRecordID() {
         return 5000;
     }
-    public static EventList getHostList(int recordID) {
-        return getGateway(recordID).getHostList();
+    /*
+    public static EventList getHostList(int gwRecordID) {
+        return getGateway(gwRecordID).getHostList();
     }
     public static Host getHost(int gwRecordID, int hostRecordID) {
         return getGateway(gwRecordID).getHost(hostRecordID);
     }
+     */
     public static Client getHttpClient() {
         return (Client) clientList.get(0); // By default the HTTP client is first
     }

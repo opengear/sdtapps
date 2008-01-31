@@ -25,6 +25,7 @@ import net.roydesign.app.Application;
 import net.roydesign.mac.MRJAdapter;
 import org.jdesktop.swingx.util.OS;
 import org.jdesktop.swingx.util.WindowUtils;
+import sdtconnector.SDTURLHelper;
 
 
 public class Main {
@@ -103,6 +104,17 @@ public class Main {
             }
         });
         window.setVisible(true);
+
+        /* 
+         * Parse command line argument in the form of:
+         *
+         *  sdt://gateway/host#service
+         */
+        if (args.length > 0) {
+            if (SDTURLHelper.parseSDTURL(args[0]) == true) {
+                window.launchService(SDTURLHelper.getGateway(), SDTURLHelper.getHost(), SDTURLHelper.getService());
+            }
+        }
     }
     
 }

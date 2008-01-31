@@ -785,7 +785,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         updateButtonState();
     }
     private void serviceButtonActionPerformed(java.awt.event.ActionEvent evt) {
-            Service service = null;
+        Service service = null;
         for (Object o : SDTManager.getServiceList()) {
             service = (Service) o;
             if (service.getRecordID() == Integer.parseInt(evt.getActionCommand())) {
@@ -799,10 +799,13 @@ static FileFilter xmlFileFilter = new FileFilter() {
             }
             Gateway gw = (Gateway) path.getPathComponent(1);
             Host host = (Host) path.getLastPathComponent();
+            launchService(gw, host, service);
+            /*
             for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
                 Launcher l = (Launcher) it.next();
                 sshLaunch(gw, host, l);
             }
+             */
         }
     }        
     private void updateButtonState() {
@@ -909,7 +912,20 @@ static FileFilter xmlFileFilter = new FileFilter() {
 
         return conn.getRedirector(host.getAddress(), remotePort, localHost, localPort, udpOverTcpPort);
     }
-    private void sshLaunch(Gateway gw, final Host host, final Launcher launcher) {
+    public void launchService(final Gateway gw, final Host host, final Service service) {
+        Object last = gatewayList.getSelectionPath().getLastPathComponent();
+        
+        if ((last instanceof Host) == false) {
+            TreePath path = treeModel.getPath(gw, host);
+            gatewayList.setSelectionPath(path);
+        }
+        
+        for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
+            Launcher l = (Launcher) it.next();
+            sshLaunch(gw, host, l);
+        }
+    }
+    private void sshLaunch(final Gateway gw, final Host host, final Launcher launcher) {
         GatewayConnection.Redirector r;
         final int boundPort;
         final GatewayConnection conn;
