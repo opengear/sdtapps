@@ -1,7 +1,6 @@
 /*
  * SocketHelper.java
  *
- * Created on 4 May 2007, 15:39
  */
 
 package sdtconnector;
