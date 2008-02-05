@@ -143,12 +143,23 @@ public class Gateway {
         }
         return null;
     }
-    public Host getHostByNameOrAddress(String nameOrAddress) {
+    public Host getHostByName(String name) {
         Host host;
         
         for (Object h : hostList) {
             host = (Host) h;
-            if (host.getName().equalsIgnoreCase(nameOrAddress) || host.getAddress().equalsIgnoreCase(nameOrAddress)) {
+            if (host.getName().equalsIgnoreCase(name)) {
+                return host;
+            }
+        }
+        return null;
+    }
+    public Host getHostByAddress(String address) {
+        Host host;
+        
+        for (Object h : hostList) {
+            host = (Host) h;
+            if (host.getAddress().equalsIgnoreCase(address)) {
                 return host;
             }
         }

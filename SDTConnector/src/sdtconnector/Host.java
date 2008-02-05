@@ -97,6 +97,23 @@ public class Host {
         }
         return null;
     }
+    public Service getServiceByPort(int remotePort, int udpPort) {
+        Service service;
+        Launcher launcher;
+		
+        for (Object s : serviceList) {
+            service = (Service) s;
+            for (Object l : service.getLauncherList()) {
+                launcher = (Launcher) l;
+                if ((remotePort != 0 && launcher.getRemotePort() == remotePort) ||
+                    (udpPort != 0 && launcher.getUdpPort() == udpPort))
+                {
+                    return service;
+                }
+            }
+        }
+        return null;
+    }
     public String toString() {
         if (name.equals("")) {
             return address;

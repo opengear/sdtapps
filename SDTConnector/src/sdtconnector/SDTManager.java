@@ -415,12 +415,24 @@ public class SDTManager {
         return null;
     }	
     
-    public static Gateway getGatewayByNameOrAddress(String nameOrAddress) {
+    public static Gateway getGatewayByName(String name) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
             gateway = (Gateway) g;
-            if (gateway.getName().equalsIgnoreCase(nameOrAddress) || gateway.getAddress().equalsIgnoreCase(nameOrAddress)) {
+            if (gateway.getName().equalsIgnoreCase(name)) {
+                return gateway;
+            }
+        }
+        return null;
+    }
+    
+    public static Gateway getGatewayByAddress(String address) {
+        Gateway gateway;
+        
+        for (Object g : getGatewayList()) {
+            gateway = (Gateway) g;
+            if (gateway.getAddress().equalsIgnoreCase(address)) {
                 return gateway;
             }
         }

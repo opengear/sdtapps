@@ -38,11 +38,10 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InvalidPreferencesFormatException {
-         final SplashWindow splash = new SplashWindow("images/opengear-splash.png");
+        final SplashWindow splash = new SplashWindow("images/opengear-splash.png");
         if (!OS.isWindows()) {
             splash.setVisible(true);
         }
-        splash.setVisible(false);
         // Initialise the L&F
         try {
             String lafName = System.getProperty("swing.defaultlaf");
@@ -95,15 +94,15 @@ public class Main {
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } catch (InvalidPreferencesFormatException ex) {
-        }
+        }            
+        window.setVisible(true);
 
         // Close the splash window after everything is up and initialised
         SwingUtilities.invokeLater(new Runnable() {
-             public void run() {
+            public void run() {
                 splash.setVisible(false);
             }
         });
-        window.setVisible(true);
 
         /* 
          * Parse command line argument in the form of:

@@ -21,6 +21,7 @@ import java.util.ListIterator;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
@@ -61,6 +62,11 @@ public class PreferencesDialog extends javax.swing.JDialog {
         privateKeyJList.setHighlighters(new HighlighterPipeline(new Highlighter[] {
             Highlighter.notePadBackground
         }));
+        if (OS.isWindows()) {
+            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links in Internet Explorer and Firefox</html>");
+        } else {
+            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links in Firefox</html>");
+        }
         pack();
     }
     
@@ -84,11 +90,14 @@ public class PreferencesDialog extends javax.swing.JDialog {
         addServiceButton = new javax.swing.JButton();
         removeServiceButton = new javax.swing.JButton();
         editServiceButton = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
+        privateKeysPreferencesPanel = new javax.swing.JPanel();
         addPrivateKeyButton = new javax.swing.JButton();
         removePrivateKeyButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         privateKeyJList = new org.jdesktop.swingx.JXList();
+        systemDefaultsPreferencesPanel = new javax.swing.JPanel();
+        registerSDTButton = new javax.swing.JButton();
+        registerSDTLabel = new javax.swing.JLabel();
         closeButton = new javax.swing.JButton();
 
         setTitle("SDTConnector Preferences");
@@ -268,37 +277,68 @@ public class PreferencesDialog extends javax.swing.JDialog {
 
         jScrollPane1.setViewportView(privateKeyJList);
 
-        org.jdesktop.layout.GroupLayout jPanel4Layout = new org.jdesktop.layout.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel4Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout privateKeysPreferencesPanelLayout = new org.jdesktop.layout.GroupLayout(privateKeysPreferencesPanel);
+        privateKeysPreferencesPanel.setLayout(privateKeysPreferencesPanelLayout);
+        privateKeysPreferencesPanelLayout.setHorizontalGroup(
+            privateKeysPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, privateKeysPreferencesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(privateKeysPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(addPrivateKeyButton)
                     .add(removePrivateKeyButton))
                 .addContainerGap())
         );
 
-        jPanel4Layout.linkSize(new java.awt.Component[] {addPrivateKeyButton, removePrivateKeyButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+        privateKeysPreferencesPanelLayout.linkSize(new java.awt.Component[] {addPrivateKeyButton, removePrivateKeyButton}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel4Layout.createSequentialGroup()
+        privateKeysPreferencesPanelLayout.setVerticalGroup(
+            privateKeysPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(privateKeysPreferencesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel4Layout.createSequentialGroup()
+                .add(privateKeysPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(privateKeysPreferencesPanelLayout.createSequentialGroup()
                         .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                         .addContainerGap())
-                    .add(jPanel4Layout.createSequentialGroup()
+                    .add(privateKeysPreferencesPanelLayout.createSequentialGroup()
                         .add(addPrivateKeyButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(removePrivateKeyButton)
                         .add(122, 122, 122))))
         );
-        jTabbedPane1.addTab("Private Keys", jPanel4);
+        jTabbedPane1.addTab("Private Keys", privateKeysPreferencesPanel);
+
+        registerSDTButton.setText("Register sdt://");
+        registerSDTButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                registerSDTButtonActionPerformed(evt);
+            }
+        });
+
+        registerSDTLabel.setText("registerSDTLabel");
+
+        org.jdesktop.layout.GroupLayout systemDefaultsPreferencesPanelLayout = new org.jdesktop.layout.GroupLayout(systemDefaultsPreferencesPanel);
+        systemDefaultsPreferencesPanel.setLayout(systemDefaultsPreferencesPanelLayout);
+        systemDefaultsPreferencesPanelLayout.setHorizontalGroup(
+            systemDefaultsPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(systemDefaultsPreferencesPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(registerSDTButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(registerSDTLabel)
+                .addContainerGap(158, Short.MAX_VALUE))
+        );
+        systemDefaultsPreferencesPanelLayout.setVerticalGroup(
+            systemDefaultsPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(systemDefaultsPreferencesPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(systemDefaultsPreferencesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(registerSDTButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 33, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(registerSDTLabel))
+                .addContainerGap(163, Short.MAX_VALUE))
+        );
+        jTabbedPane1.addTab("System Defaults", systemDefaultsPreferencesPanel);
 
         closeButton.setText("Close");
         closeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -314,7 +354,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jTabbedPane1)
+                    .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, closeButton))
                 .addContainerGap())
         );
@@ -329,6 +369,27 @@ public class PreferencesDialog extends javax.swing.JDialog {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void registerSDTButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerSDTButtonActionPerformed
+        if (SDTURLHelper.isRegisteredWithFirefox()) {
+            JOptionPane.showMessageDialog(this,
+                    "SDT protocol already registered for Firefox",
+                    "Note",
+                    JOptionPane.PLAIN_MESSAGE);
+        } else {
+            if (SDTURLHelper.registerWithFirefox()) {
+                JOptionPane.showMessageDialog(this,
+                    "Successfully registered SDT protocol for Firefox",
+                    "Success",
+                    JOptionPane.PLAIN_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Unable to register SDT protocol for Firefox",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);               
+            }
+        }
+    }//GEN-LAST:event_registerSDTButtonActionPerformed
 
     private void serviceJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_serviceJListValueChanged
         editServiceButton.setEnabled(serviceJList.isSelectionEmpty() == false);
@@ -488,17 +549,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
     private javax.swing.JButton closeButton;
     private javax.swing.JButton editClientButton;
     private javax.swing.JButton editServiceButton;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private org.jdesktop.swingx.JXList privateKeyJList;
+    private javax.swing.JPanel privateKeysPreferencesPanel;
+    private javax.swing.JButton registerSDTButton;
+    private javax.swing.JLabel registerSDTLabel;
     private javax.swing.JButton removeClientButton;
     private javax.swing.JButton removePrivateKeyButton;
     private javax.swing.JButton removeServiceButton;
     private org.jdesktop.swingx.JXList serviceJList;
     private javax.swing.JPanel servicePreferencesPanel;
+    private javax.swing.JPanel systemDefaultsPreferencesPanel;
     // End of variables declaration//GEN-END:variables
     
     private EventList privateKeyList = new BasicEventList();
