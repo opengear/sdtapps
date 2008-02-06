@@ -86,60 +86,69 @@ public class SDTURLHelper {
         return service != null ? true : false;
     }
     
+    private static File[] getFirefoxProfiles() {
+        String profilesPath;
+
+        if (OS.isWindows()) {
+            profilesPath = System.getenv("APPDATA") + "\\Mozilla\\Firefox\\Profiles";
+        } else if (OS.isMacOSX()) {
+            profilesPath = System.getProperty("user.home") + "/Library/Applications/Support/Firefox/Profiles";
+        } else {
+            profilesPath = System.getProperty("user.home") + "/.mozilla/firefox";
+        }
+        FileFilter filter = new FileFilter() {
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        };
+        File dir = new File(profilesPath);
+        if (dir != null) {
+            return dir.listFiles(filter);
+        }
+        return null;
+    }
+    
     public static boolean isRegisteredWithFirefox() {
         int registered = 0;
-        File[] profiles = null;
+        File[] profiles = getFirefoxProfiles();
                 
-        if (OS.isWindows()) {
+        if (profiles == null) {
+            return false;
+        }
 
-        } else if (OS.isMacOSX()) {
-            
-        } else {
-            File dir = new File(System.getProperty("user.home") + "/.mozilla/firefox");
-            FileFilter filter = new FileFilter() {
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory();
-                }
-            };
-            profiles = dir.listFiles(filter);
-            if (profiles == null) {
-                return false;
+    profiles:
+        for (File profile : profiles) {
+            String line;
+            FileWriter out;
+            FileReader in = null;
+            String prefsFilePath = profile.getPath() + "/user.js";
+
+            try {
+                in = new FileReader(prefsFilePath);
+            } catch (FileNotFoundException ex) {
+                continue;
             }
-            
-        profiles:
-            for (File profile : profiles) {
-                String line;
-                FileWriter out;
-                FileReader in = null;
-                String prefsFilePath = profile.getPath() + "/user.js";
-
+            if (in != null) {
+                BufferedReader br = new BufferedReader(in);
                 try {
-                    in = new FileReader(prefsFilePath);
-                } catch (FileNotFoundException ex) {
-                    continue;
-                }
-                if (in != null) {
-                    BufferedReader br = new BufferedReader(in);
+                    while ((line = br.readLine()) != null) {
+                        if (line.equals(firefoxPrefsLine)) {
+                            registered++;
+                            continue profiles;
+                        }
+                    }
+                } catch (IOException ex) {
+                } finally {
                     try {
-                        while ((line = br.readLine()) != null) {
-                            if (line.equals(firefoxPrefsLine)) {
-                                registered++;
-                                continue profiles;
-                            }
+                        if (br != null) {
+                            br.close();
                         }
                     } catch (IOException ex) {
-                    } finally {
-                        try {
-                            if (br != null) {
-                                br.close();
-                            }
-                        } catch (IOException ex) {
-                        } try {
-                            if (in != null) {
-                                in.close();
-                            }
-                        } catch (IOException ex) {
+                    } try {
+                        if (in != null) {
+                            in.close();
                         }
+                    } catch (IOException ex) {
                     }
                 }
             }
@@ -149,55 +158,42 @@ public class SDTURLHelper {
      
     public static boolean registerWithFirefox() {
         int registered = 0;
-        File[] profiles = null;
-         
-        if (OS.isWindows()) {
+        File[] profiles = getFirefoxProfiles();
 
-        } else if (OS.isMacOSX()) {
-            
-        } else {
-            File dir = new File(System.getProperty("user.home") + "/.mozilla/firefox");
-            FileFilter filter = new FileFilter() {
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory();
-                }
-            };
-            profiles = dir.listFiles(filter);
-            if (profiles == null) {
-                return false;
+        if (profiles == null) {
+            return false;
+        }
+
+    profiles:
+        for (File profile : profiles) {
+            String line;
+            FileWriter out;
+            String prefsFilePath = profile.getPath() + "/user.js";
+
+            try {
+                out = new FileWriter(prefsFilePath, true);
+            } catch (IOException ex) {
+                continue;
             }
-            
-        profiles:
-            for (File profile : profiles) {
-                String line;
-                FileWriter out;
-                String prefsFilePath = profile.getPath() + "/user.js";
-                        
+
+            BufferedWriter bw = new BufferedWriter(out);
+            try {
+                bw.write(firefoxPrefsLine);
+                bw.newLine();
+                registered++;
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
                 try {
-                    out = new FileWriter(prefsFilePath, true);
-                } catch (IOException ex) {
-                    continue;
-                }
-                
-                BufferedWriter bw = new BufferedWriter(out);
-                try {
-                    bw.write(firefoxPrefsLine);
-                    bw.newLine();
-                    registered++;
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        if (bw != null) {
-                            bw.close();
-                        }
-                    } catch (IOException ex) {
-                    } try {
-                        if (out != null) {
-                            out.close();
-                        }
-                    } catch (IOException ex) {
+                    if (bw != null) {
+                        bw.close();
                     }
+                } catch (IOException ex) {
+                } try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException ex) {
                 }
             }
         }
