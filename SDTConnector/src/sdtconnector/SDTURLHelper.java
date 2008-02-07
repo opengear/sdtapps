@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.swingx.util.OS;
 
 public class SDTURLHelper {
@@ -31,7 +33,7 @@ public class SDTURLHelper {
         return service;
     }
 
-    public static boolean parseSDTURL(String arg) {
+    public static boolean parse(String arg) {
         int index, end;
         URI uri;
         
@@ -108,7 +110,7 @@ public class SDTURLHelper {
         return null;
     }
     
-    public static boolean isRegisteredWithFirefox() {
+    private static boolean isRegisteredWithFirefox() {
         int registered = 0;
         File[] profiles = getFirefoxProfiles();
                 
@@ -156,7 +158,7 @@ public class SDTURLHelper {
         return (profiles != null && registered == profiles.length) ? true : false;
     }
      
-    public static boolean registerWithFirefox() {
+    private static boolean registerWithFirefox() {
         int registered = 0;
         File[] profiles = getFirefoxProfiles();
 
@@ -188,20 +190,110 @@ public class SDTURLHelper {
                     if (bw != null) {
                         bw.close();
                     }
-                } catch (IOException ex) {
-                } try {
+                } catch (IOException ex) {} 
+                try {
                     if (out != null) {
                         out.close();
                     }
-                } catch (IOException ex) {
-                }
+                } catch (IOException ex) {}
             }
         }
         return (profiles != null && registered == profiles.length) ? true : false;
     }
     
-    private static final String firefoxPrefsLine = "user_pref(\"network.protocol-handler.app.sdt\", \"/usr/local/bin/sdtconnector\");";
+    private static boolean isRegisteredWithWindows() {
+        File tmpfile = null;
+        
+        try {
+            tmpfile = File.createTempFile("sdt", ".reg");
+            Runtime.getRuntime().exec("regedit /e " + tmpfile.getPath() + " " + registryKeyPath);
+            if (tmpfile.length() > 0) {
+                return true;
+            }
+        } catch (IOException ex) {
+        } finally {
+            if (tmpfile != null) {
+                tmpfile.delete();
+            }
+        }
+        return false;
+    }
 
+    private static boolean registerWithWindows() {
+        File tmpfile = null;
+        FileWriter out = null;
+        BufferedWriter bw = null;
+        
+        try {
+            tmpfile = File.createTempFile("sdt", ".reg");
+            out = new FileWriter(tmpfile, true);
+            bw = new BufferedWriter(out);
+            
+            for (String line : registryEntry) {
+                bw.write(line);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            Process p = Runtime.getRuntime().exec("regedit /s " + tmpfile.getPath());
+            return true;
+        } catch (IOException ex) {
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException ex) {}
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException ex) {}
+            }
+            if (tmpfile != null) {
+                tmpfile.delete();
+            }
+        }
+        return false;
+    }
+    
+    public static boolean isRegistered() {
+        if (OS.isWindows()) {
+            return isRegisteredWithWindows();
+        } else {
+            return isRegisteredWithFirefox();
+        }
+    }
+    
+    public static boolean register() {
+        if (OS.isWindows()) {
+            return registerWithWindows();
+        } else {
+            return registerWithFirefox();
+        }
+    }
+    
+    private static final String firefoxPrefsLine = "user_pref(\"network.protocol-handler.app.sdt\", \"/usr/local/bin/sdtconnector\");";
+    private static final String registryKeyPath = "HKEY_CURRENT_USER\\Software\\Classes\\sdt";
+    private static final String[] registryEntry = {
+          "Windows Registry Editor Version 5.00",
+          "",
+          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt]",
+          "@=\"URL:SDT Protocol\"",
+          "\"URL Protocol\"=\"\"",
+          "",
+          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\Default Icon]",
+          "@=\"%SystemRoot%\\\\system32\\\\url.dll,0\"",
+          "",
+          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell]",
+          "",
+          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open]",
+          "",
+          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open\\command]",
+          "@=\"C:\\\\Documents and Settings\\\\robertw\\\\Desktop\\\\sdtapps\\\\SDTConnector\\\\dist\\\\SDTConnector.exe %1\"",
+          "",
+          ""
+        };
+    
     public static Gateway gw = null;
     public static Host host = null;
     public static Service service = null;

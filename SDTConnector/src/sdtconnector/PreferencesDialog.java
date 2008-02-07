@@ -63,9 +63,9 @@ public class PreferencesDialog extends javax.swing.JDialog {
             Highlighter.notePadBackground
         }));
         if (OS.isWindows()) {
-            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links in Internet Explorer and Firefox</html>");
+            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links</html>");
         } else {
-            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links in Firefox</html>");
+            registerSDTLabel.setText("<html>Use SDTConnector to open sdt:// links in Mozilla Firefox</html>");
         }
         pack();
     }
@@ -374,20 +374,20 @@ public class PreferencesDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerSDTButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerSDTButtonActionPerformed
-        if (SDTURLHelper.isRegisteredWithFirefox()) {
+        if (SDTURLHelper.isRegistered()) {
             JOptionPane.showMessageDialog(this,
-                    "SDT protocol already registered for Firefox.",
+                    "SDT protocol is already registered.",
                     "Already registered",
                     JOptionPane.PLAIN_MESSAGE);
         } else {
-            if (SDTURLHelper.registerWithFirefox()) {
+            if (SDTURLHelper.register()) {
                 JOptionPane.showMessageDialog(this,
-                    "Successfully registered SDT protocol for Firefox.",
+                    "Successfully registered SDT protocol.",
                     "Success",
                     JOptionPane.PLAIN_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Unable to register SDT protocol for Firefox.",
+                    "Unable to register SDT protocol.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);               
             }
