@@ -110,7 +110,7 @@ public class Main {
          *  sdt://gateway/host#service
          */
         if (args.length > 0) {
-            if (SDTURLHelper.parseSDTURL(args[0]) == true) {
+            if (SDTURLHelper.parse(args[0]) == true) {
                 window.launchService(SDTURLHelper.getGateway(), SDTURLHelper.getHost(), SDTURLHelper.getService());
             }
         }
