@@ -202,7 +202,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         if (SDTConnector.DEBUG == true) {
             JOptionPane.showMessageDialog(null,
-                        "Not for general distribution",
+                        "Not for general distribution.",
                         "Debug build",
                         JOptionPane.WARNING_MESSAGE);
         }
