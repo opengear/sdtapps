@@ -112,6 +112,12 @@ public class Main {
         if (args.length > 0) {
             if (SDTURLHelper.parse(args[0]) == true) {
                 window.launchService(SDTURLHelper.getGateway(), SDTURLHelper.getHost(), SDTURLHelper.getService());
+            } else {
+                JOptionPane.showMessageDialog(null,
+                    "The SDT URL " + args[0] + " is malformed.\n" +
+                    "The correct form is: sdt://gateway/host#service",
+                    "Malformed URL",
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }

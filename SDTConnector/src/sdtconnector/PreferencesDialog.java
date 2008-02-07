@@ -383,12 +383,12 @@ public class PreferencesDialog extends javax.swing.JDialog {
             if (SDTURLHelper.register()) {
                 JOptionPane.showMessageDialog(this,
                     "Successfully registered SDT protocol.",
-                    "Success",
+                    "Registration succeeded",
                     JOptionPane.PLAIN_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
                     "Unable to register SDT protocol.",
-                    "Error",
+                    "Registration failed",
                     JOptionPane.ERROR_MESSAGE);               
             }
         }

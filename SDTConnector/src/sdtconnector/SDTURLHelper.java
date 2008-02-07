@@ -38,7 +38,9 @@ public class SDTURLHelper {
         URI uri;
         
         try {
-            uri = new URI(arg);
+            // Kludge our way around IE URL-decoding before passing the argument,
+            // and the URI class choking on space characters
+            uri = new URI(arg.replaceAll(" ", "%20"));
         } catch (URISyntaxException ex) {
             return false;
         }
