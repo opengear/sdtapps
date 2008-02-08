@@ -1,41 +1,54 @@
 #!/bin/bash
 
 function tarup () {	
-	jarfile="$1"
+	distfile="$1"
 	configfile="$2"
-	distfile="$3"
+	shift; shift
 
-	rm -rf "$tardir" &> /dev/null
-	mkdir "$tardir"
-	cp "$jarfile" "$tardir"
-	cp "$configfile" "$tardir"/defaults.xml
-	tar -c "$tardir" > "$distfile".tar
-	gzip "$distfile".tar
-	rm -rf "$tardir"
+	cd /tmp
+	rm -rf "$TARDIR" &> /dev/null
+	mkdir "$TARDIR"
+	cp "$configfile" "$TARDIR/defaults.xml"
+	for file in $*; do
+		cp "$file" "$TARDIR"
+	done
+	tar -cz "$TARDIR" > "$distfile"
+	rm -rf "$TARDIR"
+	cd - &> /dev/null
+	mv "/tmp/$distfile" "$DISTDIR"
 }
 
-distdir="`dirname $0`/../dist"
-if [[ ! -d  "$distdir" ]] ; then
-	echo "Can't find dist directory"
+OLDDIR="$PWD"
+cd "`dirname $0`/.."
+
+ROOTDIR="$PWD"
+DISTDIR="$ROOTDIR/dist"
+TOOLSDIR="$ROOTDIR/tools"
+
+if [[ ! -d  "$DISTDIR" ]] ; then
+	echo "Can't find dist directory: $DISTDIR"
 	exit 1
 fi
-if [[ ! -e "${distdir}/sdtcon.jar" ]] || [[ ! -e "${distdir}/sdtcon-mac.jar" ]] ; then
-	echo "Can't find sdtcon JAR files in ${distdir}, have you built them?"
+if [[ ! -d  "$TOOLSDIR" ]] ; then
+	echo "Can't find tools directory: $TOOLSDIR"
 	exit 1
 fi
-cd "$distdir"
-
-version=`grep VERSION ../src/sdtconnector/SDTConnector.java|sed 's/.*\"\(.*\)\".*/\1/'`
-echo "SDTConnector version: $version"
-
-tardir="sdtconnector-${version}"
-
-tarup "sdtcon.jar" "../tools/defaults.xml" "sdtconnector-${version}"
-tarup "sdtcon-mac.jar" "../tools/defaults.xml" "sdtconnector-mac-${version}"
-
-if [[ -e "../tools/defaults-prop.xml" ]] ; then
-	tarup "sdtcon.jar" "../tools/defaults-prop.xml" "sdtconnector-${version}-prop"
-	tarup "sdtcon-mac.jar" "../tools/defaults-prop.xml" "sdtconnector-mac-${version}-prop"
+if [[ ! -e "$DISTDIR/sdtcon.jar" ]] || [[ ! -e "$DISTDIR/sdtcon-mac.jar" ]] ; then
+	echo "Can't find sdtcon JAR files in $DISTDIR, have you built them?"
+	exit 1
 fi
 
-cd - &> /dev/null
+VERSION=`grep VERSION $ROOTDIR/src/sdtconnector/SDTConnector.java|sed 's/.*\"\(.*\)\".*/\1/'`
+echo "SDTConnector version: $VERSION"
+
+TARDIR="sdtconnector-$VERSION"
+
+tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
+tarup "sdtconnector-mac-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
+
+if [[ -e "$TOOLSDIR/defaults-prop.xml" ]] ; then
+	tarup "sdtconnector-$VERSION-prop.tar.gz" "$TOOLSDIR/defaults-prop.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
+	tarup "sdtconnector-mac-$VERSION-prop.tar.gz" "$TOOLSDIR/defaults-prop.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
+fi
+
+cd "$OLDDIR" &> /dev/null
