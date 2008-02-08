@@ -15,8 +15,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
 
 public class SDTURLHelper {
@@ -45,7 +51,8 @@ public class SDTURLHelper {
             return false;
         }
         
-        if (uri.getScheme().equalsIgnoreCase("sdt")) {
+        String scheme = uri.getScheme();
+        if (scheme != null && scheme.equalsIgnoreCase("sdt")) {
             String s = uri.getHost();
             if (s != null && s.length() > 0) {
                 gw = SDTManager.getGatewayByName(s);
@@ -136,7 +143,7 @@ public class SDTURLHelper {
                 BufferedReader br = new BufferedReader(in);
                 try {
                     while ((line = br.readLine()) != null) {
-                        if (line.equals(firefoxPrefsLine)) {
+                        if (line.equals(getFirefoxPrefsLine())) {
                             registered++;
                             continue profiles;
                         }
@@ -182,8 +189,9 @@ public class SDTURLHelper {
 
             BufferedWriter bw = new BufferedWriter(out);
             try {
-                bw.write(firefoxPrefsLine);
+                bw.write(getFirefoxPrefsLine());
                 bw.newLine();
+                bw.flush();
                 registered++;
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -231,7 +239,7 @@ public class SDTURLHelper {
             out = new FileWriter(tmpfile, true);
             bw = new BufferedWriter(out);
             
-            for (String line : registryEntry) {
+            for (String line : getRegistryEntry()) {
                 bw.write(line);
                 bw.newLine();
                 bw.flush();
@@ -252,7 +260,7 @@ public class SDTURLHelper {
                 } catch (IOException ex) {}
             }
             if (tmpfile != null) {
-                tmpfile.delete();
+                //tmpfile.delete();
             }
         }
         return false;
@@ -274,27 +282,40 @@ public class SDTURLHelper {
         }
     }
     
-    private static final String firefoxPrefsLine = "user_pref(\"network.protocol-handler.app.sdt\", \"/usr/local/bin/sdtconnector\");";
+    private static String getFirefoxPrefsLine() {
+        return "user_pref(\"network.protocol-handler.app.sdt\", \"" + System.getProperty("user.dir") + "/SDTConnector\");";
+    }
+    
+    public static List<String> getRegistryEntry() {
+        List<String> list = new ArrayList<String>();
+        
+        list.addAll(REGISTRY_HEADER_ITEMS);
+        list.add("@=\"\\\"" + System.getProperty("user.dir").replaceAll("\\\\", "\\\\\\\\") + "\\\\SDTConnector.exe\\\" \\\"%1\\\"\"");
+        list.addAll(REGISTRY_FOOTER_ITEMS);
+        return list;
+    }
+    
+    private static final List<String> REGISTRY_HEADER_ITEMS = Collections.unmodifiableList(Arrays.asList(
+            "Windows Registry Editor Version 5.00",
+            "",
+            "[HKEY_CURRENT_USER\\Software\\Classes\\sdt]",
+            "@=\"URL:SDT Protocol\"",
+            "\"URL Protocol\"=\"\"",
+            "",
+            "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\Default Icon]",
+            "@=\"%SystemRoot%\\\\system32\\\\url.dll,0\"",
+            "",
+            "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell]",
+            "",
+            "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open]",
+            "",
+            "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open\\command]"
+            ));
+    private static final List<String> REGISTRY_FOOTER_ITEMS = Collections.unmodifiableList(Arrays.asList(
+            "",
+            ""
+            ));
     private static final String registryKeyPath = "HKEY_CURRENT_USER\\Software\\Classes\\sdt";
-    private static final String[] registryEntry = {
-          "Windows Registry Editor Version 5.00",
-          "",
-          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt]",
-          "@=\"URL:SDT Protocol\"",
-          "\"URL Protocol\"=\"\"",
-          "",
-          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\Default Icon]",
-          "@=\"%SystemRoot%\\\\system32\\\\url.dll,0\"",
-          "",
-          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell]",
-          "",
-          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open]",
-          "",
-          "[HKEY_CURRENT_USER\\Software\\Classes\\sdt\\shell\\open\\command]",
-          "@=\"C:\\\\Documents and Settings\\\\robertw\\\\Desktop\\\\sdtapps\\\\SDTConnector\\\\dist\\\\SDTConnector.exe %1\"",
-          "",
-          ""
-        };
     
     public static Gateway gw = null;
     public static Host host = null;
