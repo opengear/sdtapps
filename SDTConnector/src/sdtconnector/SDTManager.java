@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JOptionPane;
@@ -436,6 +438,19 @@ public class SDTManager {
                 return gateway;
             }
         }
+        try {
+            InetAddress inaddr = InetAddress.getByName(address);
+            for (Object g : getGatewayList()) {
+                gateway = (Gateway) g;
+                try {
+                    InetAddress gInaddr = InetAddress.getByName(gateway.getAddress());
+                    if (inaddr.equals(gInaddr)) {
+                        return gateway;
+                    }
+                } catch (UnknownHostException ex) {}
+            }
+        } catch (UnknownHostException ex) {}
+        
         return null;
     }
     

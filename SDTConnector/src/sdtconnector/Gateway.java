@@ -11,6 +11,8 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,17 @@ public class Gateway {
      */
     public Gateway() {
         recordID = SDTManager.nextRecordID();
+        
+        udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
+        udpgwStopFormat = "kill %pid%";
+        udpgwPidRegex = "[0-9]+";
+        if (OS.isWindows()) {
+            oobStart = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial OOB login password";
+            oobStop = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial network_connection login password";
+        } else {
+            oobStart = "pon OOB";
+            oobStop = "poff OOB";
+        }
     }
     public Gateway(int recordID, String name, String address, String username,
             String password, String description, String oobAddress,
@@ -45,21 +58,9 @@ public class Gateway {
         }
         if (oobStart != null) {
             this.oobStart = oobStart;
-        } else {
-            if (OS.isWindows()) {
-                this.oobStart = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial OOB login password";
-            } else {
-                this.oobStart = "pon OOB";
-            }
         }
         if (oobStop != null) {
             this.oobStop = oobStop;
-        } else {
-            if (OS.isWindows()) {
-                this.oobStop = "cmd /c start \"Starting Out of Band Connection\" /wait /min rasdial network_connection login password";
-            } else {
-                this.oobStop = "poff OOB";
-            }
         }
         if (udpgwStartFormat != null) {
             this.udpgwStartFormat = udpgwStartFormat;
@@ -163,6 +164,19 @@ public class Gateway {
                 return host;
             }
         }
+        try {
+            InetAddress inaddr = InetAddress.getByName(address);
+            for (Object h : hostList) {
+                host = (Host) h;
+                try {
+                    InetAddress hInaddr = InetAddress.getByName(host.getAddress());
+                    if (inaddr.equals(hInaddr)) {
+                        return host;
+                    }
+                } catch (UnknownHostException ex) {}
+            }
+        } catch (UnknownHostException ex) {}
+                
         return null;
     }
     public String toString() {
@@ -268,9 +282,9 @@ public class Gateway {
     private String oobStop = "";
     private boolean oob = false;
     
-    private String udpgwStartFormat = "{ udpgw %port% %udphost% %udpport% & } &> /dev/null ; echo $!";
-    private String udpgwStopFormat = "kill %pid%";
-    private String udpgwPidRegex = "[0-9]+";
-
+    private String udpgwStartFormat;
+    private String udpgwStopFormat;
+    private String udpgwPidRegex;
+    
     private int _hashCode = 0;
 }
