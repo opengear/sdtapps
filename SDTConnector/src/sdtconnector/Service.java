@@ -89,9 +89,9 @@ public class Service {
         Launcher launcher = this.getFirstLauncher();
         if (launcher != null) {
                 if (launcher.getUdpPort() != 0) {
-                        unnamedName = "UDP " + launcher.getUdpPort();
+                        unnamedName = "UDP Port " + launcher.getUdpPort();
                 } else if (launcher.getRemotePort() != 0) {
-                        unnamedName = "TCP " + launcher.getRemotePort();
+                        unnamedName = "TCP Port " + launcher.getRemotePort();
                 }
         }
         return unnamedName;

@@ -78,47 +78,71 @@ public class SDTURLHelper {
         }
         return host;
     }
+
+    private static int getRemotePort(String s) {
+        if (s.toLowerCase().startsWith("tcp port ")) {
+            return Integer.valueOf(s.substring("tcp port ".length()));
+        }
+        return 0;
+    }
+    
+    private static int getUdpPort(String s) {
+        if (s.toLowerCase().startsWith("udp port ")) {
+            return Integer.valueOf(s.substring("udp port ".length()));
+        }
+        return 0;
+    }
     
     public static Service serviceFromURI(URI uri, Host host) {
-        int remotePort = 0, udpPort = 0;
+        int remotePort, udpPort;
         Service service = null;
         String s = uri.getFragment();
         
         if (s != null && s.length() > 0) {
             service = host.getServiceByName(s);
+            
             if (service == null) {
-                if (s.toLowerCase().startsWith("tcp port ")) {
-                    remotePort = Integer.valueOf(s.substring("tcp port ".length()));
-                    service = host.getServiceByPort(remotePort, 0);
-                } else if (s.toLowerCase().startsWith("udp port ")) {
-                    udpPort = Integer.valueOf(s.substring("udp port ".length()));
-                    service = host.getServiceByPort(0, udpPort);
-                }
+                // Service may be generically named, e.g. "TCP Port XXXX"
+                remotePort = getRemotePort(s);
+                udpPort = getUdpPort(s);
+                service = host.getServiceByPort(remotePort, udpPort);
+
                 if (service == null) {
-                    Launcher launcher = new Launcher();
-                    Service svc = null;
-
-                    service = new Service();
+                    // The host isn't configured with this service, try snarfing it from the master list
+                    service = SDTManager.getServiceByName(s);
                     
-                    if (remotePort >= 2000 && remotePort < 2096) {
-                        // Serial telnet
-                        svc = SDTManager.getServiceByPort(23, 0);
-                        service.setName("Serial " + (remotePort - 2000) + " Telnet");
-                    } else if (remotePort >= 3000 && remotePort <= 3096) {
-                        // Serial SSH
-                        svc = SDTManager.getServiceByPort(22, 0);
-                        service.setName("Serial " + (remotePort - 3000) + " SSH");
-                    }
-                    if (svc != null) {
-                       service.setIcon(svc.getIcon());
-                       launcher.setClient(svc.getFirstLauncher().getClient());
-                    }
+                    if (service == null) {
+                        // Is there a matching generically named service in the master list
+                        service = SDTManager.getServiceByPort(remotePort, udpPort);
+                        
+                        if (service == null) {
+                            // If all else fails, create a new service
+                            Launcher launcher = new Launcher();
+                            Service svc = null;
 
-                    launcher.setRemotePort(remotePort);
-                    launcher.setUdpPort(udpPort);
-                    service.addLauncher(launcher);
+                            service = new Service();
 
-                    SDTManager.addService(service);
+                            if (remotePort >= 2000 && remotePort < 2096) {
+                                // Serial telnet
+                                svc = SDTManager.getServiceByPort(23, 0);
+                                service.setName("Serial " + (remotePort - 2000) + " Telnet");
+                            } else if (remotePort >= 3000 && remotePort <= 3096) {
+                                // Serial SSH
+                                svc = SDTManager.getServiceByPort(22, 0);
+                                service.setName("Serial " + (remotePort - 3000) + " SSH");
+                            }
+                            if (svc != null) {
+                               service.setIcon(svc.getIcon());
+                               launcher.setClient(svc.getFirstLauncher().getClient());
+                            }
+
+                            launcher.setRemotePort(remotePort);
+                            launcher.setUdpPort(udpPort);
+                            service.addLauncher(launcher);
+
+                            SDTManager.addService(service);
+                        }
+                    }
                     host.addService(service);
                 }
             }

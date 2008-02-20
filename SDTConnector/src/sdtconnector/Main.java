@@ -6,6 +6,7 @@
 package sdtconnector;
 import com.opengear.ui.SplashWindow;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -79,7 +80,7 @@ public class Main {
             
         } catch (Exception e) {}
         Application.getInstance().setName("SDTConnector");
-        MainWindow window = new MainWindow();
+        final MainWindow window = new MainWindow();
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);
         }
@@ -128,14 +129,21 @@ public class Main {
                 gw = SDTURLHelper.gatewayFromURI(uri);
                 if (gw == null) {
                     JOptionPane.showMessageDialog(null,
-                        "The gateway in the SDT URL " + args[0] + " is unknown.\n" +
-                        "This gateway must be added inside SDTConnector.",
+                        "The gateway " + uri.getHost() + " is unknown.\n" +
+                        "Click File -> New Gateway to add this gateway and click the sdt:// link again.",
                         "Unknown gateway",
                         JOptionPane.ERROR_MESSAGE);                    
                 } else {
                     host = SDTURLHelper.hostFromURI(uri, gw);
                     service = SDTURLHelper.serviceFromURI(uri, host);
                     window.launchService(gw, host, service);
+                    /*
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            window.setState(Frame.ICONIFIED);
+                        }
+                    });
+                     */
                 }
             }
         }

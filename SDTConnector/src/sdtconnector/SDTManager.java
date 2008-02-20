@@ -399,6 +399,18 @@ public class SDTManager {
         return (EventList) sortedServiceList;
     }
     
+    public static Service getServiceByName(String name) {
+        Service service;
+        
+        for (Object s : getServiceList()) {
+            service  = (Service) s;
+            if (service.getName().equalsIgnoreCase(name)) {
+                return service;
+            }
+        }
+        return null;
+    }
+    
     public static Service getServiceByPort(int remotePort, int udpPort) {
         Service service;
         Launcher launcher;
