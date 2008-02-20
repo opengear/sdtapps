@@ -11,6 +11,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
@@ -110,16 +112,32 @@ public class Main {
          *  sdt://gateway/host#service
          */
         if (args.length > 0) {
-            if (SDTURLHelper.parse(args[0]) == true) {
-                window.launchService(SDTURLHelper.getGateway(), SDTURLHelper.getHost(), SDTURLHelper.getService());
-            } else {
+            URI uri;
+            Gateway gw;
+            Host host;
+            Service service;
+            
+            uri = SDTURLHelper.getURI(args[0]);
+            if (uri == null) {
                 JOptionPane.showMessageDialog(null,
                     "The SDT URL " + args[0] + " is malformed.\n" +
                     "The correct form is: sdt://gateway/host#service",
                     "Malformed URL",
                     JOptionPane.ERROR_MESSAGE);
+            } else {
+                gw = SDTURLHelper.gatewayFromURI(uri);
+                if (gw == null) {
+                    JOptionPane.showMessageDialog(null,
+                        "The gateway in the SDT URL " + args[0] + " is unknown.\n" +
+                        "This gateway must be added inside SDTConnector.",
+                        "Unknown gateway",
+                        JOptionPane.ERROR_MESSAGE);                    
+                } else {
+                    host = SDTURLHelper.hostFromURI(uri, gw);
+                    service = SDTURLHelper.serviceFromURI(uri, host);
+                    window.launchService(gw, host, service);
+                }
             }
         }
     }
-    
 }

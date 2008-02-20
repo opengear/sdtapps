@@ -27,76 +27,105 @@ import org.jdesktop.swingx.util.OS;
 
 public class SDTURLHelper {
     
-    public static Gateway getGateway() {
-        return gw;
-    }
-    
-    public static Host getHost() {
-        return host;
-    }
-    
-    public static Service getService() {
-        return service;
-    }
-
-    public static boolean parse(String arg) {
-        int index, end;
+    public static URI getURI(String arg) {
+        String scheme;
         URI uri;
-        
         try {
             // Kludge our way around IE URL-decoding before passing the argument,
             // and the URI class choking on space characters
             uri = new URI(arg.replaceAll(" ", "%20"));
-        } catch (URISyntaxException ex) {
-            return false;
-        }
-        
-        String scheme = uri.getScheme();
-        if (scheme != null && scheme.equalsIgnoreCase("sdt")) {
-            String s = uri.getHost();
-            if (s != null && s.length() > 0) {
-                gw = SDTManager.getGatewayByName(s);
-                if (gw == null) {
-                    gw = SDTManager.getGatewayByAddress(s);
-                }
+            scheme = uri.getScheme();
+            if (scheme != null && scheme.equalsIgnoreCase("sdt")) {
+                return uri;
             }
-        } else {
-            return false;
-        }
+        } catch (URISyntaxException ex) {}
         
-        if (gw != null) {
-            String s = uri.getPath().substring(1); // Trim leading slash
-            if (s != null && s.length() > 0) {
-                host = gw.getHostByName(s);
-                if (host == null) {
-                    host = gw.getHostByAddress(s);
-                }
-            }
-        } else {
-            return false;
-        }
-        
-        if (host != null) {
-            String s = uri.getFragment();
-            if (s != null && s.length() > 0) {
-                service = host.getServiceByName(s);
-                if (service == null) {
-                    if (s.startsWith("TCP ")) {
-                        int port = Integer.valueOf(s.substring("TCP ".length()));
-                        service = host.getServiceByPort(port, 0);
-                    } else if (s.startsWith("UDP ")) {
-                        int port = Integer.valueOf(s.substring("UDP ".length()));
-                        service = host.getServiceByPort(0, port);
-                    }
-                }
-            }
-        } else {
-            return false;
-        }
-
-        return service != null ? true : false;
+        return null;
     }
     
+    public static Gateway gatewayFromURI(URI uri) {
+        Gateway gw = null;
+        String s = uri.getHost();
+        
+        if (s != null && s.length() > 0) {
+            gw = SDTManager.getGatewayByName(s);
+            if (gw == null) {
+                gw = SDTManager.getGatewayByAddress(s);
+            }
+        }
+        return gw;
+    }
+    
+    public static Host hostFromURI(URI uri, Gateway gw) {
+        Host host = null;
+        String s = uri.getPath();
+        
+        if (s != null && s.length() > 1) {
+            s = s.substring(1); // Trim leading slash
+            host = gw.getHostByName(s);
+            if (host == null) {
+                host = gw.getHostByAddress(s);
+            }
+            if (host == null) {
+                // Create a new host
+                host = new Host();
+                host.setAddress(s);
+                if (s.equals("127.0.0.1") || s.equals("localhost")) {
+                    host.setName("Local Services");
+                }
+                gw.addHost(host);
+            }
+        }
+        return host;
+    }
+    
+    public static Service serviceFromURI(URI uri, Host host) {
+        int remotePort = 0, udpPort = 0;
+        Service service = null;
+        String s = uri.getFragment();
+        
+        if (s != null && s.length() > 0) {
+            service = host.getServiceByName(s);
+            if (service == null) {
+                if (s.toLowerCase().startsWith("tcp port ")) {
+                    remotePort = Integer.valueOf(s.substring("tcp port ".length()));
+                    service = host.getServiceByPort(remotePort, 0);
+                } else if (s.toLowerCase().startsWith("udp port ")) {
+                    udpPort = Integer.valueOf(s.substring("udp port ".length()));
+                    service = host.getServiceByPort(0, udpPort);
+                }
+                if (service == null) {
+                    Launcher launcher = new Launcher();
+                    Service svc = null;
+
+                    service = new Service();
+                    
+                    if (remotePort >= 2000 && remotePort < 2096) {
+                        // Serial telnet
+                        svc = SDTManager.getServiceByPort(23, 0);
+                        service.setName("Serial " + (remotePort - 2000) + " Telnet");
+                    } else if (remotePort >= 3000 && remotePort <= 3096) {
+                        // Serial SSH
+                        svc = SDTManager.getServiceByPort(22, 0);
+                        service.setName("Serial " + (remotePort - 3000) + " SSH");
+                    }
+                    if (svc != null) {
+                       service.setIcon(svc.getIcon());
+                       launcher.setClient(svc.getFirstLauncher().getClient());
+                    }
+
+                    launcher.setRemotePort(remotePort);
+                    launcher.setUdpPort(udpPort);
+                    service.addLauncher(launcher);
+
+                    SDTManager.addService(service);
+                    host.addService(service);
+                }
+            }
+        }
+        return service;
+    }
+
     private static File[] getFirefoxProfiles() {
         String profilesPath;
 
@@ -316,8 +345,4 @@ public class SDTURLHelper {
             ""
             ));
     private static final String registryKeyPath = "HKEY_CURRENT_USER\\Software\\Classes\\sdt";
-    
-    public static Gateway gw = null;
-    public static Host host = null;
-    public static Service service = null;
 }
