@@ -77,7 +77,7 @@ public class SDTManager {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
                 String version = Settings.getProperty("version");
                 if (compareVersions(version, SDTConnector.VERSION) < 0) {
-                    int retVal = JOptionPane.showConfirmDialog(null,
+                    int retVal = JOptionPane.showConfirmDialog(Main.getMainWindow(),
                             "SDTConnector has found preferences created by an older version (" + version + ").\n" +
                             "The version you are running (" +  SDTConnector.VERSION + ") may contain updated service and client\n" +
                             "settings.\n\n" +
@@ -86,7 +86,7 @@ public class SDTManager {
                             "Load new default configuration?",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (retVal != JOptionPane.YES_OPTION) {
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(Main.getMainWindow(),
                                 "To load the new default configuration later, click File -> Import\n" +
                                 "Preferences and select: defaults.xml\n\n",
                                 "Hint",
@@ -111,7 +111,7 @@ public class SDTManager {
                 Preferences.userRoot().node(SDTManager.prefsPath).sync();
                 recordID = Integer.parseInt(Settings.getProperty("recordID"));
             } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(Main.getMainWindow(),
                         "To load the default configuration manually, click File -> Import\n" +
                         "Preferences and locate: defaults.xml\n\n",
                         "Default preferences file not found",

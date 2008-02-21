@@ -201,7 +201,7 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
         
         if (SDTConnector.DEBUG == true) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(this,
                         "Not for general distribution.",
                         "Debug build",
                         JOptionPane.WARNING_MESSAGE);
@@ -742,7 +742,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Gateway gw = (Gateway) path.getPathComponent(1);
         
         if (gw.getHostList().isEmpty() == false) {
-            int retVal = JOptionPane.showConfirmDialog(null,
+            int retVal = JOptionPane.showConfirmDialog(this,
                     "This will delete all existing hosts for " + gw,
                     "Warning",
                     JOptionPane.OK_CANCEL_OPTION,
@@ -1149,7 +1149,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
 			updateButtonState();
         }
         public void stopOobFailed() {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(Main.getMainWindow(),
 					"Unable to stop the out of band connection,\nyou must stop it manually.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
