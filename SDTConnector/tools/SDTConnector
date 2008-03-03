@@ -1,2 +1,16 @@
 #!/bin/bash
-java -jar sdtcon.jar $@
+
+jarfile="sdtcon.jar"
+cmd="java -jar $jarfile $@"
+
+if [[ ! -e "$jarfile" ]]; then
+	cd `dirname $0` &> /dev/null
+	$cmd
+	retval=$?
+	cd - &> /dev/null
+else
+	$cmd
+	retval=$?
+fi
+
+exit $retval
