@@ -201,19 +201,9 @@ public class SDTURLHelper {
                             continue profiles;
                         }
                     }
+                    br.close();
                 } catch (IOException ex) {
-                } finally {
-                    try {
-                        if (br != null) {
-                            br.close();
-                        }
-                    } catch (IOException ex) {
-                    } try {
-                        if (in != null) {
-                            in.close();
-                        }
-                    } catch (IOException ex) {
-                    }
+                    ex.printStackTrace();
                 }
             }
         }
@@ -229,36 +219,45 @@ public class SDTURLHelper {
         }
 
     profiles:
-        for (File profile : profiles) {
+        for (File profile : profiles) {                
+
             String line;
+            FileReader in;
             FileWriter out;
             String prefsFilePath = profile.getPath() + "/user.js";
-
+            File tmpfile;
+            
             try {
-                out = new FileWriter(prefsFilePath, true);
+                tmpfile = File.createTempFile("sdtcon", null);
+                in = new FileReader(prefsFilePath);
+                out = new FileWriter(tmpfile, false);
             } catch (IOException ex) {
                 continue;
             }
 
+            BufferedReader br = new BufferedReader(in);
             BufferedWriter bw = new BufferedWriter(out);
+            
             try {
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith(firefoxPrefsPrefix)) {
+                        continue;
+                    }
+                    bw.write(line);
+                    bw.newLine();
+                    bw.flush();
+                }
                 bw.write(getFirefoxPrefsLine());
                 bw.newLine();
                 bw.flush();
                 registered++;
+                
+                bw.close();
+                br.close();
+                tmpfile.renameTo(new File(prefsFilePath));
+                
             } catch (IOException ex) {
                 ex.printStackTrace();
-            } finally {
-                try {
-                    if (bw != null) {
-                        bw.close();
-                    }
-                } catch (IOException ex) {} 
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException ex) {}
             }
         }
         return (profiles != null && registered == profiles.length) ? true : false;
@@ -335,8 +334,10 @@ public class SDTURLHelper {
         }
     }
     
+    private static final String firefoxPrefsPrefix = "user_pref(\"network.protocol-handler.app.sdt\", \"";
+    
     private static String getFirefoxPrefsLine() {
-        return "user_pref(\"network.protocol-handler.app.sdt\", \"" + System.getProperty("user.dir") + "/SDTConnector\");";
+        return firefoxPrefsPrefix + System.getProperty("user.dir") + "/SDTConnector\");";
     }
     
     public static List<String> getRegistryEntry() {
