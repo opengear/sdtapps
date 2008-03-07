@@ -229,6 +229,12 @@ public class SDTURLHelper {
             
             try {
                 tmpfile = File.createTempFile("sdtcon", null);
+
+                File f = new File(prefsFilePath);
+                if (f.exists() == false) {
+                    f.createNewFile();
+                }
+                
                 in = new FileReader(prefsFilePath);
                 out = new FileWriter(tmpfile, false);
             } catch (IOException ex) {
