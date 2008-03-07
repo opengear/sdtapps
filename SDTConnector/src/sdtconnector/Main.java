@@ -117,10 +117,12 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InvalidPreferencesFormatException {
+/*
         final SplashWindow splash = new SplashWindow("images/opengear-splash.png");
         if (!OS.isWindows()) {
             splash.setVisible(true);
         }
+ */
         // Initialise the L&F
         try {
             String lafName = System.getProperty("swing.defaultlaf");
@@ -175,14 +177,14 @@ public class Main {
         } catch (InvalidPreferencesFormatException ex) {
         }            
         window.setVisible(true);
-        
+/*        
         // Close the splash window after everything is up and initialised
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 splash.setVisible(false);
             }
         });
-
+ */
         registerProtocolHandler();
         if (args.length > 0) {
             launchURL(args[0]);
