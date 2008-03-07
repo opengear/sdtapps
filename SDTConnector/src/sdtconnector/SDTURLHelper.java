@@ -268,11 +268,13 @@ public class SDTURLHelper {
         
         try {
             tmpfile = File.createTempFile("sdt", ".reg");
-            Runtime.getRuntime().exec("regedit /e " + tmpfile.getPath() + " " + registryKeyPath);
+            Process p = Runtime.getRuntime().exec("regedit /e " + tmpfile.getPath() + " " + registryKeyPath);
+            p.waitFor();
             if (tmpfile.length() > 0) {
                 return true;
             }
         } catch (IOException ex) {
+        } catch (InterruptedException ex) {
         } finally {
             if (tmpfile != null) {
                 tmpfile.delete();
@@ -298,8 +300,10 @@ public class SDTURLHelper {
             }
             bw.close();
             Process p = Runtime.getRuntime().exec("regedit /s " + tmpfile.getPath());
+            p.waitFor();
             return true;
         } catch (IOException ex) {
+        } catch (InterruptedException ex) {
         } finally {
             if (bw != null) {
                 try {
@@ -312,7 +316,7 @@ public class SDTURLHelper {
                 } catch (IOException ex) {}
             }
             if (tmpfile != null) {
-                //tmpfile.delete();
+                tmpfile.delete();
             }
         }
         return false;

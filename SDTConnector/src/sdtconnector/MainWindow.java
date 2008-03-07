@@ -956,17 +956,14 @@ static FileFilter xmlFileFilter = new FileFilter() {
             public void run() {
                 if (conn.login()) {
                     if (launcher.getClient() != null) {
-                        String[] cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
                         statusBar.setText("Launching " + launcher.getClient());
                         int localPort = launcher.getLocalPort();
                         launcher.setLocalPort(boundPort);
                         if (!launcher.launch()) {
                             statusBar.setText("Failed, check settings in Edit -> Preferences -> Clients -> "
                                     + launcher.getClient() + " -> Edit");
-                            for (String c : cmd) {
-                                System.out.print(c + " ");
-                            }
-                            System.out.println(" failed");
+                        	String cmd = launcher.getClient().getCommand(launcher.getLocalHost(), boundPort);
+                            System.out.println(cmd + " failed");
                         }
                         launcher.setLocalPort(localPort);
                     }

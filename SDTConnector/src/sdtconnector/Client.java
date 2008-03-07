@@ -56,23 +56,14 @@ public class Client {
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Client) obj).getRecordID());
     }
-    public String[] getCommand(String host, int port) {
-        int i;
-        String[] command;
-        
-        command = commandFormat.trim().split("\\s+");
-        for (i = 0; i < command.length; i++) {
-            command[i] = command[i].replaceAll("%path%", path);
-            command[i] = command[i].replaceAll("%host%", host);
-            command[i] = command[i].replaceAll("%port%", String.valueOf(port));
-            if (SDTConnector.DEBUG == true) {
-                System.out.println("command[" + i + "] " + command[i]);
-            }
-        }
-        
-        return command;
+	public String getCommand(String host, int port) {
+		String cmd = commandFormat;
+		cmd = StringUtils.replace(cmd, "%path%", path);
+		cmd = StringUtils.replace(cmd, "%host%", host);
+		cmd = StringUtils.replace(cmd, "%port%", String.valueOf(port));
+		return cmd;
     }
-    
+   
     private int recordID;
     private String name = "";
     private String path = "";
