@@ -58,17 +58,17 @@ public class Main {
              */
         } else {
             gw = SDTURLHelper.gatewayFromURI(uri);
-            if (gw == null) {
+            if (gw == null && uri.getHost() != null) {
                 JOptionPane.showMessageDialog(window,
                     "The gateway " + uri.getHost() + " is unknown.\n" +
                     "Click File -> New Gateway to add this gateway and click the sdt:// link again.",
                     "Unknown gateway",
-                    JOptionPane.ERROR_MESSAGE);                    
-            } else {
-                host = SDTURLHelper.hostFromURI(uri, gw);
-                service = SDTURLHelper.serviceFromURI(uri, host);
-                window.launchService(gw, host, service);
+                    JOptionPane.ERROR_MESSAGE);
+                return;
             }
+            host = SDTURLHelper.hostFromURI(uri, gw);
+            service = SDTURLHelper.serviceFromURI(uri, host);
+            window.launchService(gw, host, service);
         }
     }
     
