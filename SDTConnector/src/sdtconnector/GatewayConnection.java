@@ -117,7 +117,7 @@ public class GatewayConnection {
     private void setupSession(String username, String password) {
         try {
             jsch = new JSch();
-            session = jsch.getSession(username, gateway.getActiveAddress(), gateway.getPort());
+            session = jsch.getSession(username, gateway.getActiveAddress(), gateway.getActivePort());
             session.setUserInfo(userinfo);
             session.setConfig(config);
             session.setPassword(password);
@@ -367,7 +367,7 @@ public class GatewayConnection {
             this.remotePort = remotePort;
             this.localPort = localPort;
             this.udpOverTcpPort = udpOverTcpPort;
-            this.connection = connection;
+//            this.connection = connection;
 
             listenSocket = new ServerSocket();
             SocketHelper.bindSocket(listenSocket, listenSockAddr);
