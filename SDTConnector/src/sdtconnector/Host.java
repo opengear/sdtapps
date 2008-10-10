@@ -8,6 +8,7 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import java.util.List;
 import java.util.ListIterator;
 
 
@@ -28,6 +29,9 @@ public class Host {
     }
     public EventList getServiceList() {
         return serviceList;
+    }
+    public void setServiceList(EventList serviceList) {
+        this.serviceList = serviceList;
     }
     public void addService(Service service) {
         serviceList.add(service);
