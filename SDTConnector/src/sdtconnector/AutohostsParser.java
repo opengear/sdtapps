@@ -157,8 +157,8 @@ public class AutohostsParser {
                         bestMatchService = service;
                         bestMatchPorts.clear();
                         bestMatchPorts.addAll(matchedPorts);
-                        matchedPorts.clear();
                     }
+                    matchedPorts.clear();
                 }
                 if (bestMatchService == null) {
                     break;
