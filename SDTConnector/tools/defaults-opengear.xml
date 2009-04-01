@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2005 - 2009 Opengear Inc.  All rights reserved.
+
+    This file is made available under the terms of the Opengear End User
+    Licence, which accompanies this distribution, and is available at:
+    http://www.opengear.com/firmware/manual/
+-->
+<!DOCTYPE 
+preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map />
+    <node name="opengear">
+      <map />
+      <node name="sdtconnector">
+        <map />
+        <node name="clients">
+          <map />
+          <node name="1">
+            <map>
+              <entry key="commandFormat"
+              value="%path% http://%host%:%port%/" />
+              <entry key="name" value="HTTP browser" />
+              <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
+            </map>
+          </node>
+          <node name="2">
+            <map>
+              <entry key="commandFormat"
+              value="%path% https://%host%:%port%/" />
+              <entry key="name" value="HTTPS browser" />
+              <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
+            </map>
+          </node>
+          <node name="3">
+            <map>
+              <entry key="commandFormat"
+              value="xterm -e %path% %host% %port%" />
+              <entry key="commandFormat-win"
+              value="cmd /c start %path% %host% %port%" />
+              <entry key="name" value="Telnet client" />
+              <entry key="path" value="telnet" />
+            </map>
+          </node>
+          <node name="4">
+            <map>
+              <entry key="commandFormat"
+              value="xterm -e %path% -o UserKnownHostsFile=/dev/null -p %port% %host%" />
+              <entry key="commandFormat-win"
+              value="%path% -ssh -P %port% %host%" />
+              <entry key="name" value="SSH client" />
+              <entry key="path" value="ssh" />
+              <entry key="path-win" value="" />
+            </map>
+          </node>
+          <node name="5">
+            <map>
+              <entry key="commandFormat"
+              value="%path% %host%:%port%" />
+              <entry key="commandFormat-win"
+              value="%path% %host%::%port%" />
+              <entry key="name" value="VNC viewer" />
+              <entry key="path" value="" />
+            </map>
+          </node>
+          <node name="6">
+            <map>
+              <entry key="commandFormat"
+              value="%path% %host%:%port%" />
+              <entry key="commandFormat-win"
+              value="%path% /console /v:%host%:%port%" />
+              <entry key="name" value="RDP viewer" />
+              <entry key="path" value="" />
+              <entry key="path-win" value="mstsc.exe" />
+            </map>
+          </node>
+          <node name="23">
+            <map>
+              <entry key="commandFormat"
+              value="xterm -e %path% %host% 623" />
+              <entry key="commandFormat-win"
+              value="cmd /c start %path% %host% 623" />
+              <entry key="name" value="Telnet client (SOL)" />
+              <entry key="path" value="telnet" />
+            </map>
+          </node>
+          <node name="37">
+            <map>
+              <entry key="commandFormat"
+              value="%path% http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
+              <entry key="name" value="HTTP browser (RSA II)" />
+              <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
+            </map>
+          </node>
+          <node name="38">
+            <map>
+              <entry key="commandFormat" value="%path% %host%"/>
+              <entry key="name" value="IBM Director console"/>
+              <entry key="path" value="/opt/ibm/director/bin/twgcon"/>
+              <entry key="path-win" value="C:\Program Files\IBM\Director\bin\twgconw.exe"/>
+            </map>
+          </node>
+          <node name="48">
+            <map>
+              <entry key="commandFormat" value="%path% /t %host%:%port%"/>
+              <entry key="name" value="HyperTerminal"/>
+              <entry key="path" value="C:\Program Files\Windows NT\HyperTerminal\HyperTrm.exe"/>
+            </map>
+          </node>
+          <node name="55">
+            <map>
+              <entry key="commandFormat" value="%path% -h %host% -P %port%"/>
+              <entry key="name" value="VMWare Server console"/>
+              <entry key="path" value="vmware"/>
+              <entry key="path-win" value=""/>
+            </map>
+          </node>
+          <node name="58">
+            <map>
+              <entry key="commandFormat" value="%path% https://%host%:%port%/"/>
+              <entry key="name" value="HTTPS browser (Internet Explorer)"/>
+              <entry key="path" value="C:\Program Files\Internet Explorer\IEXPLORE.EXE"/>
+            </map>
+          </node>
+          <node name="59">
+            <map>
+              <entry key="commandFormat-win" value="%path% /ip %host% /https yes /port %port%"/>
+              <entry key="name" value="KVM Vision Viewer"/>
+              <entry key="path" value="C:\Program Files\KVM Vision Viewer\KVM Vision Viewer.exe"/>
+            </map>
+          </node>
+          <node name="71">
+            <map>
+              <entry key="commandFormat" value="java -jar %path% -pams -a %host%"/>
+              <entry key="commandFormat-win" value="cmd /c start /min java -jar &quot;%path%&quot; -pams -a %host%"/>
+              <entry key="name" value="PowerAlert NMS Console"/>
+              <entry key="path" value="/var/tripplite/poweralert/console/paconsole.jar"/>
+              <entry key="path-win" value="C:\Program Files\TrippLite\PowerAlert\console\paconsole.jar"/>
+            </map>
+          </node>
+        </node>
+        <node name="gateways">
+          <map />
+        </node>
+        <node name="services">
+          <map />
+          <node name="10">
+            <map>
+              <entry key="name" value="HTTP" />
+              <entry key="icon" value="www" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="7">
+                <map>
+                  <entry key="clientID" value="1" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="80" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="11">
+            <map>
+              <entry key="name" value="HTTPS" />
+              <entry key="icon" value="https" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="8">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="443" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="12">
+            <map>
+              <entry key="name" value="Telnet" />
+              <entry key="icon" value="telnet" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="9">
+                <map>
+                  <entry key="clientID" value="3" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="23" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="13">
+            <map>
+              <entry key="name" value="SSH" />
+              <entry key="icon" value="ssh" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="14">
+                <map>
+                  <entry key="clientID" value="4" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="22" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="15">
+            <map>
+              <entry key="name" value="VNC" />
+              <entry key="icon" value="vnc" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="16">
+                <map>
+                  <entry key="clientID" value="5" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="5900" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="17">
+            <map>
+              <entry key="name" value="RDP" />
+              <entry key="icon" value="tsclient" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="18">
+                <map>
+                  <entry key="clientID" value="6" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="3389" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="19">
+            <map>
+              <entry key="name" value="Dell RAC" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="20">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="5900" />
+                  <entry key="remotePort" value="5900" />
+                </map>
+              </node>
+              <node name="39">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="3668" />
+                  <entry key="remotePort" value="3668" />
+                </map>
+              </node>
+              <node name="21">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="443" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="22">
+            <map>
+              <entry key="name" value="Dell Server Administrator" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="23">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="1311" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="24">
+            <map>
+              <entry key="name" value="Dell IT Assistant" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="25">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="2607" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="26">
+            <map>
+              <entry key="name" value="SOL" />
+              <entry key="icon" value="telnet" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="27">
+                <map>
+                  <entry key="clientID" value="23" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="50623" />
+                  <entry key="udpPort" value="623" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="28">
+            <map>
+              <entry key="name" value="IBM RSA II" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="29">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="2000" />
+                  <entry key="remotePort" value="2000" />
+                </map>
+              </node>
+              <node name="30">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="1044" />
+                  <entry key="remotePort" value="1044" />
+                </map>
+              </node>
+              <node name="31">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="1045" />
+                  <entry key="remotePort" value="1045" />
+                </map>
+              </node>
+              <node name="32">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="52000" />
+                  <entry key="udpPort" value="2000" />
+                </map>
+              </node>
+              <node name="33">
+                <map>
+                  <entry key="clientID" value="37" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="80" />
+                  <entry key="remotePort" value="80" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="35">
+            <map>
+              <entry key="name" value="IBM Director" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="36">
+                <map>
+                  <entry key="clientID" value="38" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="2033" />
+                  <entry key="remotePort" value="2033" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="40">
+            <map>
+              <entry key="name" value="IBM AMM" />
+              <entry key="icon" value="lightsout" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="41">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="2000" />
+                  <entry key="remotePort" value="2000" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="42">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="1044" />
+                  <entry key="remotePort" value="1044" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="43">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="1045" />
+                  <entry key="remotePort" value="1045" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="44">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="52000" />
+                  <entry key="udpPort" value="2000" />
+                </map>
+              </node>
+              <node name="45">
+                <map>
+                  <entry key="clientID" value="37" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="80" />
+                  <entry key="remotePort" value="80" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="46">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="3900" />
+                  <entry key="remotePort" value="3900" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="47">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="1046" />
+                  <entry key="remotePort" value="1046" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="49">
+            <map>
+              <entry key="name" value="HP iLO 2" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="50">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="51">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="23" />
+                  <entry key="remotePort" value="23" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="52">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="17988" />
+                  <entry key="remotePort" value="17988" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="53">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="17990" />
+                  <entry key="remotePort" value="17990" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="54">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="9300" />
+                  <entry key="remotePort" value="9300" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="56">
+            <map>
+              <entry key="name" value="VMWare Server" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="57">
+                <map>
+                  <entry key="clientID" value="55" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="902" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="60">
+            <map>
+              <entry key="name" value="Tripp Lite NetCommander" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="61">
+                <map>
+                  <entry key="clientID" value="58" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="443" />
+                  <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="62">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="900" />
+                  <entry key="remotePort" value="900" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="63">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="901" />
+                  <entry key="remotePort" value="901" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="64">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="902" />
+                  <entry key="remotePort" value="902" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="65">
+            <map>
+              <entry key="name" value="Tripp Lite NetDirector" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="66">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="443" />
+                  <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="67">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="9000" />
+                  <entry key="remotePort" value="9000" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+              <node name="68">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="9002" />
+                  <entry key="remotePort" value="9002" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="69">
+            <map>
+              <entry key="name" value="KVM Vision Viewer" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="70">
+                <map>
+                  <entry key="clientID" value="59" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="443" />
+                  <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="72">
+            <map>
+              <entry key="name" value="Tripp Lite PowerAlert NMS" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="73">
+                <map>
+                  <entry key="clientID" value="71" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="53664" />
+                  <entry key="udpPort" value="3664" />
+                </map>
+              </node>
+              <node name="74">
+                <map>
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="50161" />
+                  <entry key="udpPort" value="161" />
+                </map>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node name="settings">
+          <map>
+            <entry key="recordID" value="5001" />
+          </map>
+          <node name="PrivateKeyPaths">
+            <map />
+          </node>
+        </node>
+      </node>
+    </node>
+  </root>
+</preferences>

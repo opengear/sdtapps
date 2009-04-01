@@ -1,15 +1,156 @@
-Opengear SDT (Secure Desktop) Utilities
-Copyright (C) 2005-2006 Opengear Inc. All rights reserved
+Opengear SDT Connector
+Copyright (C) 2005 - 2009 Opengear Inc. All rights reserved
 
 LICENSE
 
-Unless otherwise specifically licensed all of the files in this archive are 
+The file defaults-opengear.xml is made available under the terms of the
+Opengear End User Licence Agreement.
+
+Unless otherwise specifically licensed all other files in this archive are 
 licensed under the terms of version 2 of the GNU General Public License as 
 published by the Free Software Foundation.
 
+OPENGEAR END USER LICENCE AGREEMENT
+
+                  READ BEFORE USING THE ACCOMPANYING SOFTWARE
+
+YOU SHOULD CAREFULLY READ THE FOLLOWING TERMS AND CONDITIONS BEFORE USING THE
+ACCOMPANYING SOFTWARE, THE USE OF WHICH IS LICENSED FOR USE ONLY AS SET FORTH
+BELOW. IF YOU DO NOT AGREE TO THE TERMS AND CONDITIONS OF THIS AGREEMENT, DO
+NOT USE THE SOFTWARE. IF YOU USE ANY PART OF THE SOFTWARE, SUCH USE WILL
+INDICATE THAT YOU ACCEPT THESE TERMS.
+
+You have acquired a product that includes Opengear (“Opengear”) proprietary
+software and/or proprietary software licensed to Opengear. This Opengear End
+User License Agreement (“EULA”) is a legal agreement between you (either an
+individual or a single entity) and Opengear for the installed software product
+of Opengear origin, as well as associated media, printed materials, and
+“online” or electronic documentation (“Software”). By installing, copying,
+downloading, accessing, or otherwise using the Software, you agree to be bound
+by the terms of this EULA. If you do not agree to the terms of this EULA,
+Opengear is not willing to license the Software to you. In such event, do not
+use or install the Software. If you have purchased the Software, promptly
+return the Software and all accompanying materials with proof of purchase for a
+refund.
+
+Products with separate end user license agreements that may be provided along
+with the Software are licensed to you under the terms of those separate end
+user license agreements.
+
+LICENSE GRANT. Subject to the terms and conditions of this EULA, Opengear
+grants you a nonexclusive right and license to install and use the Software on
+a single CPU, provided that, (1) you may not rent, lease, sell, sublicense or
+lend the Software; (2) you may not reverse engineer, decompile, disassemble or
+modify the Software, except and only to the extent that such activity is
+expressly permitted by applicable law notwithstanding this limitation; and (3)
+you may not transfer rights under this EULA unless such transfer is part of a
+permanent sale or transfer of the Product, you transfer at the same time all
+copies of the Software to the same party or destroy such materials not
+transferred, and the recipient agrees to this EULA.
+
+No license is granted in any of the Software’s proprietary source code. This
+license does not grant you any rights to patents, copyright, trade secrets,
+trademarks or any other rights with respect to the Software.
+
+You may make a reasonable number of copies of the electronic documentation
+accompanying the Software for each Software license you acquire, provided that,
+you must reproduce and include all copyright notices and any other proprietary
+rights notices appearing on the electronic documentation.  Opengear reserves
+all rights not expressly granted herein.
+
+INTELLECTUAL PROPERTY RIGHTS. The Software is protected by copyright laws,
+international copyright treaties, and other intellectual property laws and
+treaties. Opengear and its suppliers retain all ownership of, and intellectual
+property rights in (including copyright), the Software components and all
+copies thereof, provided however, that (1) certain components of the Software,
+including SDT Connector, are components licensed under the GNU General Public
+License Version 2, which Opengear supports, and (2) the SDT Connector includes
+code from JSch, a pure Java implementation of SSH2 which is licensed under BSD
+style license. Copies of these licenses are detailed below and Opengear will
+provide source code for any of the components of the Software licensed under
+the GNU General Public License upon request.
+
+EXPORT RESTRICTIONS. You agree that you will not export or re-export the
+Software, any part thereof, or any process or service that is the direct
+product of the Software in violation of any applicable laws or regulations of
+the United States or the country in which you obtained them.
+
+U.S. GOVERNMENT RESTRICTED RIGHTS. The Software and related documentation are
+provided with Restricted Rights. Use, duplication, or disclosure by the
+Government is subject to restrictions set forth in subparagraph (c) (1) (ii) of
+the Rights in Technical Data and Computer Software clause at DFARS 252.227-
+7013 or subparagraphs (c) (1) and (2) of the Commercial Computer Software –
+Restricted Rights at 48 C.F.R. 52.227-19, as applicable, or any successor
+regulations.
+
+TERM AND TERMINATION. This EULA is effective until terminated. The EULA
+terminates immediately if you fail to comply with any term or condition. In
+such an event, you must destroy all copies of the Software. You may also
+terminate this EULA at any time by destroying the Software.
+
+GOVERNING LAW AND ATTORNEY’S FEES. This EULA is governed by the laws of the
+State of Utah, USA, excluding its conflict of law rules. You agree that the
+United Nations Convention on Contracts for the International Sale of Goods is
+hereby excluded in its entirety and does not apply to this EULA. If you
+acquired this Software in a country outside of the United States, that
+country’s laws may apply. In any action or suit to enforce any right or remedy
+under this EULA or to interpret any provision of this EULA, the prevailing
+party will be entitled to recover its costs, including reasonable attorneys’
+fees.
+
+ENTIRE AGREEMENT. This EULA constitutes the entire agreement between you and
+Opengear with respect to the Software, and supersedes all other agreements or
+representations, whether written or oral. The terms of this EULA can only be
+modified by express written consent of both parties. If any part of this EULA
+is held to be unenforceable as written, it will be enforced to the maximum
+extent allowed by applicable law, and will not affect the enforceability of any
+other part.  Should you have any questions concerning this EULA, or if you
+desire to contact Opengear for any reason, please contact the Opengear
+representative serving your company.
+
+THE FOLLOWING DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY IS
+INCORPORATED INTO THIS EULA BY REFERENCE. THE SOFTWARE IS NOT FAULT TOLERANT.
+YOU HAVE INDEPENDENTLY DETERMINED HOW TO USE THE SOFTWARE IN THE DEVICE, AND
+OPENGEAR HAS RELIED UPON YOU TO CONDUCT SUFFICIENT TESTING TO DETERMINE THAT
+THE SOFTWARE IS SUITABLE FOR SUCH USE.
+
+LIMITED WARRANTY Opengear warrants the media containing the Software for a
+period of ninety (90) days from the date of original purchase from Opengear or
+its authorized retailer. Proof of date of purchase will be required. Any
+updates to the Software provided by Opengear (which may be provided by Opengear
+at its sole discretion) shall be governed by the terms of this EULA. In the
+event the product fails to perform as warranted, Opengear’s sole obligation
+shall be, at Opengear’s discretion, to refund the purchase price paid by you
+for the Software on the defective media, or to replace the Software on new
+media. Opengear makes no warranty or representation that its Software will meet
+your requirements, will work in combination with any hardware or application
+software products provided by third parties, that the operation of the software
+products will be uninterrupted or error free, or that all defects in the
+Software will be corrected.
+
+OPENGEAR DISCLAIMS ANY AND ALL OTHER WARRANTIES, WHETHER EXPRESS OR IMPLIED,
+INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR
+FITNESS FOR A PARTICULAR PURPOSE. OTHER THAN AS STATED HEREIN, THE ENTIRE RISK
+AS TO SATISFACTORY QUALITY, PERFORMANCE, ACCURACY, AND EFFORT IS WITH YOU.
+ALSO, THERE IS NO WARRANTY AGAINST INTERFERENCE WITH YOUR ENJOYMENT OF THE
+SOFTWARE OR AGAINST INFRINGEMENT. IF YOU HAVE RECEIVED ANY WARRANTIES REGARDING
+THE DEVICE OR THE SOFTWARE, THOSE WARRANTIES DO NOT ORIGINATE FROM, AND ARE NOT
+BINDING ON, OPENGEAR.
+
+NO LIABILITY FOR CERTAIN DAMAGES. EXCEPT AS PROHIBITED BY LAW, OPENGEAR SHALL
+HAVE NO LIABILITY FOR COSTS, LOSS, DAMAGES OR LOST OPPORTUNITY OF ANY TYPE
+WHATSOEVER, INCLUDING BUT NOT LIMITED TO, LOST OR ANTICIPATED PROFITS, LOSS OF
+USE, LOSS OF DATA, OR ANY INCIDENTAL, EXEMPLARY SPECIAL OR CONSEQUENTIAL
+DAMAGES, WHETHER UNDER CONTRACT, TORT, WARRANTY OR OTHERWISE ARISING FROM OR IN
+CONNECTION WITH THIS EULA OR THE USE OR PERFORMANCE OF THE SOFTWARE. IN NO
+EVENT SHALL OPENGEAR BE LIABLE FOR ANY AMOUNT IN EXCESS OF THE LICENSE FEE PAID
+TO OPENGEAR UNDER THIS EULA. SOME STATES AND COUNTRIES DO NOT ALLOW THE
+LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES,
+SO THIS LIMITATION MAY NOT APPLY TO YOU.
+
 GPL LICENSE SUMMARY
 
-Copyright(c) 2005 - 2006 Opengear Inc. All rights reserved.
+Copyright(c) 2005 - 2009 Opengear Inc. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as
@@ -29,6 +170,5 @@ The full GNU General Public License is included in this distribution
 in the file called LICENSE.GPL.
 
 Contact Information:
-Peter Hunt <peter.hunt@opengear.com>
-Opengear, 7984 South Welby Park #101, West Jordan, UT 84088
-
+Robert Waldie <robert.waldie@opengear.com>
+Opengear, 630 West 9560 South Suite A, Sandy, UT 84070

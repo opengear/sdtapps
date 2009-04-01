@@ -6,9 +6,9 @@
 ;Include Modern UI
 
 
-  !define AppName "Opengear SDTConnector"
-  !define ShortName "SDTConnector"
-  !define Vendor "Opengear"
+  !define AppName "$%APPNAME%"
+  !define ShortName "$%SHORTNAME%"
+  !define Vendor "$%VENDOR%"
   !define MUI_BRANDINGTEXT "${AppName}"
   !define JRE_VERSION "1.4.2"
   CRCCheck On
@@ -27,7 +27,7 @@
   InstallDir "$PROGRAMFILES\${AppName}"
   
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\${AppName}" ""
+  InstallDirRegKey HKCU "Software\Opengear SDTConnector" ""
 
 ;  SetCompressor /SOLID lzma
 ;  SetCompressor off
@@ -55,7 +55,7 @@
   !insertmacro MUI_PAGE_DIRECTORY
 ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${AppName}" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Opengear SDTConnector" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   
   !insertmacro MUI_PAGE_STARTMENU ${ShortName} $STARTMENU_FOLDER
@@ -81,22 +81,22 @@ Section "install" SecDummy
   ;ADD YOUR OWN FILES HERE...
   File ..\dist\SDTConnector.exe
   File preferences.xml
-  File defaults.xml
+  File /oname=defaults.xml "$%DEFAULTS_XML%"
   ;Store installation folder
   WriteRegStr HKCU "Software\${AppName}" "" $INSTDIR
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SDTConnector" \
                  "DisplayName" "${AppName}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" \
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SDTConnector" \
                  "UninstallString" "$INSTDIR\uninstall.exe"
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   ;Setup start menu
-  !insertmacro MUI_STARTMENU_WRITE_BEGIN SDTConnector 
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN "${ShortName}"
     
   ;Create shortcuts
-  CreateShortCut "$DESKTOP\${ShortName}.lnk" "$INSTDIR\${ShortName}.exe" ""
+  CreateShortCut "$DESKTOP\${ShortName}.lnk" "$INSTDIR\SDTConnector.exe" ""
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SDTConnector.lnk" "$INSTDIR\SDTConnector.exe"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\${ShortName}.lnk" "$INSTDIR\SDTConnector.exe"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   
   !insertmacro MUI_STARTMENU_WRITE_END
@@ -128,7 +128,7 @@ Section "Uninstall"
   RMDir "$INSTDIR"
   Delete "$DESKTOP\${ShortName}.lnk"
 
-  !insertmacro MUI_STARTMENU_GETFOLDER SDTConnector $MUI_TEMP
+  !insertmacro MUI_STARTMENU_GETFOLDER "${ShortName}" $MUI_TEMP
     
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$MUI_TEMP\${ShortName}.lnk"
@@ -144,6 +144,6 @@ Section "Uninstall"
     StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
   startMenuDeleteLoopDone:
 
-  DeleteRegKey /ifempty HKCU "Software\${AppName}"
+  DeleteRegKey /ifempty HKCU "Software\Opengear SDTConnector"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SDTConnector"
 SectionEnd
