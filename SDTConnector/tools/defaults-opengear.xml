@@ -644,6 +644,23 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               </node>
             </node>
           </node>
+          <node name="75">
+            <map>
+              <entry key="name" value="Opengear IP-KVM" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="76">
+                <map>
+                  <entry key="clientID" value="2" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="443" />
+                  <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
         </node>
         <node name="settings">
           <map>
