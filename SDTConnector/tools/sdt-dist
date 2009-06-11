@@ -46,9 +46,11 @@ TARDIR="sdtconnector-$VERSION"
 tarup "sdtcon-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
 tarup "sdtcon-mac-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
 APPNAME="sdtcon" SHORTNAME="sdtcon" VENDOR="Opengear" DEFAULTS_XML="defaults.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
+mv "$DISTDIR/sdtconSetup.exe" "$DISTDIR/sdtconSetup-$VERSION.exe"
 
 tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/defaults-opengear.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
 tarup "sdtconnector-mac-$VERSION.tar.gz" "$TOOLSDIR/defaults-opengear.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
 APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" DEFAULTS_XML="defaults-opengear.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
+mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
 
 cd "$OLDDIR" &> /dev/null
