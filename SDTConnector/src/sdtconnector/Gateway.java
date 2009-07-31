@@ -265,7 +265,12 @@ public class Gateway {
     public String getUdpgwPidRegex() {
         return udpgwPidRegex;
     }
-
+    public void retrieveHostsAtStartup(Boolean retrieveHostsAtStartup) {
+        this.retrieveHostsAtStartup = retrieveHostsAtStartup;
+    }
+    public Boolean retrieveHostsAtStartup() {
+        return retrieveHostsAtStartup;
+    }
     // Variables
     private int recordID;
     private String name = "";
@@ -287,4 +292,6 @@ public class Gateway {
     private String udpgwPidRegex;
     
     private int _hashCode = 0;
+    
+    private boolean retrieveHostsAtStartup = false;
 }

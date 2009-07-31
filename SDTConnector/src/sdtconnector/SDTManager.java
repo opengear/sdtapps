@@ -13,9 +13,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
@@ -26,6 +29,7 @@ import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import com.jgoodies.looks.LookUtils;
+import java.net.URL;
 
 
 public class SDTManager {
@@ -101,24 +105,36 @@ public class SDTManager {
             ex.printStackTrace();
         }
         
-        if (loadDefaults) {
+        if (loadDefaults) {           
+            InputStream is = null;
             try {
-                File cwd = new File(System.getProperty("user.dir"));
-                File defaults = new File(cwd, "defaults.xml");
-
-                Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
-                Preferences.importPreferences(new FileInputStream(defaults));
-                Preferences.userRoot().node(SDTManager.prefsPath).sync();
-                recordID = Integer.parseInt(Settings.getProperty("recordID"));
-            } catch (FileNotFoundException ex) {
+                if ((is = SDTManager.class.getResourceAsStream("/config/defaults.xml")) == null) {
+                    File f = new File(System.getProperty("user.dir"), "/config/defaults.xml");
+                    is = new FileInputStream(f);
+                }
+                
+                if (is == null) {
+                    throw new Exception();
+                } else {
+                    Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
+                    Preferences.importPreferences(is);
+                    Preferences.userRoot().node(SDTManager.prefsPath).sync();
+                    recordID = Integer.parseInt(Settings.getProperty("recordID"));
+                }
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(Main.getMainWindow(),
-                        "To load the default configuration manually, click File -> Import\n" +
-                        "Preferences and locate: defaults.xml\n\n",
-                        "Default preferences file not found",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (InvalidPreferencesFormatException ex) {
-            } catch (IOException ex) {
-            } catch (BackingStoreException ex) {
+                            "To load the configuration manually, click File -> Import\n" +
+                            "Preferences and select the XML configuration file.\n\n",
+                            "Failed to load default preferences",
+                            JOptionPane.ERROR_MESSAGE); 
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(SDTManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         load();               
@@ -277,6 +293,23 @@ public class SDTManager {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
+
+        //
+        // Load gateway configuration passed through at Web Start launch
+        //
+        String address = System.getProperty("sdt.gateway.address");
+        if (address != null && !address.isEmpty()) {
+            Gateway gw = new Gateway();
+            
+            gw.setAddress(address);
+            gw.setPort(new Integer(System.getProperty("sdt.gateway.sshport")));
+            gw.setUsername(System.getProperty("sdt.gateway.username"));
+            gw.setName(System.getProperty("sdt.gateway.name"));
+            gw.setDescription(System.getProperty("sdt.gateway.description"));
+            gw.retrieveHostsAtStartup(true);
+            
+            addGateway(gw);
+        }
     }
 
     /**
@@ -429,26 +462,36 @@ public class SDTManager {
         return null;
     }	
     
-    public static Gateway getGatewayByName(String name) {
+    public static Gateway getGatewayByName(String name, String username) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
             gateway = (Gateway) g;
-            if (gateway.getName().equalsIgnoreCase(name)) {
-                return gateway;
+            
+            if (!gateway.getName().equalsIgnoreCase(name)) {
+                continue;
             }
+            if (username != null && !gateway.getUsername().equals(username)) {
+                continue;
+            }
+            return gateway;
         }
         return null;
     }
     
-    public static Gateway getGatewayByAddress(String address) {
+    public static Gateway getGatewayByAddress(String address, String username) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
             gateway = (Gateway) g;
-            if (gateway.getAddress().equalsIgnoreCase(address)) {
-                return gateway;
+            
+            if (!gateway.getAddress().equalsIgnoreCase(address)) {
+                continue;
             }
+            if (username != null && !gateway.getUsername().equals(username)) {
+                continue;
+            }
+            return gateway;
         }
         try {
             InetAddress inaddr = InetAddress.getByName(address);
@@ -456,9 +499,13 @@ public class SDTManager {
                 gateway = (Gateway) g;
                 try {
                     InetAddress gInaddr = InetAddress.getByName(gateway.getAddress());
-                    if (inaddr.equals(gInaddr)) {
-                        return gateway;
+                    if (!inaddr.equals(gInaddr)) {
+                        continue;
                     }
+                    if (username != null && !gateway.getUsername().equals(username)) {
+                        continue;
+                    }
+                    return gateway;
                 } catch (UnknownHostException ex) {}
             }
         } catch (UnknownHostException ex) {}

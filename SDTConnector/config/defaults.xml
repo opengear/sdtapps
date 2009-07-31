@@ -665,6 +665,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
         <node name="settings">
           <map>
             <entry key="recordID" value="5001" />
+            <entry key="skipHandlerCheck" value="true" />
           </map>
           <node name="PrivateKeyPaths">
             <map />

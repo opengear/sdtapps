@@ -42,9 +42,12 @@ import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import javax.swing.JOptionPane;
 import org.omg.SendingContext.RunTime;
 
 
@@ -70,6 +73,9 @@ public class GatewayConnection {
     }
     public void setAutohostsListener(AutohostsListener l) {
         autohostsListener = l;
+    }
+    public AutohostsListener getAutohostsListener() {
+        return autohostsListener;
     }
     public void setStopOobListener(StopOobListener l) {
         stopOobListener = l;
@@ -122,6 +128,15 @@ public class GatewayConnection {
             session.setConfig(config);
             session.setPassword(password);
             // Add any configured private keys
+            String privateKey = System.getProperty("sdt.privatekey");
+            if (privateKey != null && !privateKey.isEmpty()) {
+                jsch.addIdentity(
+                        username,               // String userName
+                        privateKey.getBytes(),  // byte[] privateKey 
+                        null,                   // byte[] publicKey
+                        "passphrase".getBytes() // byte[] passPhrase
+                );
+            }
             for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
                 jsch.addIdentity(path, "passphrase");
             }
@@ -231,11 +246,11 @@ public class GatewayConnection {
         System.out.println("Shell: Received: " + s);
         return s;
     }
-    
+   
     public void getHosts() {
         exec.execute(new Runnable() {
             public void run() {
-                EventList hosts = null;
+               EventList hosts = null;
                 
                 autohostsListener.autohostsStarted();
                 
@@ -278,6 +293,19 @@ public class GatewayConnection {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+            }
+        });
+    }
+    
+    public void launchSDTURL() {
+        exec.execute(new Runnable() {
+            public void run() {
+                Gateway gateway = SDTURLHelper.getGateway();
+                Host host = SDTURLHelper.getHost(gateway);
+                Service service = SDTURLHelper.getService(host);
+
+                // REVISIT: Using MainWindow to update tree selection
+                Main.getMainWindow().launchService(gateway, host, service);
             }
         });
     }

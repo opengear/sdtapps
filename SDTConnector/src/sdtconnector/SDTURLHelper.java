@@ -26,37 +26,77 @@ import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
 
 public class SDTURLHelper {
+
+    /** 
+     * sdt:// URL parser methods
+     */    
+    private static URI uri = null;
     
-    public static URI getURI(String arg) {
-        String scheme;
-        URI uri;
-        try {
-            // Kludge our way around IE URL-decoding before passing the argument,
-            // and the URI class choking on space characters
-            uri = new URI(arg.replaceAll(" ", "%20"));
-            scheme = uri.getScheme();
-            if (scheme != null && scheme.equalsIgnoreCase("sdt")) {
-                return uri;
-            }
-        } catch (URISyntaxException ex) {}
-        
-        return null;
+    public static boolean hasURL() {
+        return (uri != null);
     }
     
-    public static Gateway gatewayFromURI(URI uri) {
+    public static void setURL(String sdtUrl) throws URISyntaxException, Exception {
+        String scheme;
+        
+        // Kludge our way around IE URL-decoding before passing the argument,
+        // and the URI class choking on space characters
+        uri = new URI(sdtUrl.replaceAll(" ", "%20"));
+        scheme = uri.getScheme();
+        if (scheme == null || !scheme.equalsIgnoreCase("sdt")) {
+            throw new Exception("Invalid URL scheme: " + scheme);
+        }
+    }
+    
+    public static Gateway getGateway()  {
+        return uriGateway();
+    }
+    
+    public static Host getHost() {
+        return uriHost(uriGateway());
+    }
+    public static Host getHost(Gateway gateway) {
+        return uriHost(gateway);
+    }
+    
+    public static Service getService() {
+        return uriService(uriHost(uriGateway()));
+    }
+    public static Service getService(Host host) {
+        return uriService(host);
+    }
+    
+    private static Gateway uriGateway() {
+        if (uri == null) {
+            return null;
+        }
+        
         Gateway gw = null;
         String s = uri.getHost();
         
+        String username = uri.getUserInfo();
+        // Strip password
+        if (username != null) {
+            int pos = username.indexOf(':');
+            if (pos != -1) {
+                username = username.substring(0, pos);
+            }
+        }
+        
         if (s != null && s.length() > 0) {
-            gw = SDTManager.getGatewayByName(s);
+            gw = SDTManager.getGatewayByName(s, username);
             if (gw == null) {
-                gw = SDTManager.getGatewayByAddress(s);
+                gw = SDTManager.getGatewayByAddress(s, username);
             }
         }
         return gw;
     }
     
-    public static Host hostFromURI(URI uri, Gateway gw) {
+    private static Host uriHost(Gateway gw) {
+        if (uri == null || gw == null) {
+            return null;
+        }
+        
         Host host = null;
         String s = uri.getPath();
         
@@ -79,21 +119,25 @@ public class SDTURLHelper {
         return host;
     }
 
-    private static int getRemotePort(String s) {
+    private static int uriRemotePort(String s) {
         if (s.toLowerCase().startsWith("tcp port ")) {
             return Integer.valueOf(s.substring("tcp port ".length()));
         }
         return 0;
     }
     
-    private static int getUdpPort(String s) {
+    private static int uriUdpPort(String s) {
         if (s.toLowerCase().startsWith("udp port ")) {
             return Integer.valueOf(s.substring("udp port ".length()));
         }
         return 0;
     }
     
-    public static Service serviceFromURI(URI uri, Host host) {
+    public static Service uriService(Host host) {
+        if (uri == null || host == null) {
+            return null;
+        }
+        
         int remotePort, udpPort;
         Service service = null;
         String s = uri.getFragment();
@@ -103,8 +147,8 @@ public class SDTURLHelper {
             
             if (service == null) {
                 // Service may be generically named, e.g. "TCP Port XXXX"
-                remotePort = getRemotePort(s);
-                udpPort = getUdpPort(s);
+                remotePort = uriRemotePort(s);
+                udpPort = uriUdpPort(s);
                 service = host.getServiceByPort(remotePort, udpPort);
 
                 if (service == null) {
@@ -150,6 +194,9 @@ public class SDTURLHelper {
         return service;
     }
 
+    /** 
+     * Protocol handler registration methods
+     */
     private static File[] getFirefoxProfiles() {
         String profilesPath;
 

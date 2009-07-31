@@ -24,6 +24,7 @@ cd "`dirname $0`/.."
 ROOTDIR="$PWD"
 DISTDIR="$ROOTDIR/dist"
 TOOLSDIR="$ROOTDIR/tools"
+CONFIGDIR="$ROOTDIR/config"
 
 if [[ ! -d  "$DISTDIR" ]] ; then
 	echo "Can't find dist directory: $DISTDIR"
@@ -31,6 +32,10 @@ if [[ ! -d  "$DISTDIR" ]] ; then
 fi
 if [[ ! -d  "$TOOLSDIR" ]] ; then
 	echo "Can't find tools directory: $TOOLSDIR"
+	exit 1
+fi
+if [[ ! -d  "$CONFIGDIR" ]] ; then
+	echo "Can't find config directory: $CONFIGDIR"
 	exit 1
 fi
 if [[ ! -e "$DISTDIR/sdtcon.jar" ]] || [[ ! -e "$DISTDIR/sdtcon-mac.jar" ]] ; then
@@ -43,14 +48,9 @@ echo "SDTConnector version: $VERSION"
 
 TARDIR="sdtconnector-$VERSION"
 
-tarup "sdtcon-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
-tarup "sdtcon-mac-$VERSION.tar.gz" "$TOOLSDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
-APPNAME="sdtcon" SHORTNAME="sdtcon" VENDOR="Opengear" DEFAULTS_XML="defaults.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
-mv "$DISTDIR/sdtconSetup.exe" "$DISTDIR/sdtconSetup-$VERSION.exe"
-
-tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/defaults-opengear.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
-tarup "sdtconnector-mac-$VERSION.tar.gz" "$TOOLSDIR/defaults-opengear.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
-APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" DEFAULTS_XML="defaults-opengear.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
+tarup "sdtconnector-$VERSION.tar.gz" "$CONFIGDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
+tarup "sdtconnector-mac-$VERSION.tar.gz" "$CONFIGDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
+APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" DEFAULTS_XML="$CONFIGDIR/defaults.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
 mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
 
 cd "$OLDDIR" &> /dev/null

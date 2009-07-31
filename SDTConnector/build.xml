@@ -91,6 +91,7 @@
         <jar update="true" basedir="." destfile="${dist.jar}">
             <include name="images/**/*.gif"/>
             <include name="images/**/*.png"/>
+            <include name="config/**/*.xml"/>
         </jar>
         <chmod perm="ugo+rx">
             <fileset dir="${launch4j.dir}/bin">

@@ -27,7 +27,6 @@ import javax.swing.filechooser.FileFilter;
 import sdtconnector.Gateway;
 import sdtconnector.GatewayConnection;
 import sdtconnector.LoginDialog;
-import com.opengear.util.SwingExecutorService;
 import com.opengear.util.SwingInvocationProxy;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -207,6 +206,69 @@ public class MainWindow extends javax.swing.JFrame {
                         "Not for general distribution.",
                         "Debug build",
                         JOptionPane.WARNING_MESSAGE);
+        }
+        
+        // Register browser handler for sdt:// URLs
+        registerProtocolHandler();
+        
+        // Auto configure gateways
+        for (Object o : SDTManager.getGatewayList()) {
+            Gateway gw = (Gateway) o;
+            if (!gw.retrieveHostsAtStartup()) {
+                continue;
+            }
+            // Runs on the GatewayConnection thread
+            retrieveHosts(gw);
+        }
+
+        // Launch connection specified by command line arg/protocol handler
+        if (SDTURLHelper.hasURL()) {
+            Gateway gw = SDTURLHelper.getGateway();
+            GatewayConnection conn = connections.get(gw.getActiveAddress());
+
+            // Queue on the GatewayConnection thread
+            conn.launchSDTURL();
+        }
+    }
+    
+    private void registerProtocolHandler() {
+        String skip = Settings.getProperty("skipHandlerCheck");
+
+        if (skip.equals("true")) {
+            return;
+        }
+
+        if (SDTURLHelper.isRegistered() == false) {
+            String registerSDTMessage;
+            String yesText = "Yes";
+            String noText = "No";
+            String neverText = "No, don't ask me again";
+            Object[] options = { yesText, noText, neverText };
+
+            if (OS.isWindows()) {
+                registerSDTMessage = "Use SDTConnector to open sdt:// links?";
+            } else {
+                registerSDTMessage = "Use SDTConnector to open sdt:// links in Mozilla Firefox?";
+            }
+
+            int n = JOptionPane.showOptionDialog(this,
+                registerSDTMessage,
+                "Enable sdt:// links",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+            
+            if (n == -1) {
+                return;
+            }
+            
+            if (options[n].equals(yesText)) {
+                SDTURLHelper.register();
+            } else if (options[n].equals(neverText)) {
+                Settings.setProperty("skipHandlerCheck", "true");
+            }
         }
     }
     
@@ -742,8 +804,11 @@ static FileFilter xmlFileFilter = new FileFilter() {
             return;
         }
         Gateway gw = (Gateway) path.getPathComponent(1);
-        
-        if (gw.getHostList().isEmpty() == false) {
+        retrieveHosts(gw);
+    }
+    
+    private void retrieveHosts(Gateway gw) {
+         if (gw.getHostList().isEmpty() == false) {
             int retVal = JOptionPane.showConfirmDialog(this,
                     "This will delete all existing hosts for " + gw,
                     "Warning",
@@ -1197,13 +1262,13 @@ static FileFilter xmlFileFilter = new FileFilter() {
             statusBar.setLeadingMessage("Successfully retrieved hosts from " +
                     gateway);
             statusBar.progressEnded(progress);
-			updateButtonState();
+            updateButtonState();
         }
         public void autohostsFailed() {
             statusBar.setLeadingMessage("Failed to retrieve hosts from " +
                     gateway);
             statusBar.progressEnded(progress);
-			updateButtonState();
+            updateButtonState();
         }
 		
         ProgressEvent progress = new ProgressEvent(this) {
@@ -1246,7 +1311,6 @@ static FileFilter xmlFileFilter = new FileFilter() {
     
     private SDTTreeModel treeModel;
     private Map<String, GatewayConnection> connections;
-    ExecutorService swingExec = new SwingExecutorService();
     ExecutorService bgExec = Executors.newSingleThreadExecutor();
     private Color statusColor;
     

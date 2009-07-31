@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.LookUtils;
+import java.net.URISyntaxException;
 import net.roydesign.app.Application;
 import net.roydesign.mac.MRJAdapter;
 import org.jdesktop.swingx.util.OS;
@@ -35,82 +36,6 @@ public class Main {
     
     /** Creates a new instance of Main */
     public Main() {
-    }
-    
-    private static void launchURL(String url) {
-       /* 
-        * Parse command line argument in the form of: sdt://gateway/host#service
-        * and launch the corresponding service.
-        */
-        URI uri;
-        Gateway gw;
-        Host host;
-        Service service;
-
-        uri = SDTURLHelper.getURI(url);
-        if (uri == null) {
-            /*
-            JOptionPane.showMessageDialog(window,
-                "The SDT URL " + url + " is malformed.\n" +
-                "The correct form is: sdt://gateway/host#service",
-                "Malformed URL",
-                JOptionPane.ERROR_MESSAGE);
-             */
-        } else {
-            gw = SDTURLHelper.gatewayFromURI(uri);
-            if (gw == null && uri.getHost() != null) {
-                JOptionPane.showMessageDialog(window,
-                    "The gateway " + uri.getHost() + " is unknown.\n" +
-                    "Click File -> New Gateway to add this gateway and click the sdt:// link again.",
-                    "Unknown gateway",
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            host = SDTURLHelper.hostFromURI(uri, gw);
-            service = SDTURLHelper.serviceFromURI(uri, host);
-            window.launchService(gw, host, service);
-        }
-    }
-    
-    private static void registerProtocolHandler() {
-        String skip = Settings.getProperty("skipHandlerCheck");
-
-        if (skip.equals("true")) {
-            return;
-        }
-
-        if (SDTURLHelper.isRegistered() == false) {
-            String registerSDTMessage;
-            String yesText = "Yes";
-            String noText = "No";
-            String neverText = "No, don't ask me again";
-            Object[] options = { yesText, noText, neverText };
-
-            if (OS.isWindows()) {
-                registerSDTMessage = "Use SDTConnector to open sdt:// links?";
-            } else {
-                registerSDTMessage = "Use SDTConnector to open sdt:// links in Mozilla Firefox?";
-            }
-
-            int n = JOptionPane.showOptionDialog(window,
-                registerSDTMessage,
-                "Enable sdt:// links",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-            
-            if (n == -1) {
-                return;
-            }
-            
-            if (options[n].equals(yesText)) {
-                SDTURLHelper.register();
-            } else if (options[n].equals(neverText)) {
-                Settings.setProperty("skipHandlerCheck", "true");
-            }
-        }
     }
    
     /**
@@ -158,6 +83,17 @@ public class Main {
             
         } catch (Exception e) {}
         Application.getInstance().setName("SDTConnector");
+        
+         try {
+            SDTURLHelper.setURL("sdt://robertw@im4004/cvs#tcp port 80");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(window,
+                "The SDT URL " + args[0] + " is malformed.\n" +
+                "The correct form is: sdt://gateway/host#service",
+                "Malformed URL",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        
         window = new MainWindow();
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);
@@ -175,7 +111,7 @@ public class Main {
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } catch (InvalidPreferencesFormatException ex) {
-        }            
+        }
         window.setVisible(true);
 /*        
         // Close the splash window after everything is up and initialised
@@ -184,11 +120,7 @@ public class Main {
                 splash.setVisible(false);
             }
         });
- */
-        registerProtocolHandler();
-        if (args.length > 0) {
-            launchURL(args[0]);
-        }
+ */               
     }
     
     public static MainWindow getMainWindow() {
