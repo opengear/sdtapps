@@ -84,14 +84,16 @@ public class Main {
         } catch (Exception e) {}
         Application.getInstance().setName("SDTConnector");
         
-         try {
-            SDTURLHelper.setURL("sdt://robertw@im4004/cvs#tcp port 80");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(window,
-                "The SDT URL " + args[0] + " is malformed.\n" +
-                "The correct form is: sdt://gateway/host#service",
-                "Malformed URL",
-                JOptionPane.ERROR_MESSAGE);
+        if (args.length > 0) {
+            try {
+                SDTURLHelper.setURL(args[0]);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(window,
+                    "The SDT URL " + args[0] + " is malformed.\n" +
+                    "The correct form is: sdt://gateway/host#service",
+                    "Malformed URL",
+                    JOptionPane.ERROR_MESSAGE);
+            }
         }
         
         window = new MainWindow();
