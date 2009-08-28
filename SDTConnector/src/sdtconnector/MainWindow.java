@@ -225,7 +225,10 @@ public class MainWindow extends javax.swing.JFrame {
         if (SDTURLHelper.hasURL()) {
             Gateway gw = SDTURLHelper.getGateway();
             GatewayConnection conn = connections.get(gw.getActiveAddress());
-
+            if (conn == null) {
+                // Establish a new connection
+                conn = getGatewayConnection(gw);
+            }
             // Queue on the GatewayConnection thread
             conn.launchSDTURL();
         }

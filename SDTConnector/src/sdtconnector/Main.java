@@ -83,7 +83,6 @@ public class Main {
             
         } catch (Exception e) {}
         Application.getInstance().setName("SDTConnector");
-        
         if (args.length > 0) {
             try {
                 SDTURLHelper.setURL(args[0]);
@@ -95,7 +94,11 @@ public class Main {
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+/*        
+        try {
+            SDTURLHelper.setURL("sdt://root:default@im4004/127.0.0.1?form=portbuffers&port=3#Opengear Management Console");
+        } catch (Exception ex) {}
+*/        
         window = new MainWindow();
         if (LookUtils.IS_JAVA_5_OR_LATER) {
             window.setLocationByPlatform(true);

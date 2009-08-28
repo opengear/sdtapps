@@ -142,6 +142,14 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="path-win" value="C:\Program Files\TrippLite\PowerAlert\console\paconsole.jar"/>
             </map>
           </node>
+          <node name="77">
+            <map>
+              <entry key="commandFormat" value="%path% http://%host%:%port%/?%query%" />
+              <entry key="name" value="Opengear Management Console browser" />
+              <entry key="path" value="firefox" />
+              <entry key="path-win" value="rundll32 url.dll,FileProtocolHandler" />
+            </map>
+          </node>
         </node>
         <node name="gateways">
           <map />
@@ -656,6 +664,23 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
                   <entry key="localAddress" value="localhost" />
                   <entry key="localPort" value="443" />
                   <entry key="remotePort" value="443" />
+                  <entry key="udpPort" value="0" />
+                </map>
+              </node>
+            </node>
+          </node>
+          <node name="78">
+            <map>
+              <entry key="name" value="Opengear Management Console" />
+            </map>
+            <node name="launchers">
+              <map />
+              <node name="79">
+                <map>
+                  <entry key="clientID" value="77" />
+                  <entry key="localAddress" value="localhost" />
+                  <entry key="localPort" value="0" />
+                  <entry key="remotePort" value="80" />
                   <entry key="udpPort" value="0" />
                 </map>
               </node>

@@ -141,7 +141,7 @@ public class SDTURLHelper {
         int remotePort, udpPort;
         Service service = null;
         String s = uri.getFragment();
-        
+
         if (s != null && s.length() > 0) {
             service = host.getServiceByName(s);
             
@@ -190,6 +190,11 @@ public class SDTURLHelper {
                     host.addService(service);
                 }
             }
+        
+            String q = uri.getQuery();
+            if (q != null) {
+                service.getFirstLauncher().getClient().setQuery(q);
+            }    
         }
         return service;
     }
