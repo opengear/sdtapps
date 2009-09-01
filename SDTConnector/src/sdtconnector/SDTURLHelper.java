@@ -191,7 +191,7 @@ public class SDTURLHelper {
                 }
             }
         
-            String q = uri.getQuery();
+            String q = uri.getRawQuery();
             if (q != null) {
                 service.getFirstLauncher().getClient().setQuery(q);
             }    

@@ -32,7 +32,7 @@ public class AboutDialog extends javax.swing.JDialog {
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
                 + "<font face=\"Verdana,Helvetica,Arial\">"
-                + "Copyright (c) 2008 <a href=\"http://www.opengear.com\">Opengear</a>"
+                + "Copyright (c) 2009 <a href=\"http://www.opengear.com\">Opengear</a>"
                 + "</font></center>" 
                 + "</body></html>");
         closeButton.setIcon(IconLoader.getButtonIcon("ok"));
