@@ -306,7 +306,7 @@ public class SDTManager {
             gw.setUsername(System.getProperty("sdt.gateway.username"));
             gw.setName(System.getProperty("sdt.gateway.name"));
             gw.setDescription(System.getProperty("sdt.gateway.description"));
-            gw.retrieveHostsAtStartup(true);
+            gw.isVolatile(true);
             
             addGateway(gw);
         }
@@ -328,7 +328,7 @@ public class SDTManager {
     }
     public static void addGateway(Gateway gw) {
         gatewayList.add(gw);
-        saveGateway(gw);    
+        saveGateway(gw);
     }
     public static void removeGateway(Gateway gw) {
         gatewayList.remove(gw);
@@ -343,6 +343,9 @@ public class SDTManager {
         saveGateway(gw);
     }
     private static void saveGateway(Gateway gw) {
+        if (gw.isVolatile()) {
+            return;
+        }
         Preferences gwPrefs = gatewayPreferences.node(String.valueOf(gw.getRecordID()));
         gwPrefs.put("name", gw.getName());
         gwPrefs.put("address", gw.getAddress());
@@ -377,8 +380,10 @@ public class SDTManager {
     }
     public static void addHost(Gateway gw, Host host) {
         gw.addHost(host);
-        Preferences gwPrefs = gatewayPreferences.node(String.valueOf(gw.getRecordID()));
-        saveHost(gwPrefs, host);
+        if (!gw.isVolatile()) {
+            Preferences gwPrefs = gatewayPreferences.node(String.valueOf(gw.getRecordID()));
+            saveHost(gwPrefs, host);
+        }
     }
     public static void removeHost(Gateway gw, Host host) {
         gw.removeHost(host);

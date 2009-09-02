@@ -265,11 +265,11 @@ public class Gateway {
     public String getUdpgwPidRegex() {
         return udpgwPidRegex;
     }
-    public void retrieveHostsAtStartup(Boolean retrieveHostsAtStartup) {
-        this.retrieveHostsAtStartup = retrieveHostsAtStartup;
+    public void isVolatile(Boolean isVolatile) {
+        this.isVolatile = isVolatile;
     }
-    public Boolean retrieveHostsAtStartup() {
-        return retrieveHostsAtStartup;
+    public Boolean isVolatile() {
+        return isVolatile;
     }
     // Variables
     private int recordID;
@@ -292,6 +292,8 @@ public class Gateway {
     private String udpgwPidRegex;
     
     private int _hashCode = 0;
-    
-    private boolean retrieveHostsAtStartup = false;
+
+    // Flag automatically added gateways, they aren't saved to
+    // the backing store and can't be modified
+    private boolean isVolatile = false;
 }

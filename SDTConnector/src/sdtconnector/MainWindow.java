@@ -163,7 +163,7 @@ public class MainWindow extends javax.swing.JFrame {
             deleteAction.setEnabled(false);
             editAction.setEnabled(false);
         }
-        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+        GatewayListCellRenderer renderer = new GatewayListCellRenderer();
         gatewayList.setCellRenderer(renderer);
         renderer.setLeafIcon(getMenuIcon("host"));
         renderer.setClosedIcon(getMenuIcon("gateway"));
@@ -214,7 +214,7 @@ public class MainWindow extends javax.swing.JFrame {
         // Auto configure gateways
         for (Object o : SDTManager.getGatewayList()) {
             Gateway gw = (Gateway) o;
-            if (!gw.retrieveHostsAtStartup()) {
+            if (!gw.isVolatile()) {
                 continue;
             }
             // Runs on the GatewayConnection thread
@@ -673,12 +673,12 @@ static FileFilter xmlFileFilter = new FileFilter() {
         
     private void gatewayListValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_gatewayListValueChanged
         TreePath path = gatewayList.getSelectionPath();
-        boolean isGateway = false;
-        boolean isHost = false;
+        boolean enableActions = false;
         String desc = "";
         String hint = "";
+
         if (path != null) {
-             Gateway gw = (Gateway) path.getPathComponent(1);
+            Gateway gw = (Gateway) path.getPathComponent(1);
             if (gw.getOob()) {
                 statusBar.setBackground(Color.pink);
                 statusBar.setLeadingMessage("Out of band enabled");
@@ -691,18 +691,17 @@ static FileFilter xmlFileFilter = new FileFilter() {
             Object last = path.getLastPathComponent();
             if (last instanceof Gateway) {
                 desc = ((Gateway) last).getDescription();
-                isGateway = true;
             } else if (last instanceof Host) {
                 desc = ((Host) last).getDescription();
-                isHost = true;
             }
+            enableActions = !gw.isVolatile();
         }
         
         descriptionArea.setText(desc);
         
-        newHostAction.setEnabled(isHost || isGateway);
-        editAction.setEnabled(isHost || isGateway);
-        deleteAction.setEnabled(isHost || isGateway);
+        newHostAction.setEnabled(enableActions);
+        editAction.setEnabled(enableActions);
+        deleteAction.setEnabled(enableActions);
         
         updateButtonState();
     }//GEN-LAST:event_gatewayListValueChanged
