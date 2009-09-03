@@ -4,32 +4,18 @@
  */
 
 package sdtconnector;
-import com.opengear.ui.SplashWindow;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.LookUtils;
-import java.net.URISyntaxException;
 import net.roydesign.app.Application;
-import net.roydesign.mac.MRJAdapter;
-import org.jdesktop.swingx.util.OS;
-import org.jdesktop.swingx.util.WindowUtils;
-import sdtconnector.SDTURLHelper;
 
 
 public class Main {

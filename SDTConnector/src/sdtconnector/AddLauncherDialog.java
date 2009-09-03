@@ -6,16 +6,12 @@
 
 package sdtconnector;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import com.opengear.util.IconLoader;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 public class AddLauncherDialog extends javax.swing.JDialog {

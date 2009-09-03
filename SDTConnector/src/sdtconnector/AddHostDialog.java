@@ -7,17 +7,12 @@
 package sdtconnector;
 
 import com.opengear.util.IconLoader;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
-import javax.swing.ListModel;
-import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 

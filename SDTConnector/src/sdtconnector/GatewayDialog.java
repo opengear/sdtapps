@@ -6,19 +6,13 @@
 
 package sdtconnector;
 
-import sdtconnector.Gateway;
 import com.opengear.util.IconLoader;
-import java.awt.Component;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.ParseException;
-import javax.swing.JComponent;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 public class GatewayDialog extends javax.swing.JDialog {

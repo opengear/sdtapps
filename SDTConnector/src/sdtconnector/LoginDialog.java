@@ -6,12 +6,9 @@
 
 package sdtconnector;
 
-import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.net.URL;
-import javax.swing.ImageIcon;
 import static com.opengear.util.ImageLoader.getImage;
 
 

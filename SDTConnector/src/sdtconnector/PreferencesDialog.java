@@ -9,29 +9,14 @@ package sdtconnector;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import com.opengear.util.IconLoader;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterPipeline;
-import org.jdesktop.swingx.decorator.RolloverHighlighter;
 import org.jdesktop.swingx.util.OS;
-import sdtconnector.AddClientDialog;
 
 public class PreferencesDialog extends javax.swing.JDialog {
    /** Creates new form PreferencesDialog */

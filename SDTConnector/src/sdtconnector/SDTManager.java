@@ -11,7 +11,6 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -19,17 +18,10 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.InvalidPreferencesFormatException;
 import javax.swing.JOptionPane;
 import org.jdesktop.swingx.util.OS;
-import sdtconnector.Gateway;
-import sdtconnector.Client;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import com.jgoodies.looks.LookUtils;
-import java.net.URL;
 import java.util.HashSet;
 
 

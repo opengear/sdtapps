@@ -1,12 +1,10 @@
 package sdtconnector;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import static com.opengear.util.IconLoader.getMenuIcon;
 
 class GatewayListCellRenderer extends DefaultTreeCellRenderer {
 

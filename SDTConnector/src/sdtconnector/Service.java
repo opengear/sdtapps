@@ -7,8 +7,6 @@ package sdtconnector;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Service {

@@ -6,7 +6,6 @@
 package sdtconnector;
 
 import java.io.IOException;
-import java.util.ListIterator;
 import java.util.Random;
 
 

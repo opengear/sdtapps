@@ -24,7 +24,6 @@ package com.opengear.util;
  */
 
 import edu.emory.mathcs.backport.java.util.concurrent.Callable;
-import edu.emory.mathcs.backport.java.util.concurrent.ExecutionException;
 import edu.emory.mathcs.backport.java.util.concurrent.Executor;
 import edu.emory.mathcs.backport.java.util.concurrent.FutureTask;
 import java.lang.reflect.InvocationHandler;

@@ -8,9 +8,7 @@ package sdtconnector;
 
 import com.opengear.util.IconLoader;
 import com.opengear.util.ImageLoader;
-import java.awt.Image;
 import java.net.URL;
-import javax.swing.ImageIcon;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 

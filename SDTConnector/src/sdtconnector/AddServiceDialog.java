@@ -5,8 +5,6 @@
  */
 
 package sdtconnector;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import com.opengear.util.IconLoader;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterPipeline;
