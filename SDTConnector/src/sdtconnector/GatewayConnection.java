@@ -128,15 +128,17 @@ public class GatewayConnection {
             session.setConfig(config);
             session.setPassword(password);
             // Add any configured private keys
-            String privateKey = System.getProperty("sdt.privatekey");
-            if (privateKey != null && !privateKey.isEmpty()) {
-                jsch.addIdentity(
-                        username,               // String userName
-                        privateKey.getBytes(),  // byte[] privateKey 
-                        null,                   // byte[] publicKey
-                        "passphrase".getBytes() // byte[] passPhrase
-                );
+            for (String privateKey : SDTManager.getVolatilePrivateKeys()) {
+                if (privateKey != null && !privateKey.isEmpty()) {
+                    jsch.addIdentity(
+                            username,               // String userName
+                            privateKey.getBytes(),  // byte[] privateKey
+                            null,                   // byte[] publicKey
+                            "passphrase".getBytes() // byte[] passPhrase
+                    );
+                }
             }
+
             for (String path : Settings.getPropertyList(Settings.root().node("PrivateKeyPaths"))) {
                 jsch.addIdentity(path, "passphrase");
             }
@@ -250,7 +252,7 @@ public class GatewayConnection {
     public void getHosts() {
         exec.execute(new Runnable() {
             public void run() {
-               EventList hosts = null;
+                EventList hosts = null;
                 
                 autohostsListener.autohostsStarted();
                 

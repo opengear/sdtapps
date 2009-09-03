@@ -47,26 +47,28 @@ public class SDTURLHelper {
             throw new Exception("Invalid URL scheme: " + scheme);
         }
     }
+
+    public static String getURL() {
+        return uri.toString();
+    }
+
+    public static Gateway getVolatileGateway()  {
+        return uriGateway(true);
+    }
     
     public static Gateway getGateway()  {
-        return uriGateway();
+        return uriGateway(false);
     }
     
-    public static Host getHost() {
-        return uriHost(uriGateway());
-    }
     public static Host getHost(Gateway gateway) {
         return uriHost(gateway);
     }
     
-    public static Service getService() {
-        return uriService(uriHost(uriGateway()));
-    }
     public static Service getService(Host host) {
         return uriService(host);
     }
     
-    private static Gateway uriGateway() {
+    private static Gateway uriGateway(boolean isVolatile) {
         if (uri == null) {
             return null;
         }
@@ -84,9 +86,13 @@ public class SDTURLHelper {
         }
         
         if (s != null && s.length() > 0) {
-            gw = SDTManager.getGatewayByName(s, username);
+            gw = isVolatile ?
+                SDTManager.getVolatileGatewayByName(s, username)
+                : SDTManager.getGatewayByName(s, username);
             if (gw == null) {
-                gw = SDTManager.getGatewayByAddress(s, username);
+                gw = isVolatile ?
+                    SDTManager.getVolatileGatewayByAddress(s, username)
+                    : SDTManager.getGatewayByAddress(s, username);
             }
         }
         return gw;

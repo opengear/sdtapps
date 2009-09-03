@@ -30,6 +30,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import com.jgoodies.looks.LookUtils;
 import java.net.URL;
+import java.util.HashSet;
 
 
 public class SDTManager {
@@ -55,6 +56,7 @@ public class SDTManager {
                 return s1.getRecordID() - s2.getRecordID();
             }
         });
+        volatilePrivateKeys = new HashSet<String>();
         
         loadDefaults();
     }
@@ -309,6 +311,8 @@ public class SDTManager {
             gw.isVolatile(true);
             
             addGateway(gw);
+
+            addVolatilePrivateKey(System.getProperty("sdt.privatekey"));
         }
     }
 
@@ -466,13 +470,22 @@ public class SDTManager {
         }
         return null;
     }	
-    
+
     public static Gateway getGatewayByName(String name, String username) {
+        return getGatewayByName(name, username, false);
+    }
+    public static Gateway getVolatileGatewayByName(String name, String username) {
+        return getGatewayByName(name, username, true);
+    }
+    private static Gateway getGatewayByName(String name, String username, boolean isVolatile) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
             gateway = (Gateway) g;
-            
+
+            if (gateway.isVolatile() != isVolatile) {
+                continue;
+            }
             if (!gateway.getName().equalsIgnoreCase(name)) {
                 continue;
             }
@@ -483,13 +496,22 @@ public class SDTManager {
         }
         return null;
     }
-    
+
     public static Gateway getGatewayByAddress(String address, String username) {
+        return getGatewayByAddress(address, username, false);
+    }
+    public static Gateway getVolatileGatewayByAddress(String address, String username) {
+        return getGatewayByAddress(address, username, true);
+    }
+    private static Gateway getGatewayByAddress(String address, String username, boolean isVolatile) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
             gateway = (Gateway) g;
-            
+
+            if (gateway.isVolatile() != isVolatile) {
+                continue;
+            }
             if (!gateway.getAddress().equalsIgnoreCase(address)) {
                 continue;
             }
@@ -552,6 +574,12 @@ public class SDTManager {
     public static EventList getClientList() {
         return (EventList) clientList;
     }
+    public static HashSet<String> getVolatilePrivateKeys() {
+        return volatilePrivateKeys;
+    }
+    public static void addVolatilePrivateKey(String privateKey) {
+        volatilePrivateKeys.add(privateKey);
+    }
     public static void setRecordID(int recordID) {
         if (recordID >= initialRecordID()) {
             Settings.setProperty("recordID", String.valueOf(recordID));
@@ -575,7 +603,7 @@ public class SDTManager {
     public static Client getHttpClient() {
         return (Client) clientList.get(0); // By default the HTTP client is first
     }
-    
+
     private static EventList gatewayList;
     private static Preferences gatewayPreferences;
     
@@ -586,6 +614,8 @@ public class SDTManager {
     private static EventList serviceList;
     private static SortedList sortedServiceList;
     private static Preferences servicePreferences;
+
+    private static HashSet<String> volatilePrivateKeys;
     
     private static int recordID;
 }

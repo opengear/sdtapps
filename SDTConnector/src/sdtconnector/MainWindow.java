@@ -48,6 +48,13 @@ import java.util.Properties;
 import java.util.ListIterator;
 import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 import edu.emory.mathcs.backport.java.util.concurrent.Executors;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
@@ -80,6 +87,15 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */
     public MainWindow() {
+
+        if (SDTURLHelper.hasURL()) {
+            if (!cmdConnection()) {
+                // Successfully submitted command to an already running
+                // SDT Connector, exit
+                System.exit(0);
+            }
+        }
+
         initComponents();
         
         setIconImage(getIcon("16x16", "gateway").getImage());
@@ -222,6 +238,10 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         // Launch connection specified by command line arg/protocol handler
+        launchSDTURL();
+    }
+
+    public void launchSDTURL() {
         if (SDTURLHelper.hasURL()) {
             Gateway gw = SDTURLHelper.getGateway();
             GatewayConnection conn = connections.get(gw.getActiveAddress());
@@ -232,6 +252,66 @@ public class MainWindow extends javax.swing.JFrame {
             // Queue on the GatewayConnection thread
             conn.launchSDTURL();
         }
+    }
+
+    // Returns true if starting the server was successful, or sending a command
+    // to an existing server was not successful
+    private static final int CMD_PORT = 51599;
+    private boolean cmdConnection() {
+
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByAddress("localhost", new byte[] { 127, 0, 0, 1 });
+        } catch (UnknownHostException ex) {
+            return true;
+        }
+
+        ServerSocket serverSocket = null;
+        try {
+            serverSocket = new ServerSocket(CMD_PORT, 999, addr);
+        } catch (IOException ex) {}
+
+        if (serverSocket != null) {
+            // Kick off server thread
+            new Thread(new CmdServer(serverSocket)).start();
+            return true;
+        }
+
+        String address = System.getProperty("sdt.gateway.address");
+        if (address == null || address.isEmpty()) {
+            return true;
+        }
+
+        // Send the command to server and exit
+        Socket clientSocket = new Socket();
+        SocketAddress sockaddr = new InetSocketAddress(addr, CMD_PORT);
+        PrintWriter out = null;
+        try {
+            clientSocket.connect(sockaddr, 1000);
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+            System.out.println("CmdClient: Connected to server");
+
+            out.println(SDTURLHelper.getURL());
+            out.print("sdt.gateway.address ");
+            out.println(address);
+            out.print("sdt.gateway.sshport ");
+            out.println(System.getProperty("sdt.gateway.sshport"));
+            out.print("sdt.gateway.username ");
+            out.println(System.getProperty("sdt.gateway.username"));
+            out.print("sdt.gateway.name ");
+            out.println(System.getProperty("sdt.gateway.name"));
+            out.print("sdt.gateway.description ");
+            out.println(System.getProperty("sdt.gateway.description"));
+            out.println(System.getProperty("sdt.privatekey"));
+
+            out.close();
+            clientSocket.close();
+        } catch (IOException ex) {
+            return true;
+        }
+
+        return false;
     }
     
     private void registerProtocolHandler() {
@@ -809,19 +889,22 @@ static FileFilter xmlFileFilter = new FileFilter() {
         retrieveHosts(gw);
     }
     
-    private void retrieveHosts(Gateway gw) {
-         if (gw.getHostList().isEmpty() == false) {
-            int retVal = JOptionPane.showConfirmDialog(this,
-                    "This will delete all existing hosts for " + gw,
-                    "Warning",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-            if (retVal == JOptionPane.CANCEL_OPTION) {
-                statusBar.setLeadingMessage(""); // FIXME
-                return;
+    public void retrieveHosts(Gateway gw) {
+        if (gw.getHostList().isEmpty() == false) {
+            if (gw.isVolatile() == false) {
+                int retVal = JOptionPane.showConfirmDialog(this,
+                        "This will delete all existing hosts for " + gw,
+                        "Warning",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                if (retVal == JOptionPane.CANCEL_OPTION) {
+                    statusBar.setLeadingMessage(""); // FIXME
+                    return;
+                }
             }
+            gw.getHostList().clear();
         }
-        
+
         GatewayConnection conn = getGatewayConnection(gw);
         conn.setAutohostsListener((GatewayConnection.AutohostsListener) SwingInvocationProxy.create(
                 GatewayConnection.AutohostsListener.class, new AutohostsListener(gw)));
@@ -985,10 +1068,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
     public void launchService(final Gateway gw, final Host host, final Service service) {
         Object last = gatewayList.getSelectionPath().getLastPathComponent();
         
-        if ((last instanceof Host) == false) {
-            TreePath path = treeModel.getPath(gw, host);
-            gatewayList.setSelectionPath(path);
-        }
+        TreePath path = treeModel.getPath(gw, host);
+        gatewayList.setSelectionPath(path);
         
         for (ListIterator it = service.getLauncherList().listIterator(); it.hasNext(); ) {
             Launcher l = (Launcher) it.next();
@@ -1249,17 +1330,17 @@ static FileFilter xmlFileFilter = new FileFilter() {
             statusBar.progressStarted(progress);
         }
         public void autohostsSucceeded(EventList hosts) {
-			if (hosts != null && hosts.isEmpty() == false) {
-				EventList hl = gateway.getHostList();
-				while (hl.isEmpty() == false) {
-					Host h = (Host) hl.get(0);
-					SDTManager.removeHost(gateway, h);
-				}
-				for (Object o : hosts) {
-					Host h = (Host) o;
-					SDTManager.addHost(gateway, h);
-				}
-			}
+            if (hosts != null && hosts.isEmpty() == false) {
+                    EventList hl = gateway.getHostList();
+                    while (hl.isEmpty() == false) {
+                            Host h = (Host) hl.get(0);
+                            SDTManager.removeHost(gateway, h);
+                    }
+                    for (Object o : hosts) {
+                            Host h = (Host) o;
+                            SDTManager.addHost(gateway, h);
+                    }
+            }
 		
             statusBar.setLeadingMessage("Successfully retrieved hosts from " +
                     gateway);
