@@ -21,7 +21,7 @@ public class AboutDialog extends javax.swing.JDialog {
     public AboutDialog(java.awt.Frame parent, boolean modal, String version) {
         super(parent, modal);
         initComponents();
-        imagePanel.setImage(ImageLoader.getImage("opengear.gif"));
+        imagePanel.setImage(ImageLoader.getImage("sdtconnector.gif"));
         if (SDTConnector.DEBUG == true) {
             versionField.setText(version + " DEBUG");
         } else {
@@ -30,7 +30,9 @@ public class AboutDialog extends javax.swing.JDialog {
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
                 + "<font face=\"Verdana,Helvetica,Arial\">"
-                + "Copyright (c) 2009 <a href=\"http://www.opengear.com\">Opengear</a>"
+                + "Copyright (c) 2009<br/><br/>"
+		+ "<a href=\"http://sdtcon.sourceforge.net\">"
+		+ "sdtcon.sourceforge.net</a>"
                 + "</font></center>" 
                 + "</body></html>");
         closeButton.setIcon(IconLoader.getButtonIcon("ok"));
@@ -64,7 +66,7 @@ public class AboutDialog extends javax.swing.JDialog {
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setRows(5);
-        textArea.setText("\nCopyright 2007 Opengear");
+        textArea.setText("\nCopyright 2009");
         textArea.setWrapStyleWord(true);
         textArea.setAutoscrolls(false);
         textArea.setFocusable(false);
@@ -177,7 +179,7 @@ public class AboutDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
-        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, 0, SDTManager.getHttpClient());
+        Launcher launcher = new Launcher(0, "sdtcon.sourceforge.net", 80, 0, 0, SDTManager.getHttpClient());
         launcher.launch();
     }//GEN-LAST:event_imagePanelMouseClicked
     
@@ -186,7 +188,7 @@ public class AboutDialog extends javax.swing.JDialog {
             return;
         }
         URL url = evt.getURL();  
-        Launcher launcher = new Launcher(0, "www.opengear.com", 80, 0, 0, SDTManager.getHttpClient());
+        Launcher launcher = new Launcher(0, "sdtcon.sourceforge.net", 80, 0, 0, SDTManager.getHttpClient());
         launcher.launch();
     }//GEN-LAST:event_hyperlinkEvent
     

@@ -516,6 +516,10 @@ public class SDTManager {
             InetAddress inaddr = InetAddress.getByName(address);
             for (Object g : getGatewayList()) {
                 gateway = (Gateway) g;
+
+                if (gateway.isVolatile() != isVolatile) {
+                    continue;
+                }
                 try {
                     InetAddress gInaddr = InetAddress.getByName(gateway.getAddress());
                     if (!inaddr.equals(gInaddr)) {

@@ -44,7 +44,7 @@ public class LoginDialog extends javax.swing.JDialog {
         
         usernameField.addKeyListener(keyListener);
         passwordField.addKeyListener(keyListener);
-        imagePanel.setImage(getImage("opengear.gif"));
+        imagePanel.setImage(getImage("sdtconnector.gif"));
         pack();
         requestFocus(true);
     }

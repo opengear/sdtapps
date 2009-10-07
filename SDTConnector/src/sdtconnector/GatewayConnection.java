@@ -282,7 +282,7 @@ public class GatewayConnection {
     public void launchSDTURL() {
         exec.execute(new Runnable() {
             public void run() {
-                Gateway gateway = SDTURLHelper.getGateway();
+                Gateway gateway = SDTURLHelper.getVolatileGateway();
                 Host host = SDTURLHelper.getHost(gateway);
                 Service service = SDTURLHelper.getService(host);
 

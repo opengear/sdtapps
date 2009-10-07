@@ -202,6 +202,8 @@ public class MainWindow extends javax.swing.JFrame {
         
         // Register browser handler for sdt:// URLs
         registerProtocolHandler();
+
+        
         
         // Auto configure gateways
         for (Object o : SDTManager.getGatewayList()) {
@@ -219,7 +221,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void launchSDTURL() {
         if (SDTURLHelper.hasURL()) {
-            Gateway gw = SDTURLHelper.getGateway();
+            Gateway gw = SDTURLHelper.getVolatileGateway();
             GatewayConnection conn = connections.get(gw.getActiveAddress());
             if (conn == null) {
                 // Establish a new connection
@@ -393,7 +395,7 @@ public class MainWindow extends javax.swing.JFrame {
         gatewayListPopup.add(listRemoveMenuItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Opengear SDTConnector");
+        setTitle("SDTConnector");
         connectButtonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 2, 2));
 
         connectButtonPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
