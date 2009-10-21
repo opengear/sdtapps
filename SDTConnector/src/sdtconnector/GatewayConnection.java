@@ -369,8 +369,6 @@ public class GatewayConnection {
         }
         
         public Redirector(GatewayConnection conn, String remoteHost, int remotePort, String localHost, int localPort, int udpOverTcpPort) throws InterruptedException, IOException {
-            InetSocketAddress listenSockAddr = new InetSocketAddress(InetAddress.getByName(localHost), localPort);
-
             this.connection = conn;
             this.remoteHost = remoteHost;
             this.localHost = localHost;
@@ -380,7 +378,19 @@ public class GatewayConnection {
 //            this.connection = connection;
 
             listenSocket = new ServerSocket();
-            SocketHelper.bindSocket(listenSocket, listenSockAddr);
+            InetAddress inetAddress = InetAddress.getByName(localHost);
+
+            if (localPort == 0) {
+                // No local port specified, try binding the remote port number locally
+                try {
+                    SocketHelper.bindSocket(listenSocket, new InetSocketAddress(inetAddress, remotePort));
+                } catch (IOException ex) {
+                    System.out.println("Failed to bind " + remotePort + ", trying random port");
+                }
+            }
+            if (!listenSocket.isBound()) {
+                SocketHelper.bindSocket(listenSocket, new InetSocketAddress(inetAddress, localPort));
+            }
 
             this.localPort = listenSocket.getLocalPort();
         }
