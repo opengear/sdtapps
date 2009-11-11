@@ -55,7 +55,7 @@ class CmdServer implements Runnable {
                 }
                 System.out.println("CmdServer: URL " + url);
 
-                SDTManager.addVolatilePrivateKey(System.getProperty("sdt.privatekey"));
+                SDTManager.addVolatilePrivateKey(privatekey);
                 try {
                     SDTURLHelper.setURL(url);
 
