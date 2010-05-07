@@ -11,6 +11,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.UIKeyboardInteractive;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -594,6 +595,7 @@ public class GatewayConnection {
         public String getUsername();
         public String getPassword();
         public String getPassphrase();
+        public String[] doPrompt(String instructions, String prompts[], boolean echo[]);
     }
     public interface SSHListener {
         public void sshLoginStarted();
@@ -626,7 +628,8 @@ public class GatewayConnection {
     private String password = "";
     Hashtable<String, String> config = new Hashtable<String, String>();
     private Authentication authentication;
-    
+    UserInfo userinfo = new SdtUserInfo();
+
     private SSHListener sshListener = new SSHListener() {
         public void sshLoginStarted() {}
         public void sshLoginSucceeded() {}
@@ -649,7 +652,9 @@ public class GatewayConnection {
         public void stopOobSucceeded() {}
         public void stopOobFailed() {}
     };
-    UserInfo userinfo = new UserInfo() {
+
+    private class SdtUserInfo implements UserInfo, UIKeyboardInteractive {
+
         public String getPassphrase() {
             return authentication.getPassphrase();
         }
@@ -666,8 +671,12 @@ public class GatewayConnection {
             return false;
         }
         public void showMessage(String string) {
-            
+
         }
-    };
+        public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {
+            return authentication.doPrompt(instruction, prompt, echo);
+        }
+
+    }
 }
 

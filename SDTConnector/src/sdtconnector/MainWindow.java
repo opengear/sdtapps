@@ -1158,6 +1158,20 @@ static FileFilter xmlFileFilter = new FileFilter() {
             dlg.setVisible(true);
             return dlg;
         }
+
+        private PromptDialog showPrompt(String title, String prompt) {
+            PromptDialog dlg = new PromptDialog(MainWindow.this, true);
+            dlg.setTitle(title);
+            dlg.setPrompt(prompt);
+            dlg.setLocationRelativeTo(MainWindow.this);
+            if (LookUtils.IS_JAVA_5_OR_LATER) {
+                dlg.setLocation(WindowUtils.getPointForCentering(dlg));
+            }
+            dlg.pack();
+            dlg.setVisible(true);
+            return dlg;
+        }
+
         public boolean promptAuthentication(String prompt) {
             LoginDialog dlg = showDialog(prompt, LoginDialog.PASSWORD);
             
@@ -1191,6 +1205,26 @@ static FileFilter xmlFileFilter = new FileFilter() {
         String passphrase = "";
         String username = "";
         String password = "";
+
+        public String[] doPrompt(String instructions, String[] prompts, boolean[] echo) {
+            StringBuffer prompt = new StringBuffer();
+            String response[] = new String[prompts.length];
+            prompt.append("<HTML>");
+            for (String s : prompts) {
+                prompt.append(s);
+                prompt.append("<BR>");
+            }
+            prompt.append("</HTML>");
+
+            PromptDialog dlg = showPrompt("Authentication", prompt.toString());
+             if (dlg.getReturnStatus() == LoginDialog.RET_CANCEL) {
+                return null;
+            }
+
+            response[0] = dlg.getResponse();
+            return response;
+        }
+
     }
     class SSHListener implements GatewayConnection.SSHListener {
         public SSHListener(Gateway gw) {
