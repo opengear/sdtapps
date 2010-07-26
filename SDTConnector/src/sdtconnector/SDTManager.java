@@ -489,13 +489,13 @@ public class SDTManager {
         return null;
     }
 
-    public static Gateway getGatewayByAddress(String address, String username) {
-        return getGatewayByAddress(address, username, false);
+    public static Gateway getGatewayByAddress(String address, int port, String username) {
+        return getGatewayByAddress(address, port, username, false);
     }
-    public static Gateway getVolatileGatewayByAddress(String address, String username) {
-        return getGatewayByAddress(address, username, true);
+    public static Gateway getVolatileGatewayByAddress(String address, int port, String username) {
+        return getGatewayByAddress(address, port, username, true);
     }
-    private static Gateway getGatewayByAddress(String address, String username, boolean isVolatile) {
+    private static Gateway getGatewayByAddress(String address, int port, String username, boolean isVolatile) {
         Gateway gateway;
         
         for (Object g : getGatewayList()) {
@@ -518,6 +518,9 @@ public class SDTManager {
                 gateway = (Gateway) g;
 
                 if (gateway.isVolatile() != isVolatile) {
+                    continue;
+                }
+                if (gateway.getPort() != port) {
                     continue;
                 }
                 try {

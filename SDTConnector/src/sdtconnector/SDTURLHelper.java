@@ -71,6 +71,7 @@ public class SDTURLHelper {
         
         Gateway gw = null;
         String s = uri.getHost();
+        int port = (uri.getPort() != -1) ? uri.getPort() : 22;
         
         String username = uri.getUserInfo();
         // Strip password
@@ -87,8 +88,8 @@ public class SDTURLHelper {
                 : SDTManager.getGatewayByName(s, username);
             if (gw == null) {
                 gw = isVolatile ?
-                    SDTManager.getVolatileGatewayByAddress(s, username)
-                    : SDTManager.getGatewayByAddress(s, username);
+                    SDTManager.getVolatileGatewayByAddress(s, port, username)
+                    : SDTManager.getGatewayByAddress(s, port, username);
             }
         }
         return gw;
