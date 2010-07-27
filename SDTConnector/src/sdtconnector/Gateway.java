@@ -173,7 +173,7 @@ public class Gateway {
     }
     public String toString() {
         if (name.equals("")) {
-            return address;
+            return (getActiveAddress() + ":" + getActivePort());
         }
         return name;
     }

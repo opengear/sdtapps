@@ -723,7 +723,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
         Object last = path.getLastPathComponent();
         if (last instanceof Gateway) {
             SDTManager.removeGateway((Gateway)last);
-            removeGatewayConnection(last.toString());
+            removeGatewayConnection((Gateway)last);
         } else if (last instanceof Host) {
             SDTManager.removeHost((Gateway) path.getPathComponent(1), (Host) last);
         }
@@ -1112,7 +1112,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
     }
 
     private GatewayConnection getGatewayConnection(Gateway gw) {
-        GatewayConnection conn = connections.get(gw.getActiveAddress());
+        GatewayConnection conn = connections.get(gw.toString());
         
         if (conn != null && conn.getUsername().equals(gw.getUsername()) && conn.getPassword().equals(gw.getPassword())) {
             return conn;
@@ -1127,15 +1127,15 @@ static FileFilter xmlFileFilter = new FileFilter() {
                 new GatewayAuth(gw)));
         conn.setSSHListener((GatewayConnection.SSHListener) SwingInvocationProxy.create(
                 GatewayConnection.SSHListener.class, new SSHListener(gw)));
-        connections.put(gw.getActiveAddress(), conn);
+        connections.put(gw.toString(), conn);
         
         return conn;
     }
-    private void removeGatewayConnection(String oldAddress) {
-        GatewayConnection conn = connections.get(oldAddress);
+    private void removeGatewayConnection(Gateway gw) {
+        GatewayConnection conn = connections.get(gw.toString());
         if (conn != null) {
             conn.shutdown();
-            connections.remove(oldAddress);
+            connections.remove(gw.toString());
         }
     }
     class GatewayAuth implements GatewayConnection.Authentication {
