@@ -9,6 +9,7 @@ package sdtconnector;
 import com.opengear.util.IconLoader;
 import com.opengear.util.ImageLoader;
 import java.net.URL;
+import java.util.Calendar;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -30,7 +31,9 @@ public class AboutDialog extends javax.swing.JDialog {
         textPane.setEditorKit(new HTMLEditorKit());
         textPane.setText("<html><body><center>"
                 + "<font face=\"Verdana,Helvetica,Arial\">"
-                + "Copyright (c) 2009<br/><br/>"
+                + "Copyright (c) "
+                + Calendar.getInstance().get(Calendar.YEAR)
+                + "<br/><br/>"
 		+ "<a href=\"http://sdtcon.sourceforge.net\">"
 		+ "sdtcon.sourceforge.net</a>"
                 + "</font></center>" 
