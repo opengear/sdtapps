@@ -20,17 +20,17 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="1">
             <map>
               <entry key="commandFormat"
-              value="%path% http://%host%:%port%/" />
+              value="%path% url.dll,FileProtocolHandler http://%host%:%port%/" />
               <entry key="name" value="HTTP browser" />
-              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
+              <entry key="path" value="rundll32" />
             </map>
           </node>
           <node name="2">
             <map>
               <entry key="commandFormat"
-              value="%path% https://%host%:%port%/" />
+              value="%path% url.dll,FileProtocolHandler https://%host%:%port%/" />
               <entry key="name" value="HTTPS browser" />
-              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
+              <entry key="path" value="rundll32" />
             </map>
           </node>
           <node name="3">
@@ -76,9 +76,9 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="37">
             <map>
               <entry key="commandFormat"
-              value="%path% http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
+              value="%path% url.dll,FileProtocolHandler http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
               <entry key="name" value="HTTP browser (RSA II)" />
-              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
+              <entry key="path" value="rundll32" />
             </map>
           </node>
           <node name="38">
@@ -125,9 +125,9 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           </node>
           <node name="77">
             <map>
-              <entry key="commandFormat" value="%path% http://%host%:%port%/?%query%" />
+              <entry key="commandFormat" value="%path% url.dll,FileProtocolHandler http://%host%:%port%/?%query%" />
               <entry key="name" value="Opengear Management Console browser" />
-              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
+              <entry key="path" value="rundll32" />
             </map>
           </node>
         </node>
