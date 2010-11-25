@@ -22,7 +22,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="commandFormat"
               value="%path% http://%host%:%port%/" />
               <entry key="name" value="HTTP browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
           <node name="2">
@@ -30,13 +30,13 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="commandFormat"
               value="%path% https://%host%:%port%/" />
               <entry key="name" value="HTTPS browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
           <node name="3">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% %host% %port%" />
+              value="cmd /c start %path% %host% %port%" />
               <entry key="name" value="Telnet client" />
               <entry key="path" value="telnet" />
             </map>
@@ -44,15 +44,15 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="4">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% -o UserKnownHostsFile=/dev/null -p %port% %host%" />
+              value="%path% -ssh -P %port% %host%" />
               <entry key="name" value="SSH client" />
-              <entry key="path" value="ssh" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="5">
             <map>
               <entry key="commandFormat"
-              value="%path% %host%:%port%" />
+              value="%path% %host%::%port%" />
               <entry key="name" value="VNC viewer" />
               <entry key="path" value="" />
             </map>
@@ -60,15 +60,15 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="6">
             <map>
               <entry key="commandFormat"
-              value="%path% %host%:%port%" />
+              value="%path% /console /v:%host%:%port%" />
               <entry key="name" value="RDP viewer" />
-              <entry key="path" value="" />
+              <entry key="path" value="mstsc.exe" />
             </map>
           </node>
           <node name="23">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% %host% 623" />
+              value="cmd /c start %path% %host% 623" />
               <entry key="name" value="Telnet client (SOL)" />
               <entry key="path" value="telnet" />
             </map>
@@ -78,35 +78,56 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               <entry key="commandFormat"
               value="%path% http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
               <entry key="name" value="HTTP browser (RSA II)" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
           <node name="38">
             <map>
               <entry key="commandFormat" value="%path% %host%"/>
               <entry key="name" value="IBM Director console"/>
-              <entry key="path" value="/opt/ibm/director/bin/twgcon"/>
+              <entry key="path" value="C:\Program Files\IBM\Director\bin\twgconw.exe"/>
+            </map>
+          </node>
+          <node name="48">
+            <map>
+              <entry key="commandFormat" value="%path% /t %host%:%port%"/>
+              <entry key="name" value="HyperTerminal"/>
+              <entry key="path" value="C:\Program Files\Windows NT\HyperTerminal\HyperTrm.exe"/>
             </map>
           </node>
           <node name="55">
             <map>
               <entry key="commandFormat" value="%path% -h %host% -P %port%"/>
               <entry key="name" value="VMWare Server console"/>
-              <entry key="path" value="vmware"/>
+              <entry key="path" value=""/>
+            </map>
+          </node>
+          <node name="58">
+            <map>
+              <entry key="commandFormat" value="%path% https://%host%:%port%/"/>
+              <entry key="name" value="HTTPS browser (Internet Explorer)"/>
+              <entry key="path" value="C:\Program Files\Internet Explorer\IEXPLORE.EXE"/>
+            </map>
+          </node>
+          <node name="59">
+            <map>
+              <entry key="commandFormat" value="%path% /ip %host% /https yes /port %port%"/>
+              <entry key="name" value="KVM Vision Viewer"/>
+              <entry key="path" value="C:\Program Files\KVM Vision Viewer\KVM Vision Viewer.exe"/>
             </map>
           </node>
           <node name="71">
             <map>
-              <entry key="commandFormat" value="java -jar %path% -pams -a %host%"/>
+              <entry key="commandFormat" value="cmd /c start /min java -jar &quot;%path%&quot; -pams -a %host%"/>
               <entry key="name" value="PowerAlert NMS Console"/>
-              <entry key="path" value="/var/tripplite/poweralert/console/paconsole.jar"/>
+              <entry key="path" value="C:\Program Files\TrippLite\PowerAlert\console\paconsole.jar"/>
             </map>
           </node>
           <node name="77">
             <map>
               <entry key="commandFormat" value="%path% http://%host%:%port%/?%query%" />
               <entry key="name" value="Opengear Management Console browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="rundll32 url.dll,FileProtocolHandler" />
             </map>
           </node>
         </node>

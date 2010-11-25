@@ -20,39 +20,39 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="1">
             <map>
               <entry key="commandFormat"
-              value="%path% http://%host%:%port%/" />
+              value="open http://%host%:%port%/" />
               <entry key="name" value="HTTP browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="2">
             <map>
               <entry key="commandFormat"
-              value="%path% https://%host%:%port%/" />
+              value="open https://%host%:%port%/" />
               <entry key="name" value="HTTPS browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="3">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% %host% %port%" />
+              value="open telnet://%host%:%port%" />
               <entry key="name" value="Telnet client" />
-              <entry key="path" value="telnet" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="4">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% -o UserKnownHostsFile=/dev/null -p %port% %host%" />
+              value="open ssh://%port%:%host%" />
               <entry key="name" value="SSH client" />
-              <entry key="path" value="ssh" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="5">
             <map>
               <entry key="commandFormat"
-              value="%path% %host%:%port%" />
+              value="open vnc://%host%:%port%" />
               <entry key="name" value="VNC viewer" />
               <entry key="path" value="" />
             </map>
@@ -60,7 +60,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="6">
             <map>
               <entry key="commandFormat"
-              value="%path% %host%:%port%" />
+              value="open rdp://%host%:%port%" />
               <entry key="name" value="RDP viewer" />
               <entry key="path" value="" />
             </map>
@@ -68,45 +68,24 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="23">
             <map>
               <entry key="commandFormat"
-              value="xterm -e %path% %host% 623" />
+              value="open telnet://%host%:623" />
               <entry key="name" value="Telnet client (SOL)" />
-              <entry key="path" value="telnet" />
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="37">
             <map>
               <entry key="commandFormat"
-              value="%path% http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
+              value="open http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
               <entry key="name" value="HTTP browser (RSA II)" />
-              <entry key="path" value="firefox" />
-            </map>
-          </node>
-          <node name="38">
-            <map>
-              <entry key="commandFormat" value="%path% %host%"/>
-              <entry key="name" value="IBM Director console"/>
-              <entry key="path" value="/opt/ibm/director/bin/twgcon"/>
-            </map>
-          </node>
-          <node name="55">
-            <map>
-              <entry key="commandFormat" value="%path% -h %host% -P %port%"/>
-              <entry key="name" value="VMWare Server console"/>
-              <entry key="path" value="vmware"/>
-            </map>
-          </node>
-          <node name="71">
-            <map>
-              <entry key="commandFormat" value="java -jar %path% -pams -a %host%"/>
-              <entry key="name" value="PowerAlert NMS Console"/>
-              <entry key="path" value="/var/tripplite/poweralert/console/paconsole.jar"/>
+              <entry key="path" value="" />
             </map>
           </node>
           <node name="77">
             <map>
-              <entry key="commandFormat" value="%path% http://%host%:%port%/?%query%" />
+              <entry key="commandFormat" value="open http://%host%:%port%/?%query%" />
               <entry key="name" value="Opengear Management Console browser" />
-              <entry key="path" value="firefox" />
+              <entry key="path" value="" />
             </map>
           </node>
         </node>
@@ -346,23 +325,6 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               </node>
             </node>
           </node>
-          <node name="35">
-            <map>
-              <entry key="name" value="IBM Director" />
-              <entry key="icon" value="lightsout" />
-            </map>
-            <node name="launchers">
-              <map />
-              <node name="36">
-                <map>
-                  <entry key="clientID" value="38" />
-                  <entry key="localAddress" value="localhost" />
-                  <entry key="localPort" value="2033" />
-                  <entry key="remotePort" value="2033" />
-                </map>
-              </node>
-            </node>
-          </node>
           <node name="40">
             <map>
               <entry key="name" value="IBM AMM" />
@@ -478,23 +440,6 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
               </node>
             </node>
           </node>
-          <node name="56">
-            <map>
-              <entry key="name" value="VMWare Server" />
-            </map>
-            <node name="launchers">
-              <map />
-              <node name="57">
-                <map>
-                  <entry key="clientID" value="55" />
-                  <entry key="localAddress" value="localhost" />
-                  <entry key="localPort" value="0" />
-                  <entry key="remotePort" value="902" />
-                  <entry key="udpPort" value="0" />
-                </map>
-              </node>
-            </node>
-          </node>
           <node name="60">
             <map>
               <entry key="name" value="Tripp Lite NetCommander" />
@@ -565,48 +510,6 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
                   <entry key="localPort" value="9002" />
                   <entry key="remotePort" value="9002" />
                   <entry key="udpPort" value="0" />
-                </map>
-              </node>
-            </node>
-          </node>
-          <node name="69">
-            <map>
-              <entry key="name" value="KVM Vision Viewer" />
-            </map>
-            <node name="launchers">
-              <map />
-              <node name="70">
-                <map>
-                  <entry key="clientID" value="59" />
-                  <entry key="localAddress" value="localhost" />
-                  <entry key="localPort" value="443" />
-                  <entry key="remotePort" value="443" />
-                  <entry key="udpPort" value="0" />
-                </map>
-              </node>
-            </node>
-          </node>
-          <node name="72">
-            <map>
-              <entry key="name" value="Tripp Lite PowerAlert NMS" />
-            </map>
-            <node name="launchers">
-              <map />
-              <node name="73">
-                <map>
-                  <entry key="clientID" value="71" />
-                  <entry key="localAddress" value="localhost" />
-                  <entry key="localPort" value="0" />
-                  <entry key="remotePort" value="53664" />
-                  <entry key="udpPort" value="3664" />
-                </map>
-              </node>
-              <node name="74">
-                <map>
-                  <entry key="localAddress" value="localhost" />
-                  <entry key="localPort" value="0" />
-                  <entry key="remotePort" value="50161" />
-                  <entry key="udpPort" value="161" />
                 </map>
               </node>
             </node>
