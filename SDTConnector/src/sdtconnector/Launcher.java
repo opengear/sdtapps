@@ -135,7 +135,7 @@ public class Launcher implements Runnable {
     }
     public boolean launch() {
         try {
-            Runtime.getRuntime().exec(client.getCommand(localHost, localPort));
+            Runtime.getRuntime().exec( client.getCommand(localHost, localPort) );
             return true;
         } catch (IOException ex) {
             return false;

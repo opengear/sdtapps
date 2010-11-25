@@ -62,12 +62,15 @@ public class Client {
     public boolean equals(Object obj) {
         return (obj != null && recordID == ((Client) obj).getRecordID());
     }
-    public String getCommand(String host, int port) {
-            String cmd = commandFormat;
-            cmd = StringUtils.replace(cmd, "%path%", path);
-            cmd = StringUtils.replace(cmd, "%query%", query);
-            cmd = StringUtils.replace(cmd, "%host%", host);
-            cmd = StringUtils.replace(cmd, "%port%", String.valueOf(port));
+    public String[] getCommand(String host, int port) {
+            // Tokenise by space delimiter, allow backslash escaping
+            String[] cmd = commandFormat.split("(?<!\\\\) ");
+            for (int i = 0; i < cmd.length; i++) {
+                cmd[i] = StringUtils.replace(cmd[i], "%path%", path);
+                cmd[i] = StringUtils.replace(cmd[i], "%query%", query);
+                cmd[i] = StringUtils.replace(cmd[i], "%host%", host);
+                cmd[i] = StringUtils.replace(cmd[i], "%port%", String.valueOf(port));
+            }
             return cmd;
     }
    

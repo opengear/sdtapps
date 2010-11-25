@@ -11,6 +11,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -49,8 +50,11 @@ public class SDTManager {
             }
         });
         volatilePrivateKeys = new HashSet<String>();
-        
-        loadDefaults();
+
+        if (wantDefaults()) {
+            importDefaults();
+        }
+        load();
     }
     
     private static int compareVersions(String str1, String str2) {
@@ -67,10 +71,55 @@ public class SDTManager {
         }
         return 0;
     }
+
+    static void importDefaults() {
+        InputStream is = null;
+        File f = new File(System.getProperty("user.dir"), "defaults.xml");
+
+        if (f.exists()) {
+            try {
+                is = new FileInputStream(f);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(SDTManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            String resourceName;
+            if (OS.isWindows()) {
+                resourceName = "defaults-win.xml";
+            } else if (OS.isMacOSX()) {
+                resourceName = "defaults-mac.xml";
+            } else {
+                resourceName = "defaults.xml";
+            }
+            is = SDTManager.class.getResourceAsStream("/config/" + resourceName);
+        }
+
+        try {
+            if (is != null) {
+                Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
+                Preferences.importPreferences(is);
+                Preferences.userRoot().node(SDTManager.prefsPath).sync();
+                recordID = Integer.parseInt(Settings.getProperty("recordID"));
+            } else {
+                throw (new Exception());
+            }
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(Main.getMainWindow(),
+                        "An error has occured loading default preferences.",
+                        "Failed to load default preferences",
+                        JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(SDTManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
     
-    private static void loadDefaults() {
-        boolean loadDefaults = true;
-        
+    private static boolean wantDefaults() {
         try {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
                 String version = Settings.getProperty("version");
@@ -81,57 +130,19 @@ public class SDTManager {
                             "settings.\n\n" +
                             "Do you want to delete the old preferences and load the new default\n" +
                             "preferences now?  You will lose any existing gateway and host settings.\n\n",
-                            "Load new default configuration?",
+                            "Load new default preferences?",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (retVal != JOptionPane.YES_OPTION) {
-                        JOptionPane.showMessageDialog(Main.getMainWindow(),
-                                "To load the new default configuration later, click File -> Import\n" +
-                                "Preferences and select: defaults.xml\n\n",
-                                "Hint",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        loadDefaults = false;
+                    if (retVal == JOptionPane.NO_OPTION) {
+                        return false;
                     }
                 } else {
-                    loadDefaults = false;
+                    return false;
                 }
             }
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
-        
-        if (loadDefaults) {           
-            InputStream is = null;
-            try {
-                if ((is = SDTManager.class.getResourceAsStream("/config/defaults.xml")) == null) {
-                    File f = new File(System.getProperty("user.dir"), "/config/defaults.xml");
-                    is = new FileInputStream(f);
-                }
-                
-                if (is == null) {
-                    throw new Exception();
-                } else {
-                    Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
-                    Preferences.importPreferences(is);
-                    Preferences.userRoot().node(SDTManager.prefsPath).sync();
-                    recordID = Integer.parseInt(Settings.getProperty("recordID"));
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(Main.getMainWindow(),
-                            "To load the configuration manually, click File -> Import\n" +
-                            "Preferences and select the XML configuration file.\n\n",
-                            "Failed to load default preferences",
-                            JOptionPane.ERROR_MESSAGE); 
-            } finally {
-                try {
-                    if (is != null) {
-                        is.close();
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(SDTManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        load();               
+        return true;
     }
     
     public static void load() {
@@ -542,13 +553,8 @@ public class SDTManager {
     private static void saveClient(Client client) {
         Preferences clientNode = clientPreferences.node(String.valueOf(client.getRecordID()));
         clientNode.put("name", client.getName());
-		if (OS.isWindows()) {
-			clientNode.put("path-win", client.getPath());
-			clientNode.put("commandFormat-win", client.getCommandFormat());
-		} else {
-			clientNode.put("path", client.getPath());
-			clientNode.put("commandFormat", client.getCommandFormat());
-		}
+        clientNode.put("path", client.getPath());
+        clientNode.put("commandFormat", client.getCommandFormat());
         
         try {
             clientNode.sync();
