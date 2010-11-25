@@ -20,72 +20,72 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="1">
             <map>
               <entry key="commandFormat"
-              value="open http://%host%:%port%/" />
+              value="%path% http://%host%:%port%/" />
               <entry key="name" value="HTTP browser" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="2">
             <map>
               <entry key="commandFormat"
-              value="open https://%host%:%port%/" />
+              value="%path% https://%host%:%port%/" />
               <entry key="name" value="HTTPS browser" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="3">
             <map>
               <entry key="commandFormat"
-              value="open telnet://%host%:%port%" />
+              value="%path% telnet://%host%:%port%" />
               <entry key="name" value="Telnet client" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="4">
             <map>
               <entry key="commandFormat"
-              value="open ssh://%port%:%host%" />
+              value="%path% ssh://%port%:%host%" />
               <entry key="name" value="SSH client" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="5">
             <map>
               <entry key="commandFormat"
-              value="open vnc://%host%:%port%" />
+              value="%path% vnc://%host%:%port%" />
               <entry key="name" value="VNC viewer" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="6">
             <map>
               <entry key="commandFormat"
-              value="open rdp://%host%:%port%" />
+              value="%path% rdp://%host%:%port%" />
               <entry key="name" value="RDP viewer" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="23">
             <map>
               <entry key="commandFormat"
-              value="open telnet://%host%:623" />
+              value="%path% telnet://%host%:623" />
               <entry key="name" value="Telnet client (SOL)" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="37">
             <map>
               <entry key="commandFormat"
-              value="open http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
+              value="%path% http://USERID:PASSW0RD@%host%:%port%/private/welcome.ssi" />
               <entry key="name" value="HTTP browser (RSA II)" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
           <node name="77">
             <map>
-              <entry key="commandFormat" value="open http://%host%:%port%/?%query%" />
+              <entry key="commandFormat" value="%path% http://%host%:%port%/?%query%" />
               <entry key="name" value="Opengear Management Console browser" />
-              <entry key="path" value="" />
+              <entry key="path" value="open" />
             </map>
           </node>
         </node>
