@@ -655,6 +655,8 @@ public class GatewayConnection {
 
     private class SdtUserInfo implements UserInfo, UIKeyboardInteractive {
 
+        private int attempts = 0;
+
         public String getPassphrase() {
             return authentication.getPassphrase();
         }
@@ -674,6 +676,9 @@ public class GatewayConnection {
 
         }
         public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {
+            if (attempts++ == 0 && !authentication.getPassword().isEmpty()) {
+                return new String[] { authentication.getPassword() };
+            }
             return authentication.doPrompt(instruction, prompt, echo);
         }
 
