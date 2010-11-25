@@ -2,13 +2,11 @@
 
 function tarup () {	
 	distfile="$1"
-	configfile="$2"
-	shift; shift
+	shift
 
 	cd /tmp
 	rm -rf "$TARDIR" &> /dev/null
 	mkdir "$TARDIR"
-	cp "$configfile" "$TARDIR/defaults.xml"
 	for file in $*; do
 		cp "$file" "$TARDIR"
 	done
@@ -48,8 +46,8 @@ echo "SDTConnector version: $VERSION"
 
 TARDIR="sdtconnector-$VERSION"
 
-tarup "sdtconnector-$VERSION.tar.gz" "$CONFIGDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
-tarup "sdtconnector-mac-$VERSION.tar.gz" "$CONFIGDIR/defaults.xml" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
+tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
+tarup "sdtconnector-mac-$VERSION.tar.gz" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
 APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" DEFAULTS_XML="$CONFIGDIR/defaults.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
 mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
 
