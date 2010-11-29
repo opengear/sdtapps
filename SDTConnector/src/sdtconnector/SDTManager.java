@@ -73,27 +73,15 @@ public class SDTManager {
     }
 
     static void importDefaults() {
-        InputStream is = null;
-        File f = new File(System.getProperty("user.dir"), "defaults.xml");
-
-        if (f.exists()) {
-            try {
-                is = new FileInputStream(f);
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(SDTManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        String resourceName;
+        if (OS.isWindows()) {
+            resourceName = "defaults-win.xml";
+        } else if (OS.isMacOSX()) {
+            resourceName = "defaults-mac.xml";
         } else {
-            String resourceName;
-            if (OS.isWindows()) {
-                resourceName = "defaults-win.xml";
-            } else if (OS.isMacOSX()) {
-                resourceName = "defaults-mac.xml";
-            } else {
-                resourceName = "defaults.xml";
-            }
-            is = SDTManager.class.getResourceAsStream("/config/" + resourceName);
+            resourceName = "defaults.xml";
         }
-
+        InputStream is = SDTManager.class.getResourceAsStream("/config/" + resourceName);
         try {
             if (is != null) {
                 Preferences.userRoot().node(SDTManager.prefsPath).removeNode();
