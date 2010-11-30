@@ -388,6 +388,11 @@ public class SDTManager {
             gwPrefs.node("hosts/" + host.getRecordID()).removeNode();
         } catch (BackingStoreException ex) {}
     }
+    public static void removeHosts(Gateway gw) {
+        while (!gw.getHostList().isEmpty()) {
+            removeHost(gw, (Host) gw.getHostList().get(0));
+        }
+    }
     public static void updateHost(Gateway gw, Host host) {
         System.out.println("Updating host " + host);
         Preferences gwPrefs = gatewayPreferences.node(String.valueOf(gw.getRecordID()));

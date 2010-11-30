@@ -895,7 +895,8 @@ static FileFilter xmlFileFilter = new FileFilter() {
                     return;
                 }
             }
-            gw.getHostList().clear();
+            
+            SDTManager.removeHosts(gw);
         }
 
         GatewayConnection conn = getGatewayConnection(gw);
