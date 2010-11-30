@@ -47,8 +47,9 @@ echo "SDTConnector version: $VERSION"
 TARDIR="sdtconnector-$VERSION"
 
 tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
-tarup "sdtconnector-mac-$VERSION.tar.gz" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon-mac.jar"
-APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" DEFAULTS_XML="$CONFIGDIR/defaults.xml" makensis "$TOOLSDIR/SDTConnector.nsi"
+APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" makensis "$TOOLSDIR/SDTConnector.nsi"
 mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
+
+echo "Mac OS X distribution must be created manually - use Xcode Jar Bundler with $DISTDIR/sdtcon-mac.jar and SDTConnector.icns"
 
 cd "$OLDDIR" &> /dev/null
