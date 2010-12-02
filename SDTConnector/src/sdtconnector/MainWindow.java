@@ -1031,6 +1031,12 @@ static FileFilter xmlFileFilter = new FileFilter() {
             autohostsButton.setPreferredSize(new Dimension(buttonWidth, 32));
             autohostsButton.setAction(autohostsAction);
             autohostsButton.setText("Retrieve Hosts");
+            if (((Gateway)last).getUsername().equals("root")) {
+                autohostsButton.setEnabled(false);
+                autohostsButton.setToolTipText("This action is not supported "
+                        + "for gateway user root, please configure a separate "
+                        + "user account");
+            }
             connectButtonPanel.add(autohostsButton);
             
             ((TitledBorder) connectButtonPanel.getBorder()).setTitle("Gateway Actions");
@@ -1046,7 +1052,7 @@ static FileFilter xmlFileFilter = new FileFilter() {
     GatewayConnection.Redirector getRedirectorForSelection(int remotePort, String localHost, int localPort, int udpOverTcpPort) {
         // Stop any redirectors using a requested local port
         for (GatewayConnection gwc : connections.values()) {
-            gwc.shutdownConflictingRedirectors(localHost, localPort, udpOverTcpPort);
+            gwc.shutdownConflictingRedirectors(remotePort, localHost, localPort, udpOverTcpPort);
         }
         TreePath path = gatewayList.getSelectionPath();
         Gateway gw = (Gateway) path.getPathComponent(1);
