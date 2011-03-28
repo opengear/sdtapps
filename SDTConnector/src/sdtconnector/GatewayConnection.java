@@ -260,7 +260,9 @@ public class GatewayConnection {
                     // Wait for shell to be ready
                     shellRead(shIn, 1000);
                     // Send command
-                    shellWrite(shOut, "cat $HOME/.sdt");
+                    shellWrite(shOut,
+                            "if [ -f \"$HOME/.sdt\" ]; then cat \"$HOME/.sdt\"; " +
+                            "else config --sdt; fi");
                     
                     hosts = parser.parse(shell.getInputStream());
 
