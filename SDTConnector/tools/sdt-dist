@@ -46,13 +46,31 @@ echo "SDTConnector version: $VERSION"
 
 TARDIR="sdtconnector-$VERSION"
 
+#
+# Distribution for *nix
+#
 tarup "sdtconnector-$VERSION.tar.gz" "$TOOLSDIR/SDTConnector" "$DISTDIR/sdtcon.jar"
+
+#
+# Distribution for Windows
+#
 APPNAME="Opengear SDTConnector" SHORTNAME="SDTConnector" VENDOR="Opengear" makensis "$TOOLSDIR/SDTConnector.nsi"
 mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
 
-echo "***"
-echo "*** Mac OS X distribution must be created manually - use Xcode Jar Bundler"
-echo "*** with dist/sdtcon-mac.jar and images/SDTConnector.icns"
-echo "***"
+#
+# Distribution for Mac OS X
+#
+count=$(du -c -m "$DISTDIR/SDTConnector.app" | tail -n1 | cut -f1)
+dd if=/dev/zero of="$DISTDIR/SDTConnector.dmg" bs=1M count=$count
+/sbin/mkfs.hfs -v SDTConnector "$DISTDIR/SDTConnector.dmg"
+path=$(mount -v "$DISTDIR/SDTConnector.dmg" | tail -n1 | sed 's/.*on \(.*\) type.*/\1/')
+if [[ -z "$path" ]]; then
+	echo "Run this script as root or modify /etc/fstab with something like:"
+	echo "$DISTDIR/SDTConnector.dmg /media/dmg     hfsplus  loop,user,noauto        0       0"
+	exit 1
+fi
+cp -a "$DISTDIR/SDTConnector.app" "$path"
+umount "$path"
+mv "$DISTDIR/SDTConnector.dmg" "$DISTDIR/SDTConnector-1.7.3.dmg"
 
 cd "$OLDDIR" &> /dev/null
