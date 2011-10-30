@@ -259,18 +259,25 @@ public class GatewayConnection {
                     shellWrite(shOut, "stty -echo");
                     // Wait for shell to be ready
                     shellRead(shIn, 1000);
-                    // Send command
-                    shellWrite(shOut,
-                            "if [ -f \"$HOME/.sdt\" ]; then cat \"$HOME/.sdt\"; " +
-                            "else config --sdt; fi");
-                    
-                    hosts = parser.parse(shell.getInputStream());
 
+                    // Send command - Opengear firmware
+                    shellWrite(shOut, "/bin/config --sdt");
+                    hosts = parser.parse(shell.getInputStream());
                     if (hosts.isEmpty() == false) {
                         autohostsListener.autohostsSucceeded(hosts);
-                    } else {
-                        autohostsListener.autohostsFailed();
+                        return;
                     }
+
+                    // Send command - Opengear legacy firmware, vanilla *nix
+                    shellWrite(shOut, "cat \"$HOME/.sdt\"");
+                    hosts = parser.parse(shell.getInputStream());
+                    if (hosts.isEmpty() == false) {
+                        autohostsListener.autohostsSucceeded(hosts);
+                        return;
+                    }
+                    
+                    autohostsListener.autohostsFailed();
+
                 } catch (JSchException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
