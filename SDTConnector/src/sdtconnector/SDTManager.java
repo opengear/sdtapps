@@ -57,7 +57,7 @@ public class SDTManager {
         load();
     }
     
-    private static int compareVersions(String str1, String str2) {
+    private static int compareVersions(String str1, String str2, int depth) {
         String[] v1 = { "0", "0", "0" };
         String[] v2 = { "0", "0", "0" };
         int i;
@@ -65,7 +65,7 @@ public class SDTManager {
         v1 = str1.split("\\.");
         v2 = str2.split("\\.");
         
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < depth; i++) {
             if (v1[i].equals(v2[i]) == false)
                 return Integer.parseInt(v1[i]) - Integer.parseInt(v2[i]);
         }
@@ -111,7 +111,9 @@ public class SDTManager {
         try {
             if (Preferences.userRoot().nodeExists("opengear/sdtconnector/settings")) {
                 String version = Settings.getProperty("version");
-                if (compareVersions(version, SDTConnector.VERSION) < 0) {
+                // Updated preferences bumps minor number, ignore patch number
+                // to fix spurious warnings
+                if (compareVersions(version, SDTConnector.VERSION, 2) < 0) {
                     int retVal = JOptionPane.showConfirmDialog(Main.getMainWindow(),
                             "SDTConnector has found preferences created by an older version (" + version + ").\n" +
                             "The version you are running (" +  SDTConnector.VERSION + ") may contain updated service and client\n" +

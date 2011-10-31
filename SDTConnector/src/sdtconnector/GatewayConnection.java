@@ -6,6 +6,7 @@ package sdtconnector;
 import ca.odell.glazedlists.EventList;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelDirectTCPIP;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -249,28 +250,39 @@ public class GatewayConnection {
                 }
                 
                 try {
-                    ChannelShell shell = (ChannelShell) session.openChannel("shell");
-                    PrintStream shOut = new PrintStream(shell.getOutputStream());
-                    BufferedReader shIn = new BufferedReader(new InputStreamReader(shell.getInputStream()));
                     AutohostsParser parser = new AutohostsParser();
                     
-                    shell.connect();
-                    
-                    shellWrite(shOut, "stty -echo");
-                    // Wait for shell to be ready
-                    shellRead(shIn, 1000);
+                    // Opengear firmware
+                    //
+                    ChannelExec chExec = (ChannelExec) session.openChannel("exec");
 
-                    // Send command - Opengear firmware
-                    shellWrite(shOut, "/bin/config --sdt");
-                    hosts = parser.parse(shell.getInputStream());
+                    chExec.setCommand("/bin/config --sdt");
+                    chExec.connect();
+
+                    hosts = parser.parse(chExec.getInputStream());
+                    chExec.disconnect();
+
                     if (hosts.isEmpty() == false) {
                         autohostsListener.autohostsSucceeded(hosts);
                         return;
                     }
 
-                    // Send command - Opengear legacy firmware, vanilla *nix
+                    // Opengear legacy firmware, vanilla *nix
+                    //
+                    ChannelShell chShell = (ChannelShell) session.openChannel("shell");
+                    PrintStream shOut = new PrintStream(chShell.getOutputStream());
+                    BufferedReader shIn = new BufferedReader(new InputStreamReader(chShell.getInputStream()));
+
+                    chShell.connect();
+
+                    shellWrite(shOut, "stty -echo");
+                    // Wait for shell to be ready
+                    shellRead(shIn, 1000);
+
                     shellWrite(shOut, "cat \"$HOME/.sdt\"");
-                    hosts = parser.parse(shell.getInputStream());
+                    hosts = parser.parse(chShell.getInputStream());
+                    chShell.disconnect();
+
                     if (hosts.isEmpty() == false) {
                         autohostsListener.autohostsSucceeded(hosts);
                         return;
