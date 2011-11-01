@@ -71,6 +71,6 @@ if [[ -z "$path" ]]; then
 fi
 cp -a "$DISTDIR/SDTConnector.app" "$path"
 umount "$path"
-mv "$DISTDIR/SDTConnector.dmg" "$DISTDIR/SDTConnector-1.7.3.dmg"
+mv "$DISTDIR/SDTConnector.dmg" "$DISTDIR/SDTConnector-$VERSION.dmg"
 
 cd "$OLDDIR" &> /dev/null
