@@ -15,12 +15,12 @@
 <!--${JNLP.RESOURCES.MAIN.JAR}-->
 <!--${JNLP.RESOURCES.JARS}-->
 <!--${JNLP.RESOURCES.EXTENSIONS}-->
-<property name="sdt.gateway.name" value="$$name"/>
-<property name="sdt.gateway.description" value="$$description"/>
-<property name="sdt.gateway.address" value="$$address"/>
-<property name="sdt.gateway.sshport" value="$$sshport"/>
-<property name="sdt.gateway.username" value="$$username"/>
-<property name="sdt.privatekey" value="$$privatekey"/>
+<property name="jnlp.sdt.gateway.name" value="$$name"/>
+<property name="jnlp.sdt.gateway.description" value="$$description"/>
+<property name="jnlp.sdt.gateway.address" value="$$address"/>
+<property name="jnlp.sdt.gateway.sshport" value="$$sshport"/>
+<property name="jnlp.sdt.gateway.username" value="$$username"/>
+<property name="jnlp.sdt.privatekey" value="$$privatekey"/>
     </resources>
     <application-desc main-class="${jnlp.main.class}">
 <!--${JNLP.APPLICATION.ARGS}-->

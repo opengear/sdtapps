@@ -292,20 +292,20 @@ public class SDTManager {
         //
         // Load gateway configuration passed through at Web Start launch
         //
-        String address = System.getProperty("sdt.gateway.address");
+        String address = System.getProperty("jnlp.sdt.gateway.address");
         if (address != null && !address.isEmpty()) {
             Gateway gw = new Gateway();
             
             gw.setAddress(address);
-            gw.setPort(new Integer(System.getProperty("sdt.gateway.sshport")));
-            gw.setUsername(System.getProperty("sdt.gateway.username"));
-            gw.setName(System.getProperty("sdt.gateway.name"));
-            gw.setDescription(System.getProperty("sdt.gateway.description"));
+            gw.setPort(new Integer(System.getProperty("jnlp.sdt.gateway.sshport")));
+            gw.setUsername(System.getProperty("jnlp.sdt.gateway.username"));
+            gw.setName(System.getProperty("jnlp.sdt.gateway.name"));
+            gw.setDescription(System.getProperty("jnlp.sdt.gateway.description"));
             gw.isVolatile(true);
             
             addGateway(gw);
 
-            addVolatilePrivateKey(System.getProperty("sdt.privatekey"));
+            addVolatilePrivateKey(System.getProperty("jnlp.sdt.privatekey"));
         }
     }
 
