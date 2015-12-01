@@ -43,8 +43,8 @@ public class GatewayConnection {
         this.username = gw.getUsername();
         this.password = gw.getPassword();
         config.put("StrictHostKeyChecking", "no");
-        config.put("cipher.s2c", "aes128-cbc,3des-cbc,blowfish-cbc");
-        config.put("cipher.c2s", "aes128-cbc,3des-cbc,blowfish-cbc");
+        config.put("cipher.s2c", "aes128-ctr,aes192-ctr,aes256-ctr,3des-ctr,aes128-cbc,3des-cbc,blowfish-cbc");
+        config.put("cipher.c2s", "aes128-ctr,aes192-ctr,aes256-ctr,3des-ctr,aes128-cbc,3des-cbc,blowfish-cbc");
         config.put("compression.s2c", "zlib,none");
         config.put("compression.c2s", "zlib,none");
         setupSession(username, password);
