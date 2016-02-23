@@ -23,3 +23,9 @@ install:
 	else \
 		echo "make dist to build installation packages"; \
 	fi
+
+VERSION := $(shell awk -F\" '/VERSION/{print $$2}' $(SRC)/src/sdtconnector/SDTConnector.java)
+sdtapps-$(VERSION).tar.gz:
+	git archive --prefix=sdtapps-$(VERSION)/ --format=tar HEAD | gzip -9 >$@
+
+sdtapps-dist: sdtapps-$(VERSION).tar.gz
