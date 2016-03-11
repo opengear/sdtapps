@@ -81,6 +81,11 @@ Section "install" SecDummy
   ;ADD YOUR OWN FILES HERE...
   File ..\dist\SDTConnector.exe
   File preferences.xml
+  CreateDirectory $INSTDIR\doc
+
+  SetOutPath "$INSTDIR\doc"
+  File ..\doc\one-jar-license.txt
+
   ;Store installation folder
   WriteRegStr HKCU "Software\${AppName}" "" $INSTDIR
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SDTConnector" \
