@@ -61,6 +61,7 @@ mv "$DISTDIR/SDTConnectorSetup.exe" "$DISTDIR/SDTConnectorSetup-$VERSION.exe"
 # Distribution for Mac OS X
 #
 count=$(du -c -m "$DISTDIR/SDTConnector.app" | tail -n1 | cut -f1)
+count=$((count+1))
 dd if=/dev/zero of="$DISTDIR/SDTConnector.dmg" bs=1M count=$count
 /sbin/mkfs.hfs -v SDTConnector "$DISTDIR/SDTConnector.dmg"
 path=$(mount -v "$DISTDIR/SDTConnector.dmg" | tail -n1 | sed 's/.*on \(.*\) type.*/\1/')

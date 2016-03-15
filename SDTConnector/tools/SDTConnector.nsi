@@ -85,6 +85,7 @@ Section "install" SecDummy
 
   SetOutPath "$INSTDIR\doc"
   File ..\doc\one-jar-license.txt
+  SetOutPath "$INSTDIR"
 
   ;Store installation folder
   WriteRegStr HKCU "Software\${AppName}" "" $INSTDIR
