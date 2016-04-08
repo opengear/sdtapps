@@ -109,6 +109,7 @@
 	    name="SDTConnector"
 	    displayname="SDTConnector"
 	    identifier="com.simontuffs.onejar.Boot"
+	    icon="images/SDTConnector.icns"
 	    mainclassname="com.simontuffs.onejar.Boot">
 	    <classpath file="dist/sdtcon-mac.jar" />
 	    <option value="-Done-jar.main-class=sdtconnector.Main" />
