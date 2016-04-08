@@ -3,6 +3,7 @@
 <!-- some examples of how to customize the build. -->
 <!-- (If you delete it and reopen the project it will be recreated.) -->
 <project name="SDTConnector" default="default" basedir=".">
+    <property environment="env"/>
     <description>Builds, tests, and runs the project SDTConnector.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -77,9 +78,14 @@
         classname="net.sf.launch4j.ant.Launch4jTask"
         classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar">
     </taskdef>
+<!--
     <taskdef name="jarbundler" 
 	classname="net.sourceforge.jarbundler.JarBundler">
     </taskdef>
+-->
+    <taskdef name="bundleapp"
+	classname="com.oracle.appbundler.AppBundlerTask"
+	classpath="lib/appbundler-1.0.jar" />
     <target name="-pre-jar">
         <echo message="Running retroweaver"/>
         <retroweaver srcdir="${build.classes.dir}" version="1.4"/>
@@ -105,7 +111,7 @@
         <launch4j configFile="launch4j.xml"/>
         <echo message="Bundling Mac OS X app"/>
 	<!-- Kludge for building in an environment other than OS X -->
-	<touch file="dist/JavaApplicationStub"/>
+<!--	<touch file="dist/JavaApplicationStub"/>
 	<jarbundler
 	    dir="dist"
 	    name="SDTConnector"
@@ -117,7 +123,16 @@
 	<exec executable="ln">
 	    <arg line="-sf /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 	    <arg value="dist/SDTConnector.app/Contents/MacOS/JavaApplicationStub"/>
-	</exec>
+	</exec>-->
     </target>
-  
+    <target name="bundle-sdtcon">
+	<bundleapp outputdirectory="dist"
+	    name="SDTConnector"
+	    displayname="SDTConnector"
+	    identifier="com.simontuffs.onejar.Boot"
+	    mainclassname="com.simontuffs.onejar.Boot">
+	    <classpath file="dist/sdtcon-mac.jar" />
+	    <option value="-Done-jar.main-class=sdtconnector.Main" />
+	</bundleapp>
+    </target>
 </project>
