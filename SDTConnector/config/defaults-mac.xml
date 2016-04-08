@@ -44,7 +44,7 @@ preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
           <node name="4">
             <map>
               <entry key="commandFormat"
-              value="%path% ssh://%port%:%host%" />
+              value="%path% ssh://%host%:%port%" />
               <entry key="name" value="SSH client" />
               <entry key="path" value="open" />
             </map>
