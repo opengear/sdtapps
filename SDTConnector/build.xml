@@ -67,13 +67,7 @@
     nbproject/build-impl.xml file. 
 
     -->
-    <taskdef name="retroweaver"
-        classname="com.rc.retroweaver.ant.RetroWeaverTask">
-        <classpath>
-            <fileset dir="../antlib" includes="**/*"/>            
-        </classpath>
-    </taskdef>
-    <property name="launch4j.dir" location="../launch4j"/>
+	<property name="launch4j.dir" location="../launch4j"/>
     <taskdef name="launch4j" 
         classname="net.sf.launch4j.ant.Launch4jTask"
         classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar">
@@ -81,10 +75,6 @@
     <taskdef name="bundleapp"
 	classname="com.oracle.appbundler.AppBundlerTask"
 	classpath="lib/appbundler-1.0.jar" />
-    <target name="-pre-jar">
-        <echo message="Running retroweaver"/>
-        <retroweaver srcdir="${build.classes.dir}" version="1.4"/>
-    </target>
     <target name="-post-jar">
         <echo message="Updating ${dist.jar}"/>
         <jar update="true" basedir="." destfile="${dist.jar}">

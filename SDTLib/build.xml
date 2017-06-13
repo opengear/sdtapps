@@ -66,14 +66,4 @@
     nbproject/build-impl.xml file. 
 
     -->
-    <taskdef name="retroweaver"
-        classname="com.rc.retroweaver.ant.RetroWeaverTask">
-        <classpath>
-            <fileset dir="../antlib" includes="**/*"/>            
-        </classpath>
-    </taskdef>
-    <target name="-pre-jar">
-        <echo message="Running retroweaver"/>
-        <retroweaver srcdir="${build.classes.dir}" version="1.4"/>
-    </target>
 </project>
