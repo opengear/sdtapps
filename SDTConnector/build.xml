@@ -69,7 +69,7 @@
     -->
 	<property name="launch4j.dir" location="../launch4j"/>
     <taskdef name="launch4j" 
-        classname="net.sf.launch4j.ant.Launch4jTask"
+	    classname="net.sf.launch4j.ant.Launch4jTask"
         classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar">
     </taskdef>
     <taskdef name="bundleapp"
@@ -93,7 +93,7 @@
             <arg line="${javac.classpath}"/>
         </exec>
         <echo message="Bundling Windows exe"/>
-        <launch4j configFile="launch4j.xml"/>
+	<launch4j configFile="launch4j.xml" bindir="../launch4j/bin/bin-linux64/"/>
 	<echo message="Bundling MAC OS X app"/>
 	<bundleapp outputdirectory="dist"
 	    name="SDTConnector"

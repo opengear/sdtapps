@@ -2,7 +2,8 @@ SRC=SDTConnector
 DIST=$(SRC)/dist
 
 all:
-	cd $(SRC) && ant
+	cd launch4j && ant jar
+	cd $(SRC) && ANT_OPTS=--add-opens=java.base/java.util=ALL-UNNAMED ant
 
 clean:
 	cd $(SRC) && ant clean
