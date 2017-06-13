@@ -42,10 +42,10 @@ public class Main {
                 // Just use whatever the user wanted
             } else if (LookUtils.IS_OS_MAC) {
                 lafName = "ch.randelshofer.quaqua.QuaquaLookAndFeel";
-            } else if (LookUtils.IS_OS_WINDOWS) {
-                lafName = Options.getSystemLookAndFeelClassName();
             } else if (LookUtils.IS_JAVA_6_OR_LATER) {
                 lafName = UIManager.getSystemLookAndFeelClassName();
+            } else if (LookUtils.IS_OS_WINDOWS) {
+                lafName = Options.getSystemLookAndFeelClassName();
             } else {
                 // Use The Looks L&F on pre-1.6 java on linux, since
                 // the pre 1.6 GTK L&F did not work that well
