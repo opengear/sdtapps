@@ -163,28 +163,6 @@ public class MainWindow extends javax.swing.JFrame {
         renderer.setOpenIcon(getMenuIcon("gateway"));
         
         //
-        // Fixup things to look slightly better on MaxOSX
-        //
-        if (OS.isMacOSX()) {
-            fileMenu.remove(fileMenuExitItem);
-            MRJAdapter.addAboutListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    aboutMenuItemActionPerformed(e);
-                }
-            });
-            MRJAdapter.addPreferencesListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    prefsMenuItemActionPerformed(e);
-                }
-            });
-            MRJAdapter.addQuitApplicationListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fileMenuExitItemActionPerformed(e);
-                }
-            });
-        }
-        
-        //
         // Do not put an etched border on GTK, it does not look right.
         //
         String lafName = UIManager.getLookAndFeel().getClass().getName();
